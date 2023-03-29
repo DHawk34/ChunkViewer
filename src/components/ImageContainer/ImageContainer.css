@@ -1,0 +1,15 @@
+#image_container {
+  display: inline-flex;
+  box-sizing: border-box;
+  width: 40vw;
+  height: 100vh;
+  border-right: 1px solid black;
+  border-radius: 5px;
+  line-height: 100%;
+}
+
+#preview {
+  margin: auto;
+  max-height: 100%;
+  max-width: 100%;
+}
