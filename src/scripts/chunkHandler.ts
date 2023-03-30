@@ -38,15 +38,29 @@ readChunks(fileName, new ReadSettings(false, false), (chunks) => {
 
 
 
-function readChunks(fileName: string, settings: ReadSettings, onCompleted: (chunks: Object) => void) {
+function readChunks(fileName: string, settings: ReadSettings, onCompleted: (chunks: { name: string, value: string | Object }[]) => void) {
     _fileName = fileName;
     _settings = settings;
 
     if (settings.readUsingStream) {
-        readChunksUsingStream(fileName, settings, onCompleted)
+        readChunksUsingStream(fileName, settings, onDone)
     }
     else {
-        readChunksInOneGo(fileName, settings, onCompleted)
+        readChunksInOneGo(fileName, settings, onDone)
+    }
+
+    function onDone(chunks: Object) {
+        let keys = Object.keys(chunks);
+        let values = Object.values(chunks);
+
+        let result: { name: string, value: string | Object }[] = [];
+        for (let i = 0; i < keys.length; i++) {
+            result.push({ name: keys[i], value: values[i] });
+        }
+
+        if (onCompleted != null) {
+            onCompleted(result);
+        }
     }
 }
 
