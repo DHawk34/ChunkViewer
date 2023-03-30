@@ -22,7 +22,7 @@ export {
 
 
 
-let fileName: string = 'C:\\Users\\CompleX\\Documents\\JavaScript\\PNG Chunk Reader\\test\\wings 00000 with params.png'
+//let fileName: string = 'C:\\Users\\CompleX\\Documents\\JavaScript\\PNG Chunk Reader\\test\\wings 00000 with params.png'
 
 var _fileName: string;
 var _settings: ReadSettings;
@@ -31,10 +31,10 @@ var _chunks: Object;
 
 
 
-readChunks(fileName, new ReadSettings(false, false), (chunks) => {
-    //debugChunks(chunks)
-    saveChunks(chunks, fileName, _image);
-})
+// readChunks(fileName, new ReadSettings(false, false), (chunks) => {
+//     //debugChunks(chunks)
+//     saveChunks(chunks, fileName, _image);
+// })
 
 
 
