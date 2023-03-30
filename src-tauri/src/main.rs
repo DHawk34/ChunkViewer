@@ -7,6 +7,12 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+#[tauri::command]
+fn path_to_file_url(file_path: &str) -> Result<String, &str> {
+    let url = Url::from_file_path(file_path).unwrap();
+    Ok(url.to_string())
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![greet])
