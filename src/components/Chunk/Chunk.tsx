@@ -1,4 +1,5 @@
 import './Chunk.css'
+import trashcanIcon from './trash.svg'
 import React from "react";
 
 export type MyProps = {
@@ -55,7 +56,7 @@ export class Chunk extends React.Component<MyProps, {}> {
             <div className="chunk" key={this.props.index}>
                 <div className="chunk_header">
                     <div className="chunk_name" onDoubleClick={(e) => this.spawnInput(e.currentTarget, this.props.index)}>{this.props.chunk.name}</div>
-                    <a className="delete_chunk_button button" onClick={() => this.deleteChunk(this.props.index)}>Delete</a>
+                    <img className="delete_chunk_button button" src={trashcanIcon} onClick={() => this.deleteChunk(this.props.index)}/>
                 </div>
                 <p className="chunk_text" onDoubleClick={(e) => this.spawnInput(e.currentTarget, this.props.index)}>{this.props.chunk.text}</p>
             </div>
