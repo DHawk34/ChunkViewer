@@ -1,4 +1,4 @@
-import { readFile } from 'fs';
+import { readBinaryFile } from '@tauri-apps/api/fs';
 import { getChunksInOneGo, getChunksUsingStream } from './chunkReader'
 import { saveChunks } from './chunkSaver'
 
@@ -97,13 +97,7 @@ function readChunksUsingStream(fileName: string, settings: ReadSettings, onCompl
 }
 
 function readChunksInOneGo(fileName: string, settings: ReadSettings, onCompleted: (chunks: Object) => void) {
-    readFile(fileName, (err, bytes: Uint8Array) => {
-        if (err) {
-            if (onCompleted != null) {
-                onCompleted({ message: 'Error: ' + err.message });
-            }
-            return;
-        }
+    readBinaryFile(fileName).then((bytes: Uint8Array) => {
         _image = bytes;
 
         getChunksInOneGo(bytes, settings.parseParameters, (chunks) => {
