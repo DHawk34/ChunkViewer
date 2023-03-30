@@ -12,14 +12,13 @@ export {
 
 
 
-function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean, onCompleted: (chunks: Object) => void) {
+function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean) {
     let result: any = new Object();
     let requiredLength: number = 16;
 
     if (bytes.length < requiredLength) {
         result.message = 'Файл слишком маленький, нечего обрабатывать!';
-        onCompleted(result);
-        return;
+        return result;
     }
 
     let pos: number = 8;
@@ -33,8 +32,7 @@ function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean, onCompleted: 
     // PNG check
     if (!isPng(bytes)) {
         result.message = 'Это не пнг! Не могу обработать.';
-        onCompleted(result);
-        return;
+        return result;
     }
 
     while (bytes.length > requiredLength) {
@@ -55,19 +53,35 @@ function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean, onCompleted: 
             if (other != "") {
                 result.Other = other;
             }
-
-            onCompleted(result);
-            return;
+            return result;
         }
 
         if (bytes.length < requiredLength) {
             result.message = 'Данные кончились раньше, чем был найден чанк IDAT!';
-            onCompleted(result);
-            return;
+            return result;
         }
 
         if (blockName == "tEXt" || blockName == "iTXt" || blockName == "zTXt") {
-            processTxtChunk(blockName);
+            let chunkType = blockName;
+
+            // Имя блока указано после (на конце \0)
+            let endNameIndex = getFieldEnd(bytes, pos);
+            if (endNameIndex == -1) {
+                result.message = "Ошибка поиска параметров, возможно картинка битая!";
+                return result;
+            }
+            blockName = bytes2String(bytes, pos, endNameIndex - pos);
+
+            length -= blockName.length + 1;
+            pos += blockName.length + 1;
+
+            if (blockName == 'parameters') {
+                parametersAreNotFound = false;
+                result[blockName] = processParameters(chunkType);
+            }
+            else {
+                result[blockName] = bytes2String(bytes, pos, length);
+            }
         }
         else if (blockName != "IHDR") {
             result[blockName] = bytes2String(bytes, pos, length);
@@ -78,31 +92,6 @@ function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean, onCompleted: 
     }
 
 
-
-    function processTxtChunk(blockName: string) {
-        let chunkType = blockName;
-
-        // Имя блока указано после (на конце \0)
-        let endNameIndex = getFieldEnd(bytes, pos);
-        if (endNameIndex == -1) {
-            result.message = "Ошибка поиска параметров, возможно картинка битая!";
-            onCompleted(result);
-            return;
-        }
-
-        blockName = bytes2String(bytes, pos, endNameIndex - pos);
-
-        length -= blockName.length + 1;
-        pos += blockName.length + 1;
-
-        if (blockName == 'parameters') {
-            parametersAreNotFound = false;
-            result[blockName] = processParameters(chunkType);
-        }
-        else {
-            result[blockName] = bytes2String(bytes, pos, length);
-        }
-    }
 
     function processParameters(chunkType: string) {
         let isCompressed = false;
@@ -146,8 +135,7 @@ function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean, onCompleted: 
 
         if (isCompressed) {
             result.message = "Это картинка нужна для тестов \"Как раскодировать данные\"!";
-            onCompleted(result);
-            return;
+            return parameters;
 
             // try {
             //     parameters = pako.inflate(parameters, { to: 'string' });

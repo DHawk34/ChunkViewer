@@ -18,7 +18,8 @@
         "open": true
       },
       "fs": {
-        "all": true
+        "readFile": true,
+        "writeFile": true
       },
       "protocol": {
         "all": false,
