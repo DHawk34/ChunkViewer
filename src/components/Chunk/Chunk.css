@@ -1,14 +1,9 @@
 .delete_chunk_button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  width: 15%;
-  display: flex;
-  height: 100%;
-  align-items: center;
+  display: inline-flex;
+  width: 50px;
+  /* align-items: center;
   flex-direction: column;
-  justify-content: center;
+  justify-content: center; */
 }
 
 .editable_textarea {
@@ -44,7 +39,6 @@
 .chunk_name {
   box-sizing: border-box;
   display: inline-block;
-  width: 80%;
 }
 
 .chunk_text {
