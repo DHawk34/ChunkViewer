@@ -12,7 +12,7 @@ export {
 
 
 
-function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean) {
+function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean): Object {
     let result: any = new Object();
     let requiredLength: number = 16;
 
@@ -91,7 +91,9 @@ function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean) {
         requiredLength = pos + 8; // Чтобы хватило на чтение длины чанка и его имени
     }
 
-
+    console.log('func END')
+    result.message = 'Данные кончились раньше, чем был найден чанк IDAT!';
+    return result;
 
     function processParameters(chunkType: string) {
         let isCompressed = false;

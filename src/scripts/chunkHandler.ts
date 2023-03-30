@@ -1,6 +1,7 @@
-import { readBinaryFile } from '@tauri-apps/api/fs';
+import { tauri } from '@tauri-apps/api';
+import axios from 'axios';
 import chunkReader from './chunkReader'
-import { saveChunks } from './chunkSaver'
+import chunkSaver from './chunkSaver'
 
 class ReadSettings {
     public parseParameters: boolean;
@@ -32,23 +33,48 @@ async function readChunks(fileName: string, settings: ReadSettings) {
     _settings = settings;
 
     chunks = await readChunksInOneGo(fileName, settings);
-
+    
     let keys = Object.keys(chunks);
     let values = Object.values(chunks);
-
+    
     let result: { name: string, value: string | Object }[] = [];
+    let message: string = '';
+
     for (let i = 0; i < keys.length; i++) {
-        result.push({ name: keys[i], value: values[i] });
+        if (keys[i] == 'message') {
+            message = values[i];
+        }
+        else {
+            result.push({ name: keys[i], value: values[i] });
+        }
     }
 
-    return result;
+    return {
+        chunks: result,
+        message
+    };
 }
 
 
 
 async function readChunksInOneGo(fileName: string, settings: ReadSettings) {
-    image = await readBinaryFile(fileName);
-    return chunkReader.getChunksInOneGo(image, settings.parseParameters);
+    let url = tauri.convertFileSrc(fileName);
+    let result: Object = {
+        message: 'Unexpected error!'
+    };
+
+    await axios.get(url, { responseType: 'arraybuffer' })
+        .then((response) => {
+            image = new Uint8Array(response.data);
+            result = chunkReader.getChunksInOneGo(image, settings.parseParameters);
+        })
+        .catch((error) => {
+            result = {
+                message: error.message,
+            };
+        });
+
+    return result;
 }
 
 
