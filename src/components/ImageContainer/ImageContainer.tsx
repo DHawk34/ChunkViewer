@@ -17,15 +17,28 @@ export class ImageContainer extends React.Component<MyProps, {}> {
         super(props)
 
         listen('tauri://file-drop', event => {
-            var a = event.payload as Array<any>;
+            var payloads = event.payload as Array<string>;
+            var imgPath = this.getImage(payloads)
+
+            if (imgPath == null)
+                return
+
             var img = document.getElementById("preview") as HTMLImageElement;
-            console.log(a[0]);
-            let apiPath = tauri.convertFileSrc(a[0])
-            console.log(apiPath);
+
+            let apiPath = tauri.convertFileSrc(imgPath)
             img.src = apiPath;
 
-            this.props.OnImageLoaded(a[0])
+            this.props.OnImageLoaded(imgPath)
         })
+    }
+
+    getImage = (payloads: Array<string>) => {
+
+        for (let i = 0; i < payloads.length; i++) {
+            const payload = payloads[i];
+            if (payload.endsWith(".png"))
+                return payload
+        }
     }
 
     render(): React.ReactNode {
