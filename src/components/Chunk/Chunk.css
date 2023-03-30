@@ -3,10 +3,17 @@
   width: 40px;
   padding: 5px;
   background-color: transparent;
-  color: red;
+  color: #aa2121;
+  filter: invert(22%) sepia(28%) saturate(6630%) hue-rotate(347deg) brightness(81%) contrast(91%);
   /* align-items: center;
   flex-direction: column;
   justify-content: center; */
+}
+
+.delete_chunk_button:hover{
+  padding: 5px;
+  background-color: transparent;
+  filter: invert(12%) sepia(83%) saturate(2729%) hue-rotate(347deg) brightness(98%) contrast(91%);
 }
 
 .editable_textarea {
