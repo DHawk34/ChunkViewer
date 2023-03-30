@@ -1,6 +1,9 @@
 .delete_chunk_button {
-  display: inline-flex;
-  width: 50px;
+  display: block;
+  width: 40px;
+  padding: 5px;
+  background-color: transparent;
+  color: red;
   /* align-items: center;
   flex-direction: column;
   justify-content: center; */
@@ -29,7 +32,9 @@
 
 .chunk_header {
   position: relative;
-  display: block;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   height: 100%;
   padding: 25px 10px;
   background-color: #1e1f22;
@@ -39,6 +44,7 @@
 .chunk_name {
   box-sizing: border-box;
   display: inline-block;
+  width: 80%;
 }
 
 .chunk_text {

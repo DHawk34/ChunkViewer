@@ -37,12 +37,12 @@ export class App extends React.Component<{}, AppState>{
 
   loadChunks = (path: string) => {
     console.log("load chunks")
-    chunkHandler.readChunks(path, new ReadSettings(false, false), (chunks) =>{
+    chunkHandler.readChunks(path, new ReadSettings(false)).then((chunks) => {
       let result: { name: string; text: string; }[] = []
       for (let i = 0; i < chunks.length; i++) {
         const chunk = chunks[i];
         console.log(chunk)
-        result.push({name:chunk.name, text:chunk.value.toString()})
+        result.push({ name: chunk.name, text: chunk.value.toString() })
       }
 
       this.updateChunkArray(result)
