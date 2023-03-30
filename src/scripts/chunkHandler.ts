@@ -1,5 +1,5 @@
 import { readBinaryFile } from '@tauri-apps/api/fs';
-import { getChunksInOneGo, getChunksUsingStream } from './chunkReader'
+import { getChunksInOneGo, /*getChunksUsingStream*/ } from './chunkReader'
 import { saveChunks } from './chunkSaver'
 
 class ReadSettings {
@@ -87,13 +87,13 @@ function readChunks(fileName: string, settings: ReadSettings, onCompleted: (chun
 
 
 function readChunksUsingStream(fileName: string, settings: ReadSettings, onCompleted: (chunks: Object) => void) {
-    getChunksUsingStream(fileName, settings.parseParameters, (chunks) => {
-        _chunks = chunks;
+    // getChunksUsingStream(fileName, settings.parseParameters, (chunks) => {
+    //     _chunks = chunks;
 
-        if (onCompleted != null) {
-            onCompleted(chunks);
-        }
-    })
+    //     if (onCompleted != null) {
+    //         onCompleted(chunks);
+    //     }
+    // })
 }
 
 function readChunksInOneGo(fileName: string, settings: ReadSettings, onCompleted: (chunks: Object) => void) {
