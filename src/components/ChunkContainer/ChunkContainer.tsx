@@ -37,7 +37,6 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
 
     render(): React.ReactNode {
         let chunkElements = this.props.chunkArray.map((item: { name: string; text: string; }, index: number) => {
-            console.log(item)
             return <Chunk index={index} chunk={item} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index} />
         })
 
