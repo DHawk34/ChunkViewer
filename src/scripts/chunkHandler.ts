@@ -86,10 +86,10 @@ async function readChunksUsingStream(imgUrl: string, settings: ReadSettings) {
     };
 
     await axios.get(imgUrl, { responseType: 'stream' })
-    .then((response) => {
+    .then(async (response) => {
         let stream = response.data;
-        //result = chunkReader.getChunksUsingStream(stream, settings.parseParameters);
-        //stream.destroy();
+        result = await chunkReader.getChunksUsingStream(stream, settings.parseParameters);
+        stream.destroy();
     })
     .catch((error) => {
         result = {

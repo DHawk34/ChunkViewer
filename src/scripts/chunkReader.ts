@@ -156,103 +156,93 @@ function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean): Object {
 
 
 
-function getChunksUsingStream(stream: ReadStream, parseParams: boolean, onCompleted: (chunks: Object) => void) {
+async function getChunksUsingStream(stream: ReadStream, parseParams: boolean): Promise<Object> {
     let result: any = new Object();
+    result.message = '';
 
     let bytes = new Uint8Array();
     let chunkNumber: number = 0;
-    let other: string = '';
     let length: number = 0;
     let blockName: string = '';
     let pos: number = 0;
     let requiredLength: number = 16;
-    let parametersAreNotFound: boolean = true;
     let skipLengthNameRead: boolean = false;
 
-    stream.on('error', (err: { message: string; }) => {
-        result.message = 'Error: ' + err.message;
-        onCompleted(result);
-        return;
-    })
+    return await new Promise((resolve) => {
+        stream.on('close', () => resolve(result));
+        stream.on('end', () => {
+            result.message += 'Файл слишком маленький или в нем не найден чанк IDAT!';
+            resolve(result);
+        })
+        stream.on('error', (err) => {
+            result.message += 'Error: ' + err.message;
+            resolve(result);
+        })
 
-    stream.on('end', () => {
-        result.message = 'Файл слишком маленький или в нем не найден чанк IDAT!';
-        onCompleted(result);
-        return;
-    })
+        stream.on('data', (chunk: Uint8Array) => {
+            chunkNumber++
+            bytes = concatUInt8Arrays(bytes, chunk);
 
-    stream.on('data', (chunk: Uint8Array) => {
-        chunkNumber++
-        bytes = concatUInt8Arrays(bytes, chunk);
-
-        if (bytes.length < requiredLength) {
-            return;
-        }
-
-        // PNG check
-        if (chunkNumber == 1) {
-            if (!isPng(bytes)) {
-                result.message = 'Это не пнг! Не могу обработать.';
-                onCompleted(result);
+            if (bytes.length < requiredLength) {
                 return;
             }
-            pos += 8;
-        }
 
-        while (bytes.length >= requiredLength) {
-            if (!skipLengthNameRead) {
-                // Размер чанка с параметрами
-                length = bytes2UInt32BigEndian(bytes, pos);
-                requiredLength += length;
-                pos += 4;
+            // PNG check
+            if (chunkNumber == 1) {
+                if (!isPng(bytes)) {
+                    result.message += 'Это не пнг! Не могу обработать.';
+                    resolve(result); // return
+                }
+                pos += 8;
+            }
 
-                // Проверяем наличие чанка с параметрами (tEXt)
-                blockName = bytes2String(bytes, pos, 4);
-                pos += 4;
+            while (bytes.length >= requiredLength) {
+                if (!skipLengthNameRead) {
+                    // Размер чанка с параметрами
+                    length = bytes2UInt32BigEndian(bytes, pos);
+                    requiredLength += length;
+                    pos += 4;
 
-                if (blockName == "IDAT") { // Кончились все хедеры
-                    if (parametersAreNotFound) {
-                        result.message = "В этой картинке нет параметров генерации!";
+                    // Проверяем наличие чанка с параметрами (tEXt)
+                    blockName = bytes2String(bytes, pos, 4);
+                    pos += 4;
+
+                    if (blockName == "IDAT") { // Кончились все хедеры
+                        resolve(result); // return
                     }
 
-                    if (other != "") {
-                        result.Other = other;
+                    if (bytes.length < requiredLength) {
+                        skipLengthNameRead = true;
+                        return;
                     }
+                }
+                skipLengthNameRead = false;
 
-                    onCompleted(result);
-                    return;
+
+
+                if (blockName == "tEXt" || blockName == "iTXt" || blockName == "zTXt") {
+                    processTxtChunk(resolve);
+                }
+                else if (blockName != "IHDR") {
+                    result[blockName] = bytes2String(bytes, pos, length);
                 }
 
-                if (bytes.length < requiredLength) {
-                    skipLengthNameRead = true;
-                    return;
-                }
+                pos += length + 4; // +4 -- CRC (окончание чанка)
+                requiredLength = pos + 8; // Чтобы хватило на чтение длины чанка и его имени
             }
-            skipLengthNameRead = false;
-
-
-
-            if (blockName == "tEXt" || blockName == "iTXt" || blockName == "zTXt") {
-                processTxtChunk();
-            }
-            else if (blockName != "IHDR") {
-                result[blockName] = bytes2String(bytes, pos, length);
-            }
-
-            pos += length + 4; // +4 -- CRC (окончание чанка)
-            requiredLength = pos + 8; // Чтобы хватило на чтение длины чанка и его имени
-        }
+        })
     })
 
-    function processTxtChunk() {
+
+
+    function processTxtChunk(resolve: any) {
         let chunkType = blockName;
 
         // Имя блока указано после (на конце \0)
         let endNameIndex = getFieldEnd(bytes, pos);
         if (endNameIndex == -1) {
-            result.message = "Ошибка поиска параметров, возможно картинка битая!";
-            onCompleted(result);
-            return;
+            result.message += "Ошибка поиска параметров, возможно картинка битая!";
+            resolve(result); // return
         }
 
         blockName = bytes2String(bytes, pos, endNameIndex - pos);
@@ -261,15 +251,14 @@ function getChunksUsingStream(stream: ReadStream, parseParams: boolean, onComple
         pos += blockName.length + 1;
 
         if (blockName == 'parameters') {
-            parametersAreNotFound = false;
-            result[blockName] = processParameters(chunkType);
+            result[blockName] = processParameters(resolve, chunkType);
         }
         else {
             result[blockName] = bytes2String(bytes, pos, length);
         }
     }
 
-    function processParameters(chunkType: string) {
+    function processParameters(resolve: any, chunkType: string) {
         let isCompressed = false;
 
         if (chunkType == "iTXt") {
@@ -287,10 +276,10 @@ function getChunksUsingStream(stream: ReadStream, parseParams: boolean, onComple
             pos += translated.length + 1;
             length -= translated.length + 1;
 
-            other += `Чанк iTXt (${isCompressed ? 'compressed' : 'uncompressed'}${language == '' ? '' : ', language: ' + language}${translated == '' ? '' : ', translated: ' + translated})\n`;
+            result.message += `Чанк iTXt (${isCompressed ? 'compressed' : 'uncompressed'}${language == '' ? '' : ', language: ' + language}${translated == '' ? '' : ', translated: ' + translated}) | `;
 
             if (isCompressed) {
-                result.warning = "Закодированный чанк iTXt. Эта картинка нужна для тестов!";
+                result.message = "Закодированный чанк iTXt. Эта картинка нужна для тестов!";
             }
         }
         else if (chunkType == "zTXt") { // data is 100% compressed
@@ -300,8 +289,7 @@ function getChunksUsingStream(stream: ReadStream, parseParams: boolean, onComple
             pos++;
             length--;
 
-            other += "Чанк zTXt (compressed)\n";
-            result.warning = "Чанк zTXt. Эта картинка нужна для тестов!";
+            result.message += "Чанк zTXt (compressed). Эта картинка нужна для тестов! | ";
         }
 
 
@@ -310,16 +298,15 @@ function getChunksUsingStream(stream: ReadStream, parseParams: boolean, onComple
         let parameters = bytes2String(bytes, pos, length);
 
         if (isCompressed) {
-            result.message = "Это картинка нужна для тестов \"Как раскодировать данные\"!";
-            onCompleted(result);
-            return;
+            result.message += "Это картинка нужна для тестов \"Как раскодировать данные\"!";
+            resolve(result); // return
 
             // try {
             //     parameters = pako.inflate(parameters, { to: 'string' });
             // }
             // catch (error) {
-            //     result.message = "Не удалось раскодировать данные в блоке zTXt!"
-            //     return result;
+            //     result.message += "Не удалось раскодировать данные в блоке zTXt!"
+            //     resolve(result); // return
             // }
         }
 
