@@ -5,7 +5,7 @@ import './ImageContainer.css'
 import React, { useState } from "react";
 
 
-export type MyProps = {
+type MyProps = {
     // using `interface` is also ok
     OnImageLoaded: (path: string) => void
 };

@@ -5,13 +5,8 @@ import { ChunkContainer } from "./components/ChunkContainer/ChunkContainer";
 import chunkHandler, { ReadSettings } from "./scripts/chunkHandler";
 import { text } from "stream/consumers";
 
-export type ChunkType = {
-  name: string,
-  text: string
-}
-
 export type AppState = {
-  chunkArray: ChunkType[]
+  chunkArray: { name: string, value: string | Object }[]
 }
 
 export class App extends React.Component<{}, AppState>{
@@ -21,24 +16,24 @@ export class App extends React.Component<{}, AppState>{
       chunkArray: [
         {
           name: "TEXT",
-          text: "some cool text"
+          value: "some cool text"
         },
         {
           name: "TEXT222",
-          text: "another cool text"
+          value: "another cool text"
         }
       ]
     }
   }
 
-  updateChunkArray = (newChunkArray: { name: string; text: string; }[]) => {
+  updateChunkArray = (newChunkArray: { name: string; value: string | Object }[]) => {
     this.setState({ chunkArray: newChunkArray })
   }
 
   loadChunks = (path: string) => {
     console.log("load chunks")
-    chunkHandler.readChunks(path, new ReadSettings(false)).then(({chunks, message}) => {
-      let result: { name: string; text: string; }[] = []
+    chunkHandler.readChunks(path, new ReadSettings(false, false)).then(({ chunks, message }) => {
+      let result: { name: string; value: string; }[] = []
       // if (message != '') {
       //   result.push({ name: 'message', text: message })
       // }
@@ -46,7 +41,7 @@ export class App extends React.Component<{}, AppState>{
       for (let i = 0; i < chunks.length; i++) {
         const chunk = chunks[i];
         console.log(chunk)
-        result.push({ name: chunk.name, text: chunk.value.toString() })
+        result.push({ name: chunk.name, value: chunk.value.toString() })
       }
 
       this.updateChunkArray(result)

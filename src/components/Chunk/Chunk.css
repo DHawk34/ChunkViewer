@@ -3,23 +3,37 @@
   padding: 5px;
   background-color: transparent;
   color: #da0000;
-  /* align-items: center;
-  flex-direction: column;
-  justify-content: center; */
 }
 
-.trash_icon{
-  width: 100%;
+.export_chunk_button {
+  display: block;
+  padding: 5px;
+  background-color: transparent;
+  color: green;
 }
 
-/* .delete_chunk_button path{
-  fill: red;
-} */
+.export_chunk_button:hover{
+  padding: 5px;
+  color: #dedede;
+  background-color: green;
+}
+
+.export_chunk_button:active{
+  padding: 5px;
+  color: #dedede;
+  background-color: #006a00
+}
 
 .delete_chunk_button:hover{
   padding: 5px;
   color: #dedede;
   background-color: #da0000;
+}
+
+.delete_chunk_button:active{
+  padding: 5px;
+  color: #dedede;
+  background-color: #aa0000;
 }
 
 .editable_textarea {

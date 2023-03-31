@@ -2,9 +2,9 @@ import './ChunkContainer.css'
 import React, { useState } from "react";
 import { Chunk } from '../Chunk/Chunk';
 
-export type MyProps = {
-    chunkArray: { name: string, text: string }[],
-    OnChunksUpdated: (chunk: { name: string, text: string }[]) => void
+type MyProps = {
+    chunkArray: { name: string, value: string | Object }[],
+    OnChunksUpdated: (chunk: { name: string, value: string | Object }[]) => void
 };
 
 export class ChunkContainer extends React.Component<MyProps, {}> {
@@ -18,25 +18,25 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
 
     addChunk = () => {
 
-        let source = [...this.props.chunkArray, { name: "New Chunk", text: "" }];
+        let source = [...this.props.chunkArray, { name: "New Chunk", value: "" }];
         console.log(source);
         this.props.OnChunksUpdated(source)
     }
 
-    chunkUpdate = (index: number, newValue: { name: string; text: string; }) => {
+    chunkUpdate = (index: number, newValue: { name: string; value: string | Object }) => {
         let list = [...this.props.chunkArray];
         list[index] = newValue;
         this.props.OnChunksUpdated(list)
     }
 
     chunkDelete = (index: number) => {
-        let list = [...this.props.chunkArray];
+        let list = this.props.chunkArray;
         list.splice(index, 1);
         this.props.OnChunksUpdated(list)
     }
 
     render(): React.ReactNode {
-        let chunkElements = this.props.chunkArray.map((item: { name: string; text: string; }, index: number) => {
+        let chunkElements = this.props.chunkArray.map((item: { name: string; value: string | Object; }, index: number) => {
             return <Chunk index={index} chunk={item} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index} />
         })
 
