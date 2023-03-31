@@ -1,22 +1,25 @@
 import { tauri } from '@tauri-apps/api';
 import axios from 'axios';
 import chunkReader from './chunkReader'
+import { exportChunk, exportChunks } from './chunkExporter'
 import chunkSaver from './chunkSaver'
 
 class ReadSettings {
+    public readUsingStream: boolean;
     public parseParameters: boolean;
 
-    constructor(parseParameters: boolean) {
+    constructor(readUsingStream: boolean, parseParameters: boolean) {
+        this.readUsingStream = readUsingStream;
         this.parseParameters = parseParameters;
     }
 }
 
 export default {
-    ReadSettings, readChunks, exportChunk
+    ReadSettings, readChunks, exportChunk, exportChunks
 }
 
 export {
-    ReadSettings, readChunks, exportChunk
+    ReadSettings, readChunks, exportChunk, exportChunks
 }
 
 
@@ -30,7 +33,12 @@ var chunks: Object;
 async function readChunks(imgUrl: string, settings: ReadSettings) {
     _settings = settings;
 
-    chunks = await readChunksInOneGo(imgUrl, settings);
+    if (settings.readUsingStream) {
+        chunks = await readChunksUsingStream(imgUrl, settings);
+    }
+    else {
+        chunks = await readChunksInOneGo(imgUrl, settings);
+    }
 
     let keys = Object.keys(chunks);
     let values = Object.values(chunks);
@@ -53,8 +61,6 @@ async function readChunks(imgUrl: string, settings: ReadSettings) {
     };
 }
 
-
-
 async function readChunksInOneGo(imgUrl: string, settings: ReadSettings) {
     let result: Object = {
         message: 'Неожиданная ошибка при чтении картинки (такого быть не должно)!'
@@ -74,31 +80,26 @@ async function readChunksInOneGo(imgUrl: string, settings: ReadSettings) {
     return result;
 }
 
+async function readChunksUsingStream(imgUrl: string, settings: ReadSettings) {
+    let result: Object = {
+        message: 'Неожиданная ошибка при чтении картинки (такого быть не должно)!'
+    };
 
+    await axios.get(imgUrl, { responseType: 'stream' })
+    .then((response) => {
+        let stream = response.data;
+        //result = chunkReader.getChunksUsingStream(stream, settings.parseParameters);
+        //stream.destroy();
+    })
+    .catch((error) => {
+        result = {
+            message: error.message,
+        };
+    })
 
-function exportChunk(chunk: { name: string, value: string | Object }, fileName: string) {
-    let content: string = '========= ' + chunk.name + ' =========';
-    content += chunkValueToReadableString(chunk.value);
-
-
-
+    return result;
 }
 
-function chunkValueToReadableString(chunkValue: string | Object): String {
-    if (chunkValue instanceof Object) {
-        let keys = Object.keys(chunkValue);
-        let values = Object.values(chunkValue);
-        let result: string = '';
-
-        for (let i = 0; i < keys.length; i++) {
-            result += keys[i] + chunkValueToReadableString(values[i]);
-        }
-
-        return result;
-    }
-
-    return chunkValue;
-}
 
 
 function debugChunks(chunks: Object) {
