@@ -21,18 +21,16 @@ export {
 
 
 
-var _fileName: string;
 var _settings: ReadSettings;
 var image: Uint8Array;
 var chunks: Object;
 
 
 
-async function readChunks(fileName: string, settings: ReadSettings) {
-    _fileName = fileName;
+async function readChunks(imgUrl: string, settings: ReadSettings) {
     _settings = settings;
 
-    chunks = await readChunksInOneGo(fileName, settings);
+    chunks = await readChunksInOneGo(imgUrl, settings);
     
     let keys = Object.keys(chunks);
     let values = Object.values(chunks);
@@ -57,13 +55,12 @@ async function readChunks(fileName: string, settings: ReadSettings) {
 
 
 
-async function readChunksInOneGo(fileName: string, settings: ReadSettings) {
-    let url = tauri.convertFileSrc(fileName);
+async function readChunksInOneGo(imgUrl: string, settings: ReadSettings) {
     let result: Object = {
-        message: 'Unexpected error!'
+        message: 'Неожиданная ошибка при чтении картинки (такого быть не должно)!'
     };
 
-    await axios.get(url, { responseType: 'arraybuffer' })
+    await axios.get(imgUrl, { responseType: 'arraybuffer' })
         .then((response) => {
             image = new Uint8Array(response.data);
             result = chunkReader.getChunksInOneGo(image, settings.parseParameters);
@@ -75,6 +72,12 @@ async function readChunksInOneGo(fileName: string, settings: ReadSettings) {
         });
 
     return result;
+}
+
+
+
+function exportChunk(chunk: { name: string, value: string | Object }) {
+
 }
 
 
