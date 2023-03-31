@@ -85,9 +85,16 @@ async function readChunksUsingStream(imgUrl: string, settings: ReadSettings) {
         message: 'Неожиданная ошибка при чтении картинки (такого быть не должно)!'
     };
 
-    await axios.get(imgUrl, { responseType: 'stream' })
+    await axios.get(imgUrl, { responseType: 'stream', maxRedirects: 0 })
     .then(async (response) => {
         let stream = response.data;
+        if (typeof(stream) === 'string') {
+            result = {
+                message: 'Не удалось получить стрим'
+            }
+            return
+        }
+
         result = await chunkReader.getChunksUsingStream(stream, settings.parseParameters);
         stream.destroy();
     })

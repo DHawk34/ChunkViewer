@@ -31,8 +31,8 @@ export class App extends React.Component<{}, AppState>{
   }
 
   loadChunks = (path: string) => {
-    console.log("load chunks")
     chunkHandler.readChunks(path, new ReadSettings(false, false)).then(({ chunks, message }) => {
+      console.log(message)
       let result: { name: string; value: string; }[] = []
       // if (message != '') {
       //   result.push({ name: 'message', text: message })
