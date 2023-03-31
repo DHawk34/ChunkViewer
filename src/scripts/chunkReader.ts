@@ -77,10 +77,10 @@ function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean): Object {
 
             if (blockName == 'parameters') {
                 parametersAreNotFound = false;
-                result[blockName] = processParameters(chunkType);
+                result[chunkType + blockName] = processParameters(chunkType);
             }
             else {
-                result[blockName] = bytes2String(bytes, pos, length);
+                result[chunkType + blockName] = bytes2String(bytes, pos, length);
             }
         }
         else if (blockName != "IHDR") {

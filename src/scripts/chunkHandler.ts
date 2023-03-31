@@ -12,11 +12,11 @@ class ReadSettings {
 }
 
 export default {
-    ReadSettings, readChunks
+    ReadSettings, readChunks, exportChunk
 }
 
 export {
-    ReadSettings, readChunks
+    ReadSettings, readChunks, exportChunk
 }
 
 
@@ -31,10 +31,10 @@ async function readChunks(imgUrl: string, settings: ReadSettings) {
     _settings = settings;
 
     chunks = await readChunksInOneGo(imgUrl, settings);
-    
+
     let keys = Object.keys(chunks);
     let values = Object.values(chunks);
-    
+
     let result: { name: string, value: string | Object }[] = [];
     let message: string = '';
 
@@ -76,10 +76,29 @@ async function readChunksInOneGo(imgUrl: string, settings: ReadSettings) {
 
 
 
-function exportChunk(chunk: { name: string, value: string | Object }) {
+function exportChunk(chunk: { name: string, value: string | Object }, fileName: string) {
+    let content: string = '========= ' + chunk.name + ' =========';
+    content += chunkValueToReadableString(chunk.value);
+
+
 
 }
 
+function chunkValueToReadableString(chunkValue: string | Object): String {
+    if (chunkValue instanceof Object) {
+        let keys = Object.keys(chunkValue);
+        let values = Object.values(chunkValue);
+        let result: string = '';
+
+        for (let i = 0; i < keys.length; i++) {
+            result += keys[i] + chunkValueToReadableString(values[i]);
+        }
+
+        return result;
+    }
+
+    return chunkValue;
+}
 
 
 function debugChunks(chunks: Object) {
