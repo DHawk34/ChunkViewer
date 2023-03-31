@@ -6,10 +6,10 @@
 #toolbar_container {
   display: inline-block;
   box-sizing: border-box;
+  background-color: #26282c;
   vertical-align: top;
-  width: 20vw;
+  width: 25vw;
   height: 100vh;
-  border-left: 1px solid black;
 }
 
 .button {

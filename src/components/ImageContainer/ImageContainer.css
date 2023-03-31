@@ -1,9 +1,11 @@
 #image_container {
   display: inline-flex;
   box-sizing: border-box;
-  width: 40vw;
+  width: 35vw;
   height: 100vh;
-  border-right: 1px solid black;
+  padding: 15px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   border-radius: 5px;
   line-height: 100%;
 }
@@ -12,4 +14,5 @@
   margin: auto;
   max-height: 100%;
   max-width: 100%;
+  border-radius: 8px;
 }

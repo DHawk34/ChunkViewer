@@ -28,7 +28,7 @@ export class ImageContainer extends React.Component<MyProps, {}> {
             let apiPath = tauri.convertFileSrc(imgPath)
             img.src = apiPath;
 
-            this.props.OnImageLoaded(imgPath)
+            this.props.OnImageLoaded(apiPath)
         })
     }
 

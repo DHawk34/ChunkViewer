@@ -1,19 +1,25 @@
 .delete_chunk_button {
   display: block;
-  width: 40px;
   padding: 5px;
   background-color: transparent;
-  color: #aa2121;
-  filter: invert(22%) sepia(28%) saturate(6630%) hue-rotate(347deg) brightness(81%) contrast(91%);
+  color: #da0000;
   /* align-items: center;
   flex-direction: column;
   justify-content: center; */
 }
 
+.trash_icon{
+  width: 100%;
+}
+
+/* .delete_chunk_button path{
+  fill: red;
+} */
+
 .delete_chunk_button:hover{
   padding: 5px;
-  background-color: transparent;
-  filter: invert(12%) sepia(83%) saturate(2729%) hue-rotate(347deg) brightness(98%) contrast(91%);
+  color: #dedede;
+  background-color: #da0000;
 }
 
 .editable_textarea {
@@ -26,7 +32,7 @@
   display: block;
   margin: auto;
   width: 90%;
-  margin-top: 20px;
+  margin-bottom: 20px;
   border: 1px solid black;
   border-radius: 8px;
 }
