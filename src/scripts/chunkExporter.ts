@@ -1,4 +1,4 @@
-import { writeTextFile } from '@tauri-apps/api/fs';
+import { saveText } from "./save.utils";
 
 export default {
     exportChunk, exportChunks
@@ -10,19 +10,18 @@ export {
 
 
 
-async function exportChunk(chunk: { name: string, value: string | Object }, fileName: string) {
+async function exportChunk(chunk: { name: string, value: string | Object }): Promise<string | undefined> {
     let content: string = '========= ' + chunk.name + ' =========\n';
     content += chunkValueToReadableString(chunk.value) + '\n';
 
-    try {
-        await writeTextFile(fileName, content);
-        return Promise.resolve();
-    } catch (error) {
-        return Promise.reject(error);
-    }
+    return new Promise((resolve) => {
+        saveText(content, chunk.name + '.txt')
+            .then(() => resolve(undefined))
+            .catch((error) => resolve(error))
+    })
 }
 
-async function exportChunks(chunks: { name: string, value: string | Object }[], fileName: string) {
+async function exportChunks(chunks: { name: string, value: string | Object }[]): Promise<string | undefined> {
     let content: string = '';
 
     for (let i = 0; i < chunks.length; i++) {
@@ -30,12 +29,11 @@ async function exportChunks(chunks: { name: string, value: string | Object }[], 
         content += chunkValueToReadableString(chunks[i].value) + '\n\n';
     }
 
-    try {
-        await writeTextFile(fileName, content);
-        return Promise.resolve();
-    } catch (error) {
-        return Promise.reject(error);
-    }
+    return new Promise((resolve) => {
+        saveText(content, 'chunks.txt')
+            .then(() => resolve(undefined))
+            .catch((error) => resolve(error))
+    })
 }
 
 function chunkValueToReadableString(chunkValue: string | Object): String {

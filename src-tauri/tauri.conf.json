@@ -22,10 +22,6 @@
         "all": false,
         "open": true
       },
-      "fs": {
-        "all": false,
-        "writeFile": true
-      },
       "protocol": {
         "all": false,
         "asset": true,

@@ -67,18 +67,8 @@ export class Chunk extends React.Component<MyProps, {}> {
         element.style.height = (element.scrollHeight) + "px";
     }
 
-    exportChunk = async () => {
-        const filePath = await save({
-            filters: [{
-                name: "text file",
-                extensions: ['txt']
-            }]
-        });
-
-        if (filePath == null)
-            return;
-
-        chunkHandler.exportChunk(this.props.chunk, filePath);
+    exportChunk = () => {
+        chunkHandler.exportChunk(this.props.chunk);
     }
 
     render(): React.ReactNode {

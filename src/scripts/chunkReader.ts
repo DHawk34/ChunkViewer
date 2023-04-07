@@ -1,6 +1,4 @@
-//import { createReadStream } from 'fs'
-import axios from 'axios';
-import { isPng, bytes2UInt32BigEndian } from './utils'
+import { isPng, bytes2UInt32BigEndian, concatUInt8Arrays } from './utils'
 import { ReadStream } from 'fs';
 const textDecoder = new TextDecoder('utf-8');
 
@@ -8,13 +6,9 @@ export default {
     getChunksInOneGo, getChunksUsingStream
 }
 
-export {
-    getChunksInOneGo, getChunksUsingStream
-}
 
 
-
-function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean): Object {
+export function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean): Object {
     let result: any = new Object();
     let requiredLength: number = 16;
 
@@ -156,7 +150,7 @@ function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean): Object {
 
 
 
-async function getChunksUsingStream(stream: ReadStream, parseParams: boolean): Promise<Object> {
+export async function getChunksUsingStream(stream: ReadStream, parseParams: boolean): Promise<Object> {
     let result: any = new Object();
     result.message = '';
 
@@ -168,7 +162,7 @@ async function getChunksUsingStream(stream: ReadStream, parseParams: boolean): P
     let requiredLength: number = 16;
     let skipLengthNameRead: boolean = false;
 
-    return await new Promise((resolve) => {
+    return new Promise((resolve) => {
         stream.on('close', () => resolve(result));
         stream.on('end', () => {
             result.message += 'Файл слишком маленький или в нем не найден чанк IDAT!';
@@ -316,18 +310,11 @@ async function getChunksUsingStream(stream: ReadStream, parseParams: boolean): P
 
 
 
-function bytes2String(bytes: Uint8Array, index: number, length: number) {
-    return textDecoder.decode(bytes.slice(index, index + length));
+function bytes2String(bytes: Uint8Array, offset: number, length: number): string {
+    return textDecoder.decode(bytes.slice(offset, offset + length));
 }
 
-function concatUInt8Arrays(arr1: Uint8Array, arr2: Uint8Array) {
-    let out = new Uint8Array(arr1.length + arr2.length);
-    out.set(arr1);
-    out.set(arr2, arr1.length);
-    return out;
-}
-
-function getFieldEnd(array: Uint8Array, startIndex: number) {
+function getFieldEnd(array: Uint8Array, startIndex: number): number {
     for (let i = startIndex, len = array.length; i < len; i++) {
         if (!array[i]) return i;
     }

@@ -14,7 +14,7 @@ export class App extends React.Component<{}, AppState>{
   constructor(props: any) {
     super(props);
     this.state = {
-      chunkArray:[]
+      chunkArray: []
     }
     // this.state = {
     //   chunkArray: [
@@ -52,15 +52,27 @@ export class App extends React.Component<{}, AppState>{
     })
   }
 
+  saveImage = () => {
+    console.log('Started saving')
+
+    chunkHandler.saveImageWithNewChunks(this.state.chunkArray)
+      .then(() => {
+        console.log('Сохранилося )')
+      })
+      .catch((error) => {
+        console.log('Не сохранилося (\n' + error)
+      })
+
+    console.log('End of saveImage method')
+  }
+
   render(): React.ReactNode {
     return (
       <div id="#container">
         <ImageContainer OnImageLoaded={this.loadChunks} />
         <ChunkContainer chunkArray={this.state.chunkArray} OnChunksUpdated={this.updateChunkArray} />
-        <ToolbarContainer OnExportImage={(p) => {console.log(p)}}/>
+        <ToolbarContainer OnExportImage={this.saveImage} />
       </div>
     );
   }
-
 }
-

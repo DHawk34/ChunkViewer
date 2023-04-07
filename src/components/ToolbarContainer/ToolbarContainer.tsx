@@ -1,12 +1,12 @@
 import './ToolbarContainer.css'
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import React, { useState } from "react";
+import React from "react";
 import { FeaturesContainer } from '../FeaturesContainer/FeaturesContainer';
 
 type MyProps = {
     // chunkArray: { name: string, value: string | Object }[] | null,
     // OnChunksUpdated: (chunk: { name: string, value: string | Object }[]) => void | null
-    OnExportImage: (filePath: string) => void
+    OnExportImage: () => void
 };
 
 export class ToolbarContainer extends React.Component<MyProps, {}> {
