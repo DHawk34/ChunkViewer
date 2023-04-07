@@ -1,0 +1,9 @@
+#features_container > .button{
+    width: 90%;
+    background: #1e1f22;
+}
+
+#features_container > .button:hover{
+    width: 90%;
+    background: #131315;
+}

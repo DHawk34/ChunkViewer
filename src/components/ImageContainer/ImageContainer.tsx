@@ -1,4 +1,4 @@
-import testImg from './test.png';
+import dragImg from './dragANDdrop.png';
 import { listen } from '@tauri-apps/api/event'
 import { tauri } from "@tauri-apps/api";
 import './ImageContainer.css'
@@ -44,7 +44,7 @@ export class ImageContainer extends React.Component<MyProps, {}> {
     render(): React.ReactNode {
         return (
             <div id="image_container">
-                <img id="preview" src={testImg} />
+                <img id="preview" src={dragImg} />
             </div>
         )
     }

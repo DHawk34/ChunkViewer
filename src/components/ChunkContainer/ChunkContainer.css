@@ -10,28 +10,18 @@
     overflow-x: hidden;
 }
 
-#chunk_container::-webkit-scrollbar-track
-{
-	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-	border-radius: 10px;
-	background-color: #2f3136;
-}
 #chunk_container::-webkit-scrollbar
 {
 	width: 8px;
-	background-color: #2f3136;
 }
 
 #chunk_container::-webkit-scrollbar-thumb
 {
 	border-radius: 10px;
-	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
 	background-color: #202225;
 }
 
 #add_chunk_button {
-    display: block;
-    margin: auto;
     font-size: x-large;
     border: 1px solid black;
     width: 90%;

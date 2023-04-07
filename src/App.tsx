@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import { ImageContainer } from "./components/ImageContainer/ImageContainer";
 import { ChunkContainer } from "./components/ChunkContainer/ChunkContainer";
+import { ToolbarContainer } from "./components/ToolbarContainer/ToolbarContainer";
 import chunkHandler, { ReadSettings } from "./scripts/chunkHandler";
 import { text } from "stream/consumers";
 
@@ -13,17 +14,20 @@ export class App extends React.Component<{}, AppState>{
   constructor(props: any) {
     super(props);
     this.state = {
-      chunkArray: [
-        {
-          name: "TEXT",
-          value: "some cool text"
-        },
-        {
-          name: "TEXT222",
-          value: "another cool text"
-        }
-      ]
+      chunkArray:[]
     }
+    // this.state = {
+    //   chunkArray: [
+    //     {
+    //       name: "TEXT",
+    //       value: "some cool text"
+    //     },
+    //     {
+    //       name: "TEXT222",
+    //       value: "another cool text"
+    //     }
+    //   ]
+    // }
   }
 
   updateChunkArray = (newChunkArray: { name: string; value: string | Object }[]) => {
@@ -53,9 +57,7 @@ export class App extends React.Component<{}, AppState>{
       <div id="#container">
         <ImageContainer OnImageLoaded={this.loadChunks} />
         <ChunkContainer chunkArray={this.state.chunkArray} OnChunksUpdated={this.updateChunkArray} />
-        <div id="toolbar_container">
-          <button className="toolbar_button">Test</button>
-        </div>
+        <ToolbarContainer OnExportImage={(p) => {console.log(p)}}/>
       </div>
     );
   }

@@ -3,34 +3,21 @@
   padding: 0;
 }
 
-#toolbar_container {
-  display: inline-block;
-  box-sizing: border-box;
-  background-color: #26282c;
-  vertical-align: top;
-  width: 25vw;
-  height: 100vh;
-}
-
 .button {
+  display: block;
+  margin: auto;
   background-color: #232427;
   box-sizing: border-box;
   border-radius: 8px;
   text-align: center;
-  vertical-align: middle;
   padding: 10px;
 }
 
 .button:hover {
   background-color: #1e1f22;
+  cursor: pointer;
 }
 
 .button:active {
   background-color: #232427;
-}
-
-.toolbar_button {
-  display: block;
-  margin: auto;
-  width: 80%;
 }
