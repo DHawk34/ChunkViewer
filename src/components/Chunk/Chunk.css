@@ -1,15 +1,19 @@
 .delete_chunk_button {
-  display: block;
+  display: inline-block;
   padding: 5px;
   background-color: transparent;
   color: #da0000;
+  margin-left: 4px;
+  margin-right: 4px;
 }
 
 .export_chunk_button {
-  display: block;
+  display: inline-block;
   padding: 5px;
   background-color: transparent;
   color: green;
+  margin-left: 4px;
+  margin-right: 4px;
 }
 
 .export_chunk_button:hover{
@@ -60,7 +64,6 @@
 .chunk_header {
   position: relative;
   display: flex;
-  justify-content: space-between;
   align-items: center;
   height: 100%;
   padding: 25px 10px;
@@ -71,7 +74,11 @@
 .chunk_name {
   box-sizing: border-box;
   display: inline-block;
-  width: 80%;
+  flex-grow: 1;
+  margin-right: 12px;
+  min-width: 50%;
+  min-height: 1em;
+  font-size: 1.1em;
 }
 
 .chunk_text {

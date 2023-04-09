@@ -1,39 +1,43 @@
-import { saveText } from "./save.utils";
+import { getSaveFileHandle, txtSaveFilePickerOptions, save } from "./save.utils";
 
 export default {
     exportChunk, exportChunks
 }
 
-export {
-    exportChunk, exportChunks
+
+
+export async function exportChunk(chunk: { name: string, value: string | Object }) {
+    const filePickerOptions = txtSaveFilePickerOptions(chunk.name + '.txt');
+    const fileHandle = await getSaveFileHandle(filePickerOptions);
+    const content = getChunkContent(chunk);
+
+    return save(content, filePickerOptions, fileHandle);
 }
 
-
-
-async function exportChunk(chunk: { name: string, value: string | Object }): Promise<string | undefined> {
-    let content: string = '========= ' + chunk.name + ' =========\n';
-    content += chunkValueToReadableString(chunk.value) + '\n';
-
-    return new Promise((resolve) => {
-        saveText(content, chunk.name + '.txt')
-            .then(() => resolve(undefined))
-            .catch((error) => resolve(error))
-    })
-}
-
-async function exportChunks(chunks: { name: string, value: string | Object }[]): Promise<string | undefined> {
-    let content: string = '';
-
-    for (let i = 0; i < chunks.length; i++) {
-        content += '========= ' + chunks[i].name + ' =========\n';
-        content += chunkValueToReadableString(chunks[i].value) + '\n\n';
+export async function exportChunks(chunks: { name: string, value: string | Object }[]) {
+    if (chunks.length == 0) {
+        return;
     }
 
-    return new Promise((resolve) => {
-        saveText(content, 'chunks.txt')
-            .then(() => resolve(undefined))
-            .catch((error) => resolve(error))
-    })
+    const filePickerOptions = txtSaveFilePickerOptions('chunks.txt');
+    const fileHandle = await getSaveFileHandle(filePickerOptions);
+    const content = getChunksContent(chunks);
+
+    return save(content, filePickerOptions, fileHandle);
+}
+
+function getChunksContent(chunks: { name: string, value: string | Object }[]) {
+    let content: string = '';
+    for (let i = 0; i < chunks.length; i++) {
+        content += getChunkContent(chunks[i]) + '\0';
+    }
+    return content;
+}
+
+function getChunkContent(chunk: { name: string, value: string | Object }) {
+    console.log(chunk.name)
+    return '========= ' + chunk.name + ' =========\n'
+        + chunkValueToReadableString(chunk.value) + '\n';
 }
 
 function chunkValueToReadableString(chunkValue: string | Object): String {

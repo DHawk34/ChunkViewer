@@ -68,7 +68,8 @@ export class Chunk extends React.Component<MyProps, {}> {
     }
 
     exportChunk = () => {
-        chunkHandler.exportChunk(this.props.chunk);
+        chunkHandler.exportChunk(this.props.chunk)
+            .catch((error) => console.log(error));
     }
 
     render(): React.ReactNode {

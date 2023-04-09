@@ -1,4 +1,4 @@
-import { isPng, bytes2UInt32BigEndian, concatUInt8Arrays } from './utils'
+import { isPng, bytes2UInt32BigEndian, concatUInt8Arrays } from './binary.utils'
 import { ReadStream } from 'fs';
 const textDecoder = new TextDecoder('utf-8');
 
@@ -73,10 +73,10 @@ export function getChunksInOneGo(bytes: Uint8Array, parseParams: boolean): Objec
 
             if (blockName == 'parameters') {
                 parametersAreNotFound = false;
-                result[chunkType + blockName] = processParameters(chunkType);
+                result[blockName] = processParameters(chunkType);
             }
             else {
-                result[chunkType + blockName] = bytes2String(bytes, pos, length);
+                result[blockName] = bytes2String(bytes, pos, length);
             }
         }
         else if (blockName != "IHDR") {

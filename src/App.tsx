@@ -3,7 +3,7 @@ import "./App.css";
 import { ImageContainer } from "./components/ImageContainer/ImageContainer";
 import { ChunkContainer } from "./components/ChunkContainer/ChunkContainer";
 import { ToolbarContainer } from "./components/ToolbarContainer/ToolbarContainer";
-import chunkHandler, { ReadSettings } from "./scripts/chunkHandler";
+import chunkHandler, { ChunkTypes, ReadSettings } from "./scripts/chunkHandler";
 import { text } from "stream/consumers";
 
 export type AppState = {
@@ -53,9 +53,10 @@ export class App extends React.Component<{}, AppState>{
   }
 
   saveImage = () => {
-    console.log('Started saving')
+    console.log('Start of saveImage method')
 
-    chunkHandler.saveImageWithNewChunks(this.state.chunkArray)
+    // TODO: retrieve ChunkTypes from settings
+    chunkHandler.saveImageWithNewChunks(this.state.chunkArray, ChunkTypes.tEXt)
       .then(() => {
         console.log('Сохранилося )')
       })

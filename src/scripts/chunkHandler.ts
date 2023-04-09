@@ -1,8 +1,8 @@
 import axios from 'axios';
 import chunkReader from './chunkReader'
 import { exportChunk, exportChunks } from './chunkExporter'
-import chunkSaver from './chunkSaver'
-import { savePng } from './save.utils';
+import chunkSaver, { ChunkTypes } from './chunkSaver'
+import { getSaveFileHandle, pngSaveFilePickerOptions, save } from './save.utils';
 
 class ReadSettings {
     public readUsingStream: boolean;
@@ -15,11 +15,11 @@ class ReadSettings {
 }
 
 export default {
-    ReadSettings, readChunks, exportChunk, exportChunks, saveImageWithNewChunks
+    ReadSettings, readChunks, exportChunk, exportChunks, saveImageWithNewChunks, ChunkTypes
 }
 
 export {
-    ReadSettings, exportChunk, exportChunks
+    ReadSettings, exportChunk, exportChunks, ChunkTypes
 }
 
 
@@ -110,40 +110,19 @@ async function readChunksUsingStream(imgUrl: string, settings: ReadSettings) {
     return result;
 }
 
-export async function saveImageWithNewChunks(chunks: { name: string, value: string | Object }[]): Promise<void> {
+export async function saveImageWithNewChunks(chunks: { name: string, value: string | Object }[], chunkType: Object): Promise<void> {
+    const filePickerOptions = pngSaveFilePickerOptions('modified.png');
+    const fileHandle = await getSaveFileHandle(filePickerOptions);
+    
     if (_settings.readUsingStream || image == null || image.length == 0) {
-
-        return new Promise((resolve, reject) => {
-            axios.get(url, { responseType: 'arraybuffer' })
-                .then((response) => {
-                    image = new Uint8Array(response.data);
-
-                    let result = chunkSaver.saveChunksToImageBytes(chunks, image);
-                    if (result.succeeded) {
-                        savePng(result.imageBytes!, 'modified.png')
-                            .then(resolve)
-                            .catch(reject)
-                    }
-                    else {
-                        reject(result.errorMessage);
-                    }
-                })
-                .catch((error) => {
-                    return reject(error);
-                })
-        })
+        let response = await axios.get(url, { responseType: 'arraybuffer' });
+        image = new Uint8Array(response.data);
     }
-    else return new Promise((resolve, reject) => {
-        let result = chunkSaver.saveChunksToImageBytes(chunks, image);
-        if (result.succeeded) {
-            savePng(result.imageBytes!, 'modified.png')
-                .then(resolve)
-                .catch(reject)
-        }
-        else {
-            reject(result.errorMessage);
-        }
-    })
+
+    let result = chunkSaver.saveChunksToImageBytes(chunks, image, chunkType);
+    return result.succeeded
+        ? save(result.imageBytes!, filePickerOptions, fileHandle)
+        : Promise.reject(result.errorMessage);
 }
 
 
