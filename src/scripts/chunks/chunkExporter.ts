@@ -1,4 +1,4 @@
-import { getSaveFileHandle, txtSaveFilePickerOptions, save } from "./save.utils";
+import { getSaveFileHandle, txtSaveFilePickerOptions, save } from "../save.utils";
 
 export default {
     exportChunk, exportChunks

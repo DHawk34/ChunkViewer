@@ -16,7 +16,8 @@
       "dialog": {
         "all": false,
         "open": true,
-        "save": true
+        "save": true,
+        "message": true
       },
       "shell": {
         "all": false,
@@ -44,6 +45,15 @@
     },
     "security": {
       "csp": "default-src 'self'; connect-src 'self' https://asset.localhost; img-src 'self' asset: https://asset.localhost"
+    },
+    "cli": {
+      "args": [
+        {
+          "name": "fileName",
+          "index": 1,
+          "takesValue": true
+        }
+      ]
     },
     "updater": {
       "active": false

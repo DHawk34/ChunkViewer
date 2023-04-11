@@ -3,7 +3,7 @@ import React from "react";
 import { appWindow } from "@tauri-apps/api/window";
 import { save } from '@tauri-apps/api/dialog';
 import { event } from '@tauri-apps/api';
-import chunkHandler from '../../scripts/chunkHandler';
+import chunkHandler from '../../scripts/chunks/chunkHandler';
 
 type MyProps = {
     // using `interface` is also ok
