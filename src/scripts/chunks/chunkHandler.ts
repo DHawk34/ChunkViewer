@@ -6,9 +6,11 @@ import { getSaveFileHandle, pngSaveFilePickerOptions, save } from '../save.utils
 
 class ReadSettings {
     public readUsingStream: boolean;
+    public rememberLastOpenedImage: boolean;
 
-    constructor(readUsingStream: boolean) {
+    constructor(readUsingStream: boolean, rememberLastOpenedImage: boolean) {
         this.readUsingStream = readUsingStream;
+        this.rememberLastOpenedImage = rememberLastOpenedImage;
     }
 }
 
@@ -29,10 +31,11 @@ var url: string;
 // TODO: добавить коллбэк, если чтене будет успешным?
 
 export async function readChunks(imgUrl: string, settings: ReadSettings) {
+    _settings = settings;
     let chunks = await getChunksInOneGo(imgUrl);
 
-    _settings = settings;
-    url = imgUrl;
+    if (settings.rememberLastOpenedImage)
+        url = imgUrl;
 
     return chunks;
 }
@@ -46,15 +49,19 @@ async function getChunksInOneGo(imgUrl: string): Promise<ChunkReadResult> {
 
     await axios.get(imgUrl, { responseType: 'arraybuffer' })
         .then((response) => {
-            image = new Uint8Array(response.data);
-            result = readChunksInOneGo(image);
+            let img = new Uint8Array(response.data);
+            if (_settings.rememberLastOpenedImage)
+                image = img;
+
+            result = readChunksInOneGo(img);
         })
-        .catch(() => {
+        .catch((e) => {
             result = {
                 chunks: [],
                 message: 'Не удалось прочитать картинку!',
                 error: true
             }
+            console.log(e)
         })
 
     return result;

@@ -77,7 +77,7 @@ export class ChunkParams extends React.Component<MyProps, {}> {
 
         let params = Object.keys(this.props.chunk.value).map((name: string, index: number) => {
             return (
-                <div className='param'>
+                <div className='param' key={index}>
                     <p className='param_name' id={name}>{name}</p>
                     <p className='param_value' id={name} onDoubleClick={(e) => this.spawnInput(e.currentTarget, this.props.index)}>{this.props.chunk.value[name]}</p>
                 </div>

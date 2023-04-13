@@ -9,6 +9,7 @@ import chunkHandler, { ChunkTypes, ReadSettings } from "./scripts/chunks/chunkHa
 import { getMatches } from '@tauri-apps/api/cli'
 import { listen } from "@tauri-apps/api/event";
 import { Parameters, parseParameters } from "./scripts/sdParamParser";
+import { dialog } from '@tauri-apps/api'
 
 export type AppState = {
   chunkArray: { name: string, value: string | Parameters }[],
@@ -85,16 +86,14 @@ export class App extends React.Component<{}, AppState>{
     this.setState({ chunkArray: newChunkArray })
   }
 
-  loadChunks = (path: string) => {
-    chunkHandler.readChunks(path, new ReadSettings(false))
+  loadChunks = async (path: string, readSettings: ReadSettings): Promise<boolean> => {
+    return chunkHandler.readChunks(path, readSettings)
       .then(({ chunks, error, message }) => {
         if (error) {
           this.showMessage(message)
           console.log(message)
-          return;
+          return Promise.resolve(false);
         }
-
-        this.setState({ imageUrl: path })
 
         if (message && message != '')
           this.showMessage(message);
@@ -103,14 +102,16 @@ export class App extends React.Component<{}, AppState>{
 
         let parseParam = true
         chunks.forEach(chunk => {
-            chunkArray.push({name: chunk.name, value: parseParam ? parseParameters(chunk.value) : chunk.value })
+          chunkArray.push({ name: chunk.name, value: parseParam && chunk.name == 'parameters' ? parseParameters(chunk.value) : chunk.value })
         });
-        
+
         this.updateChunkArray(chunkArray)
+        return Promise.resolve(true)
       })
       .catch((err) => {
         this.showMessage('Не удалось загрузить картинку!');
         console.log(err)
+        return Promise.resolve(false)
       })
   }
   //#endregion
@@ -126,15 +127,17 @@ export class App extends React.Component<{}, AppState>{
 
   loadImage = (imgPath: string) => {
     let apiPath = tauri.convertFileSrc(imgPath)
-    this.loadChunks(apiPath)
+    this.loadChunks(apiPath, new ReadSettings(false, true))
+      .then((succeeded) => {
+        if (succeeded)
+          this.setState({ imageUrl: apiPath })
+      })
   }
   //#endregion
 
 
 
   saveImage = () => {
-    console.log('Start of saveImage method')
-
     // TODO: retrieve ChunkTypes from settings
     chunkHandler.saveImageWithNewChunks(this.state.chunkArray, ChunkTypes.tEXt)
       .then(() => {
@@ -143,8 +146,11 @@ export class App extends React.Component<{}, AppState>{
       .catch((error) => {
         console.log('Не сохранилося (\n' + error)
       })
+  }
 
-    console.log('End of saveImage method')
+
+  copyChunksFromAnotherImage = (imgUrl: string) => {
+    this.loadChunks(imgUrl, new ReadSettings(false, false))
   }
 
 
@@ -160,7 +166,7 @@ export class App extends React.Component<{}, AppState>{
       <div id="#container">
         <ImageContainer imageUrl={this.state.imageUrl} />
         <ChunkContainer chunkArray={this.state.chunkArray} OnChunksUpdated={this.updateChunkArray} />
-        <ToolbarContainer OnExportImage={this.saveImage} />
+        <ToolbarContainer OnExportImage={this.saveImage} OnCopyChunks={this.copyChunksFromAnotherImage} />
       </div>
     );
   }
