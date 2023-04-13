@@ -3,7 +3,7 @@ import { Chunk } from "./chunks/chunkReader";
 const NEGATIVE_PROMPT_TEXT = "Negative prompt: ";
 const STEPS_TEXT = "Steps: ";
 
-interface Parameters {
+export interface Parameters {
     [key: string]: string
 }
 
@@ -17,8 +17,8 @@ export function parseParameters(parameters: string): Parameters | string {
     }
 
     // Get positive & negative prompt
-    let positive = "";
-    let negative = "";
+    let positive = '';
+    let negative = '';
 
     let out = parameters.split(STEPS_TEXT);
     let posNeg = out[0];
