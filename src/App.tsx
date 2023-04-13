@@ -8,7 +8,7 @@ import dragImg from './components/ImageContainer/dragANDdrop.png';
 import chunkHandler, { ChunkTypes, ReadSettings } from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
 import { listen } from "@tauri-apps/api/event";
-import { Parameters } from "./scripts/sdParamParser";
+import { Parameters, parseParameters } from "./scripts/sdParamParser";
 
 export type AppState = {
   chunkArray: { name: string, value: string | Parameters }[],
@@ -24,9 +24,9 @@ export class App extends React.Component<{}, AppState>{
       chunkArray: [{
         name: "TEST",
         value: {
-          "param1":"param",
-          "param2":"cool param",
-          "param3":"super param"
+          "param1": "param",
+          "param2": "cool param",
+          "param3": "super param"
         }
       }],
       imageUrl: dragImg
@@ -99,11 +99,14 @@ export class App extends React.Component<{}, AppState>{
         if (message && message != '')
           this.showMessage(message);
 
-        if (true) {
+        let chunkArray: { name: string, value: string | Parameters }[] = []
 
-        }
-
-        this.updateChunkArray(chunks)
+        let parseParam = true
+        chunks.forEach(chunk => {
+            chunkArray.push({name: chunk.name, value: parseParam ? parseParameters(chunk.value) : chunk.value })
+        });
+        
+        this.updateChunkArray(chunkArray)
       })
       .catch((err) => {
         this.showMessage('Не удалось загрузить картинку!');

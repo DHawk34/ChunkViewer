@@ -42,13 +42,13 @@ export class ChunkParams extends React.Component<MyProps, {}> {
             var val = input.value;
             element.textContent = val;
 
-            if (element.tagName == 'DIV') {
+            if (element.className == 'chunk_name') {
                 this.props.chunk.name = input.value;
                 this.props.OnUpdate(index, this.props.chunk)
             }
-            else {
-                // this.props.chunk.value = input.value;
-                // this.props.OnUpdate(index, this.props.chunk)
+            else if(element.className == 'param_value') {
+                this.props.chunk.value[element.id] = input.value;
+                this.props.OnUpdate(index, this.props.chunk)
             }
             this.curInput = null
         }
@@ -74,6 +74,16 @@ export class ChunkParams extends React.Component<MyProps, {}> {
     }
 
     render(): React.ReactNode {
+
+        let params = Object.keys(this.props.chunk.value).map((name: string, index: number) => {
+            return (
+                <div className='param'>
+                    <p className='param_name' id={name}>{name}</p>
+                    <p className='param_value' id={name} onDoubleClick={(e) => this.spawnInput(e.currentTarget, this.props.index)}>{this.props.chunk.value[name]}</p>
+                </div>
+            )
+        })
+
         return (
             <div className="chunk" key={this.props.index}>
                 <div className="chunk_header">
@@ -82,9 +92,9 @@ export class ChunkParams extends React.Component<MyProps, {}> {
                     <svg className="delete_chunk_button button" onClick={this.deleteChunk} aria-hidden="true" role="img" width="35" height="35" viewBox="0 0 24 24"><path fill="currentColor" d="M15 3.999V2H9V3.999H3V5.999H21V3.999H15Z"></path><path fill="currentColor" d="M5 6.99902V18.999C5 20.101 5.897 20.999 7 20.999H17C18.103 20.999 19 20.101 19 18.999V6.99902H5ZM11 17H9V11H11V17ZM15 17H13V11H15V17Z"></path></svg>
                 </div>
                 <div className="chunk_params">
-
+                    {params}
                 </div>
-                
+
                 {/* <p className="chunk_text" onDoubleClick={(e) => this.spawnInput(e.currentTarget, this.props.index)}>{this.props.chunk.value.toString()}</p> */}
             </div>
         )

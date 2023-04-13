@@ -42,7 +42,7 @@ export class Chunk extends React.Component<MyProps, {}> {
             var val = input.value;
             element.textContent = val;
 
-            if (element.tagName == 'DIV') {
+            if (element.className == 'chunk_name') {
                 this.props.chunk.name = input.value;
                 this.props.OnUpdate(index, this.props.chunk)
             }
