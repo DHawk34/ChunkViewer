@@ -78,7 +78,7 @@ export class App extends React.Component<{}, AppState>{
   }
 
   loadChunks = (path: string) => {
-    chunkHandler.readChunks(path, new ReadSettings(false, false))
+    chunkHandler.readChunks(path, new ReadSettings(false))
       .then(({ chunks, error, message }) => {
         if (error) {
           this.showMessage(message)

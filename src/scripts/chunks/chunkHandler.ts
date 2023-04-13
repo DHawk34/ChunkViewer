@@ -6,11 +6,9 @@ import { getSaveFileHandle, pngSaveFilePickerOptions, save } from '../save.utils
 
 class ReadSettings {
     public readUsingStream: boolean;
-    public parseParameters: boolean;
 
-    constructor(readUsingStream: boolean, parseParameters: boolean) {
+    constructor(readUsingStream: boolean) {
         this.readUsingStream = readUsingStream;
-        this.parseParameters = parseParameters;
     }
 }
 

@@ -17,7 +17,6 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
 
 
     addChunk = () => {
-
         let source = [...this.props.chunkArray, { name: "New Chunk", value: "" }];
         console.log(source);
         this.props.OnChunksUpdated(source)
