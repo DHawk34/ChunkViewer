@@ -1,10 +1,12 @@
 import './ChunkContainer.css'
 import React, { useState } from "react";
 import { Chunk } from '../Chunk/Chunk';
+import { Parameters } from '../../scripts/sdParamParser';
+import { ChunkParams } from '../ChunkParams/ChunkParams';
 
 type MyProps = {
-    chunkArray: { name: string, value: string | Object }[],
-    OnChunksUpdated: (chunk: { name: string, value: string | Object }[]) => void
+    chunkArray: { name: string, value: string | Parameters }[],
+    OnChunksUpdated: (chunk: { name: string, value: string | Parameters }[]) => void
 };
 
 export class ChunkContainer extends React.Component<MyProps, {}> {
@@ -22,7 +24,7 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
         this.props.OnChunksUpdated(source)
     }
 
-    chunkUpdate = (index: number, newValue: { name: string; value: string | Object }) => {
+    chunkUpdate = (index: number, newValue: { name: string; value: string | Parameters }) => {
         let list = [...this.props.chunkArray];
         list[index] = newValue;
         this.props.OnChunksUpdated(list)
@@ -35,8 +37,13 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
     }
 
     render(): React.ReactNode {
-        let chunkElements = this.props.chunkArray.map((item: { name: string; value: string | Object; }, index: number) => {
-            return <Chunk index={index} chunk={item} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index} />
+        let chunkElements = this.props.chunkArray.map((item: { name: string; value: string | Parameters; }, index: number) => {
+            if (typeof (item.value) === 'string') {
+                return <Chunk index={index} chunk={{name: item.name, value: item.value}} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index} />
+            }
+            else{
+                return <ChunkParams index={index} chunk={{name: item.name, value: item.value}} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index}/>
+            }
         })
 
         return (

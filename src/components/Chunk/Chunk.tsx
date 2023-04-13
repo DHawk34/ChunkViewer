@@ -4,12 +4,13 @@ import { appWindow } from "@tauri-apps/api/window";
 import { save } from '@tauri-apps/api/dialog';
 import { event } from '@tauri-apps/api';
 import chunkHandler from '../../scripts/chunks/chunkHandler';
+import { Parameters } from '../../scripts/sdParamParser';
 
 type MyProps = {
     // using `interface` is also ok
     index: number,
-    chunk: { name: string, value: string | Object },
-    OnUpdate: (index: number, newValue: { name: string, value: string | Object }) => void,
+    chunk: { name: string, value: string },
+    OnUpdate: (index: number, newValue: { name: string, value: string | Parameters }) => void,
     OnDelete: (index: number) => void
 };
 

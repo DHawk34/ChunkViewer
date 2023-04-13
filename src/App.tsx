@@ -8,9 +8,10 @@ import dragImg from './components/ImageContainer/dragANDdrop.png';
 import chunkHandler, { ChunkTypes, ReadSettings } from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
 import { listen } from "@tauri-apps/api/event";
+import { Parameters } from "./scripts/sdParamParser";
 
 export type AppState = {
-  chunkArray: { name: string, value: string | Object }[],
+  chunkArray: { name: string, value: string | Parameters }[],
   imageUrl: string
 }
 
@@ -20,7 +21,14 @@ export class App extends React.Component<{}, AppState>{
   constructor(props: any) {
     super(props);
     this.state = {
-      chunkArray: [],
+      chunkArray: [{
+        name: "TEST",
+        value: {
+          "param1":"param",
+          "param2":"cool param",
+          "param3":"super param"
+        }
+      }],
       imageUrl: dragImg
     }
 
@@ -73,7 +81,7 @@ export class App extends React.Component<{}, AppState>{
   }
 
   //#region chunks
-  updateChunkArray = (newChunkArray: { name: string; value: string | Object }[]) => {
+  updateChunkArray = (newChunkArray: { name: string; value: string | Parameters }[]) => {
     this.setState({ chunkArray: newChunkArray })
   }
 
@@ -91,14 +99,11 @@ export class App extends React.Component<{}, AppState>{
         if (message && message != '')
           this.showMessage(message);
 
-        let result: { name: string; value: string; }[] = []
+        if (true) {
 
-        for (let i = 0; i < chunks.length; i++) {
-          const chunk = chunks[i];
-          result.push({ name: chunk.name, value: chunk.value.toString() })
         }
 
-        this.updateChunkArray(result)
+        this.updateChunkArray(chunks)
       })
       .catch((err) => {
         this.showMessage('Не удалось загрузить картинку!');

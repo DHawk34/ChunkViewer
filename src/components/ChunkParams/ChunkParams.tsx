@@ -4,12 +4,13 @@ import { appWindow } from "@tauri-apps/api/window";
 import { save } from '@tauri-apps/api/dialog';
 import { event } from '@tauri-apps/api';
 import chunkHandler from '../../scripts/chunks/chunkHandler';
+import { Parameters } from '../../scripts/sdParamParser';
 
 type MyProps = {
     // using `interface` is also ok
     index: number,
-    chunk: { name: string, value: string | Object },
-    OnUpdate: (index: number, newValue: { name: string, value: string | Object }) => void,
+    chunk: { name: string, value: Parameters },
+    OnUpdate: (index: number, newValue: { name: string, value: string | Parameters }) => void,
     OnDelete: (index: number) => void
 };
 
@@ -46,8 +47,8 @@ export class ChunkParams extends React.Component<MyProps, {}> {
                 this.props.OnUpdate(index, this.props.chunk)
             }
             else {
-                this.props.chunk.value = input.value;
-                this.props.OnUpdate(index, this.props.chunk)
+                // this.props.chunk.value = input.value;
+                // this.props.OnUpdate(index, this.props.chunk)
             }
             this.curInput = null
         }
@@ -74,12 +75,16 @@ export class ChunkParams extends React.Component<MyProps, {}> {
 
     render(): React.ReactNode {
         return (
-            <div className="chunk_params_header" key={this.props.index}>
+            <div className="chunk" key={this.props.index}>
                 <div className="chunk_header">
                     <div className="chunk_name" onDoubleClick={(e) => this.spawnInput(e.currentTarget, this.props.index)}>{this.props.chunk.name}</div>
                     <svg className="export_chunk_button button" onClick={this.exportChunk} width="35" height="35" viewBox="0 0 35 35"><path d="M4.4,29.2c3.6-5.4,8.8-7.9,16-7.9v6.4l10.2-10.9L20.4,5.8v6.2C10.2,13.6,5.8,21.4,4.4,29.2z" fill="currentColor"></path></svg>
                     <svg className="delete_chunk_button button" onClick={this.deleteChunk} aria-hidden="true" role="img" width="35" height="35" viewBox="0 0 24 24"><path fill="currentColor" d="M15 3.999V2H9V3.999H3V5.999H21V3.999H15Z"></path><path fill="currentColor" d="M5 6.99902V18.999C5 20.101 5.897 20.999 7 20.999H17C18.103 20.999 19 20.101 19 18.999V6.99902H5ZM11 17H9V11H11V17ZM15 17H13V11H15V17Z"></path></svg>
                 </div>
+                <div className="chunk_params">
+
+                </div>
+                
                 {/* <p className="chunk_text" onDoubleClick={(e) => this.spawnInput(e.currentTarget, this.props.index)}>{this.props.chunk.value.toString()}</p> */}
             </div>
         )
