@@ -1,7 +1,5 @@
-import { Chunk } from "./chunks/chunkReader";
-
-const NEGATIVE_PROMPT_TEXT = "Negative prompt: ";
-const STEPS_TEXT = "Steps: ";
+const NEGATIVE_PROMPT_TEXT = 'Negative prompt: ';
+const STEPS_TEXT = 'Steps: ';
 
 export interface Parameters {
     [key: string]: string
@@ -17,29 +15,11 @@ export function parseParameters(parameters: string): Parameters | string {
     }
 
     // Get positive & negative prompt
-    let positive = '';
-    let negative = '';
-
-    let out = parameters.split(STEPS_TEXT);
-    let posNeg = out[0];
-    parameters = out[1];
-
-    if (posNeg.includes(NEGATIVE_PROMPT_TEXT)) {
-        out = posNeg.split(NEGATIVE_PROMPT_TEXT);
-        positive = out[0];
-        negative = out[1];
-    }
-    else {
-        positive = posNeg;
-        negative = "";
-    }
-
-    result["positive"] = positive;
-    result["negative"] = negative;
+    retreivePosNegPrompt();
 
     // Get other parameters
     let params = parameters.split(", ");
-    params[0] = STEPS_TEXT + String(params[0]); // Возвращаем на место "Steps: "
+    params[0] = STEPS_TEXT + params[0]; // Возвращаем на место "Steps: "
 
     for (let i = 0; i < params.length; i++) {
         let out = params[i].split(": ");
@@ -48,4 +28,31 @@ export function parseParameters(parameters: string): Parameters | string {
     }
 
     return result;
+
+    
+
+    // local functions
+    function retreivePosNegPrompt() {
+        let positive = '';
+        let negative = '';
+    
+        let out = parameters.split(STEPS_TEXT);
+        let posNeg = out[0];
+        parameters = out[1];
+    
+        if (posNeg.includes(NEGATIVE_PROMPT_TEXT)) {
+            out = posNeg.split(NEGATIVE_PROMPT_TEXT);
+            positive = out[0];
+            negative = out[1];
+        }
+        else {
+            positive = posNeg;
+            negative = '';
+        }
+    
+        result['positive'] = positive;
+        result['negative'] = negative;
+    }
 }
+
+// toString ?
