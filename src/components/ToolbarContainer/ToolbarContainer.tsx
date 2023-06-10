@@ -20,7 +20,7 @@ export class ToolbarContainer extends React.Component<MyProps, {}> {
                         <Tab>Options</Tab>
                     </TabList>
                     <TabPanel>
-                        <FeaturesContainer OnExportImage={this.props.OnExportImage} OnCopyChunks={this.props.OnCopyChunks}/>
+                        <FeaturesContainer OnExportImage={this.props.OnExportImage} OnReplaceChunks={this.props.OnCopyChunks}/>
                     </TabPanel>
                     <TabPanel>
                         <p>Comming soon!</p>

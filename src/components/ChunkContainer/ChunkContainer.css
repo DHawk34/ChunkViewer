@@ -10,6 +10,13 @@
     overflow-x: hidden;
 }
 
+#drag_container{
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
 #chunk_container::-webkit-scrollbar
 {
 	width: 8px;

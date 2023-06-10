@@ -5,6 +5,7 @@ import { save } from '@tauri-apps/api/dialog';
 import { event } from '@tauri-apps/api';
 import chunkHandler from '../../scripts/chunks/chunkHandler';
 import { Parameters } from '../../scripts/sdParamParser';
+import { Draggable, DraggableStateSnapshot, DraggingStyle, NotDraggingStyle } from 'react-beautiful-dnd';
 
 type MyProps = {
     // using `interface` is also ok
@@ -28,6 +29,9 @@ export class Chunk extends React.Component<MyProps, {}> {
 
 
     spawnInput = (element: HTMLElement, index: number) => {
+        if (element.querySelector('.editable_textarea'))
+            return;
+
         let val: string = element.textContent as string;
         var input = document.createElement("textarea");
         this.curInput = input;
@@ -75,14 +79,20 @@ export class Chunk extends React.Component<MyProps, {}> {
 
     render(): React.ReactNode {
         return (
-            <div className="chunk" key={this.props.index}>
-                <div className="chunk_header">
-                    <div className="chunk_name" onDoubleClick={(e) => this.spawnInput(e.currentTarget, this.props.index)}>{this.props.chunk.name}</div>
-                    <svg className="export_chunk_button button" onClick={this.exportChunk} width="35" height="35" viewBox="0 0 35 35"><path d="M4.4,29.2c3.6-5.4,8.8-7.9,16-7.9v6.4l10.2-10.9L20.4,5.8v6.2C10.2,13.6,5.8,21.4,4.4,29.2z" fill="currentColor"></path></svg>
-                    <svg className="delete_chunk_button button" onClick={this.deleteChunk} aria-hidden="true" role="img" width="35" height="35" viewBox="0 0 24 24"><path fill="currentColor" d="M15 3.999V2H9V3.999H3V5.999H21V3.999H15Z"></path><path fill="currentColor" d="M5 6.99902V18.999C5 20.101 5.897 20.999 7 20.999H17C18.103 20.999 19 20.101 19 18.999V6.99902H5ZM11 17H9V11H11V17ZM15 17H13V11H15V17Z"></path></svg>
-                </div>
-                <p className="chunk_text" onDoubleClick={(e) => this.spawnInput(e.currentTarget, this.props.index)}>{this.props.chunk.value.toString()}</p>
-            </div>
+            <Draggable draggableId={this.props.index.toString()} key={this.props.index} index={this.props.index}>
+                {(provided, snapshot) => (
+                    <div className="chunk" key={this.props.index}
+                        {...provided.draggableProps} ref={provided.innerRef}>
+                        <div className="chunk_header">
+                            <div  {...provided.dragHandleProps} id='chunk_dragger'><svg width={16} height={35} fill='white' viewBox="64 0 128 256"><rect width="128" height="256" fill="none" /><circle cx="92" cy="60" r="12" /><circle cx="164" cy="60" r="12" /><circle cx="92" cy="128" r="12" /><circle cx="164" cy="128" r="12" /><circle cx="92" cy="196" r="12" /><circle cx="164" cy="196" r="12" /></svg></div>
+                            <div className="chunk_name" onDoubleClick={(e) => this.spawnInput(e.currentTarget, this.props.index)}>{this.props.chunk.name}</div>
+                            <svg className="export_chunk_button button" onClick={this.exportChunk} width="35" height="35" viewBox="0 0 35 35"><path d="M4.4,29.2c3.6-5.4,8.8-7.9,16-7.9v6.4l10.2-10.9L20.4,5.8v6.2C10.2,13.6,5.8,21.4,4.4,29.2z" fill="currentColor"></path></svg>
+                            <svg className="delete_chunk_button button" onClick={this.deleteChunk} aria-hidden="true" role="img" width="35" height="35" viewBox="0 0 24 24"><path fill="currentColor" d="M15 3.999V2H9V3.999H3V5.999H21V3.999H15Z"></path><path fill="currentColor" d="M5 6.99902V18.999C5 20.101 5.897 20.999 7 20.999H17C18.103 20.999 19 20.101 19 18.999V6.99902H5ZM11 17H9V11H11V17ZM15 17H13V11H15V17Z"></path></svg>
+                        </div>
+                        <p className="chunk_text" onDoubleClick={(e) => this.spawnInput(e.currentTarget, this.props.index)}>{this.props.chunk.value.toString()}</p>
+                    </div>
+                )}
+            </Draggable>
         )
     }
 }

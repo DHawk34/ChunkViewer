@@ -8,8 +8,10 @@ import dragImg from './components/ImageContainer/dragANDdrop.png';
 import chunkHandler, { ChunkTypes, ReadSettings } from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
 import { listen } from "@tauri-apps/api/event";
+import { swap } from "./scripts/utils";
 import { Parameters, parseParameters } from "./scripts/sdParamParser";
 import { dialog } from '@tauri-apps/api'
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 
 export type AppState = {
   chunkArray: { name: string, value: string }[],
@@ -24,7 +26,7 @@ export class App extends React.Component<{}, AppState>{
     this.state = {
       chunkArray: [{
         name: "TEST",
-        value:"param1: param"
+        value: "param1: param"
       }],
       imageUrl: dragImg
     }
@@ -144,7 +146,7 @@ export class App extends React.Component<{}, AppState>{
   }
 
 
-  copyChunksFromAnotherImage = (imgUrl: string) => {
+  replaceChunksFromAnotherImage = (imgUrl: string) => {
     this.loadChunks(imgUrl, new ReadSettings(false, false))
   }
 
@@ -154,14 +156,35 @@ export class App extends React.Component<{}, AppState>{
     alert(message)
   }
 
+  dropChunk = (result: DropResult) => {
+    if (!result.destination)
+      return;
+
+    if (result.source.index === result.destination.index)
+      return;
+
+    const sourceIndex = result.source.index
+    const destinationIndex = result.destination.index
+    let newArr = [...this.state.chunkArray];
+    //console.log(newArr);
+
+    //[newArr[sourceIndex], newArr[destinationIndex]] = [newArr[destinationIndex], newArr[sourceIndex]]
+    swap(newArr, destinationIndex, sourceIndex);
+
+    // console.log(newArr);
+
+    this.setState({ chunkArray: newArr })
+  }
 
 
   render(): React.ReactNode {
     return (
       <div id="#container">
         <ImageContainer imageUrl={this.state.imageUrl} />
-        <ChunkContainer chunkArray={this.state.chunkArray} OnChunksUpdated={this.updateChunkArray} />
-        <ToolbarContainer OnExportImage={this.saveImage} OnCopyChunks={this.copyChunksFromAnotherImage} />
+        <DragDropContext onDragEnd={this.dropChunk} >
+          <ChunkContainer chunkArray={this.state.chunkArray} OnChunksUpdated={this.updateChunkArray} />
+        </DragDropContext>
+        <ToolbarContainer OnExportImage={this.saveImage} OnCopyChunks={this.replaceChunksFromAnotherImage} />
       </div>
     );
   }

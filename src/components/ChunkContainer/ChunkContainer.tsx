@@ -1,8 +1,10 @@
 import './ChunkContainer.css'
 import React, { useState } from "react";
 import { Chunk } from '../Chunk/Chunk';
+import { Droppable } from 'react-beautiful-dnd';
 import { Parameters } from '../../scripts/sdParamParser';
 import { ChunkParams } from '../ChunkParams/ChunkParams';
+import { StrictModeDroppable } from '../StrictModeDroppable';
 
 type MyProps = {
     chunkArray: { name: string, value: string }[],
@@ -37,9 +39,10 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
     }
 
     render(): React.ReactNode {
+        console.log(this.props.chunkArray)
         let chunkElements = this.props.chunkArray.map((item: { name: string; value: string; }, index: number) => {
             //if (typeof (item.value) === 'string') {
-                return <Chunk index={index} chunk={{name: item.name, value: item.value}} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index} />
+            return <Chunk index={index} chunk={{ name: item.name, value: item.value }} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index} />
             //}
             // else{
             //     return <ChunkParams index={index} chunk={{name: item.name, value: item.value}} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index}/>
@@ -48,7 +51,17 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
 
         return (
             <div id="chunk_container">
-                {chunkElements}
+                <StrictModeDroppable droppableId='chunks'>
+                    {(provided) => (
+                        <div id='drag_container'
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                        >
+                            {chunkElements}
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </StrictModeDroppable>
                 <a id="add_chunk_button" className="button" onClick={this.addChunk}>+</a>
             </div>
         )
