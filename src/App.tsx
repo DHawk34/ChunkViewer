@@ -12,7 +12,7 @@ import { Parameters, parseParameters } from "./scripts/sdParamParser";
 import { dialog } from '@tauri-apps/api'
 
 export type AppState = {
-  chunkArray: { name: string, value: string | Parameters }[],
+  chunkArray: { name: string, value: string }[],
   imageUrl: string
 }
 
@@ -24,11 +24,7 @@ export class App extends React.Component<{}, AppState>{
     this.state = {
       chunkArray: [{
         name: "TEST",
-        value: {
-          "param1": "param",
-          "param2": "cool param",
-          "param3": "super param"
-        }
+        value:"param1: param"
       }],
       imageUrl: dragImg
     }
@@ -82,7 +78,7 @@ export class App extends React.Component<{}, AppState>{
   }
 
   //#region chunks
-  updateChunkArray = (newChunkArray: { name: string; value: string | Parameters }[]) => {
+  updateChunkArray = (newChunkArray: { name: string; value: string }[]) => {
     this.setState({ chunkArray: newChunkArray })
   }
 
@@ -98,11 +94,10 @@ export class App extends React.Component<{}, AppState>{
         if (message && message != '')
           this.showMessage(message);
 
-        let chunkArray: { name: string, value: string | Parameters }[] = []
+        let chunkArray: { name: string, value: string }[] = []
 
-        let parseParam = true
         chunks.forEach(chunk => {
-          chunkArray.push({ name: chunk.name, value: parseParam && chunk.name == 'parameters' ? parseParameters(chunk.value) : chunk.value })
+          chunkArray.push({ name: chunk.name, value: chunk.value })
         });
 
         this.updateChunkArray(chunkArray)

@@ -10,7 +10,7 @@ type MyProps = {
     // using `interface` is also ok
     index: number,
     chunk: { name: string, value: string },
-    OnUpdate: (index: number, newValue: { name: string, value: string | Parameters }) => void,
+    OnUpdate: (index: number, newValue: { name: string, value: string }) => void,
     OnDelete: (index: number) => void
 };
 

@@ -5,8 +5,8 @@ import { Parameters } from '../../scripts/sdParamParser';
 import { ChunkParams } from '../ChunkParams/ChunkParams';
 
 type MyProps = {
-    chunkArray: { name: string, value: string | Parameters }[],
-    OnChunksUpdated: (chunk: { name: string, value: string | Parameters }[]) => void
+    chunkArray: { name: string, value: string }[],
+    OnChunksUpdated: (chunk: { name: string, value: string }[]) => void
 };
 
 export class ChunkContainer extends React.Component<MyProps, {}> {
@@ -24,7 +24,7 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
         this.props.OnChunksUpdated(source)
     }
 
-    chunkUpdate = (index: number, newValue: { name: string; value: string | Parameters }) => {
+    chunkUpdate = (index: number, newValue: { name: string; value: string }) => {
         let list = [...this.props.chunkArray];
         list[index] = newValue;
         this.props.OnChunksUpdated(list)
@@ -37,13 +37,13 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
     }
 
     render(): React.ReactNode {
-        let chunkElements = this.props.chunkArray.map((item: { name: string; value: string | Parameters; }, index: number) => {
-            if (typeof (item.value) === 'string') {
+        let chunkElements = this.props.chunkArray.map((item: { name: string; value: string; }, index: number) => {
+            //if (typeof (item.value) === 'string') {
                 return <Chunk index={index} chunk={{name: item.name, value: item.value}} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index} />
-            }
-            else{
-                return <ChunkParams index={index} chunk={{name: item.name, value: item.value}} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index}/>
-            }
+            //}
+            // else{
+            //     return <ChunkParams index={index} chunk={{name: item.name, value: item.value}} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index}/>
+            // }
         })
 
         return (
