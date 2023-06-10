@@ -22,7 +22,7 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
 
     addChunk = () => {
         let source = [...this.props.chunkArray, { name: "New Chunk", value: "" }];
-        console.log(source);
+        // console.log(source);
         this.props.OnChunksUpdated(source)
     }
 
@@ -39,7 +39,7 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
     }
 
     render(): React.ReactNode {
-        console.log(this.props.chunkArray)
+        //console.log(this.props.chunkArray)
         let chunkElements = this.props.chunkArray.map((item: { name: string; value: string; }, index: number) => {
             //if (typeof (item.value) === 'string') {
             return <Chunk index={index} chunk={{ name: item.name, value: item.value }} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index} />

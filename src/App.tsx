@@ -24,10 +24,7 @@ export class App extends React.Component<{}, AppState>{
   constructor(props: any) {
     super(props);
     this.state = {
-      chunkArray: [{
-        name: "TEST",
-        value: "param1: param"
-      }],
+      chunkArray: [],
       imageUrl: dragImg
     }
 
@@ -157,6 +154,8 @@ export class App extends React.Component<{}, AppState>{
   }
 
   dropChunk = (result: DropResult) => {
+    console.log('fire')
+
     if (!result.destination)
       return;
 
@@ -166,12 +165,10 @@ export class App extends React.Component<{}, AppState>{
     const sourceIndex = result.source.index
     const destinationIndex = result.destination.index
     let newArr = [...this.state.chunkArray];
-    //console.log(newArr);
 
-    //[newArr[sourceIndex], newArr[destinationIndex]] = [newArr[destinationIndex], newArr[sourceIndex]]
-    swap(newArr, destinationIndex, sourceIndex);
-
-    // console.log(newArr);
+    swap(newArr, sourceIndex, destinationIndex)
+    // const [oneElement] = newArr.splice(sourceIndex, 1)
+    // newArr.splice(destinationIndex, 0, oneElement)
 
     this.setState({ chunkArray: newArr })
   }
