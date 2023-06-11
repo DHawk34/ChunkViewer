@@ -8,22 +8,20 @@
     overflow-x: hidden;
 }
 
-#drag_container{
+#drag_container {
     flex-direction: column;
     display: flex;
     align-items: center;
     width: 100%;
 }
 
-#chunk_container::-webkit-scrollbar
-{
-	width: 8px;
+#chunk_container::-webkit-scrollbar {
+    width: 8px;
 }
 
-#chunk_container::-webkit-scrollbar-thumb
-{
-	border-radius: 10px;
-	background-color: #202225;
+#chunk_container::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #202225;
 }
 
 #add_chunk_button {

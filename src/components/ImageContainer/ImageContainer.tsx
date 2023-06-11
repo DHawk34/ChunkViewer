@@ -1,55 +1,35 @@
+import { useEffect, useState } from "react";
 import './ImageContainer.css'
-import React, { useState } from "react";
 
-type MyProps = {
-    // using `interface` is also ok
-    imageUrl: string
-};
-
-type MyState = {
-    imageSize: { width: number, height: number }
+type ImageSize = {
+    width: number
+    height: number
 }
 
-export class ImageContainer extends React.Component<MyProps, MyState> {
+export function ImageContainer(props: { imageUrl: string }) {
+    const [imageSize, setImageSize] = useState<ImageSize>({ height: 0, width: 0 })
 
-    constructor(props: any) {
-        super(props);
+    function getImgSize(imgSrc: string) {
+        const img = new Image();
 
-        this.state = {
-            imageSize: {
-                height: 0,
-                width: 0
-            }
+        img.onload = () => {
+            const height = img.height;
+            const width = img.width;
+
+            setImageSize({ width, height })
         }
+        img.src = imgSrc; // this must be done AFTER setting onload
     }
 
-    getImgSize(imgSrc: string) {
-        var newImg = new Image();
+    useEffect(() => {
+        const image = document.getElementById('preview') as HTMLImageElement;
+        image.onload = () => getImgSize(image.src)
+    }, [])
 
-        newImg.onload = () => {
-            var height = newImg.height;
-            var width = newImg.width;
-
-            this.setState({ imageSize: { width, height } })
-        }
-        newImg.src = imgSrc; // this must be done AFTER setting onload
-    }
-
-    componentDidMount(): void {
-        var image = document.getElementById("preview") as HTMLImageElement;
-        // if (image)
-        image.onload = (ev) => {
-            this.getImgSize(image.src)
-        }
-    }
-
-
-    render(): React.ReactNode {
-        return (
-            <div id="image_container">
-                <img id="preview" src={this.props.imageUrl} />
-                <p>{`${this.state.imageSize.width} x ${this.state.imageSize.height}`}</p>
-            </div>
-        )
-    }
+    return (
+        <div id='image_container'>
+            <img id='preview' src={props.imageUrl} />
+            <p>{`${imageSize.width} x ${imageSize.height}`}</p>
+        </div>
+    )
 }
