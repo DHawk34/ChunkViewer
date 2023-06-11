@@ -11,7 +11,3 @@ export function objectToArray<T>(object: Object) {
         return { key: key, value: values[index] }
     })
 }
-
-export function isDigit(char: string): boolean {
-    return char >= '0' && char <= '9'
-}
