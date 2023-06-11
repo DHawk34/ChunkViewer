@@ -2,26 +2,3 @@
   margin: 0;
   padding: 0;
 }
-
-button {
-  display: block;
-  margin: auto;
-  background-color: #232427;
-  box-sizing: border-box;
-  border-radius: 8px;
-  text-align: center;
-  padding: 10px;
-  border: inherit;
-  color: white;
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-
-}
-
-button:hover {
-  background-color: #1e1f22;
-  cursor: pointer;
-}
-
-button:active {
-  background-color: #232427;
-}
