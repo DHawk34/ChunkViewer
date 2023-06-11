@@ -21,7 +21,7 @@ export default {
 //     return false;
 // }
 
-export function isPng(data: Uint8Array) : boolean {
+export function isPng(data: Uint8Array): boolean {
     for (let i = 0; i < 8; i++) {
         if (data[i] != PNG_HEADER_BYTES[i]) {
             return false;
@@ -39,11 +39,16 @@ export function isPng(data: Uint8Array) : boolean {
 //     return true;
 // }
 
-export function concatUInt8Arrays(arr1: Uint8Array, arr2: Uint8Array): Uint8Array {
-    let out = new Uint8Array(arr1.length + arr2.length);
-    out.set(arr1);
-    out.set(arr2, arr1.length);
-    return out;
+export function concatUInt8Arrays(...arrays: Uint8Array[]): Uint8Array {
+    const sumArraysLength = arrays.reduce((acc, x) => acc + x.length, 0)
+    const out = new Uint8Array(sumArraysLength)
+    let offset = 0
+
+    for (let arr of arrays) {
+        out.set(arr, offset)
+        offset += arr.length
+    }
+    return out
 }
 
 export function bytes2UInt32BigEndian(bytes: Uint8Array, offset: number): number {
