@@ -7,6 +7,7 @@ type MyProps = {
     // OnChunksUpdated: (chunk: { name: string, value: string | Object }[]) => void | null
     OnExportImage: () => void
     OnExportParameters: () => void
+    OnExportAllChunks: () => void
     OnReplaceChunks: (imgPath: string) => void
 };
 
@@ -33,6 +34,7 @@ export class FeaturesContainer extends React.Component<MyProps, {}> {
             <div id="features_container">
                 <button onClick={this.props.OnExportImage}>Export Image</button>
                 <button onClick={this.props.OnExportParameters}>Export parameters</button>
+                <button onClick={this.props.OnExportAllChunks}>Export all chunks</button>
                 <button onClick={this.replaceChunks}>Replace chunks from image</button>
             </div>
         )

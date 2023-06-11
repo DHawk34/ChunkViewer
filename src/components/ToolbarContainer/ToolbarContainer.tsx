@@ -6,8 +6,9 @@ import { FeaturesContainer } from '../FeaturesContainer/FeaturesContainer';
 type MyProps = {
     // chunkArray: { name: string, value: string | Object }[] | null,
     // OnChunksUpdated: (chunk: { name: string, value: string | Object }[]) => void | null
-    OnExportImage: () => void,
-    OnExportParameters: () => void,
+    OnExportImage: () => void
+    OnExportParameters: () => void
+    OnExportAllChunks: () => void
     OnCopyChunks: (imgPath: string) => void
 };
 
@@ -21,7 +22,7 @@ export class ToolbarContainer extends React.Component<MyProps, {}> {
                         <Tab>Options</Tab>
                     </TabList>
                     <TabPanel>
-                        <FeaturesContainer OnExportImage={this.props.OnExportImage} OnExportParameters={this.props.OnExportParameters} OnReplaceChunks={this.props.OnCopyChunks}/>
+                        <FeaturesContainer OnExportImage={this.props.OnExportImage} OnExportParameters={this.props.OnExportParameters} OnExportAllChunks={this.props.OnExportAllChunks} OnReplaceChunks={this.props.OnCopyChunks}/>
                     </TabPanel>
                     <TabPanel>
                         <p>Comming soon!</p>

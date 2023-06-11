@@ -5,7 +5,7 @@ import { ImageContainer } from "./components/ImageContainer/ImageContainer";
 import { ChunkContainer } from "./components/ChunkContainer/ChunkContainer";
 import { ToolbarContainer } from "./components/ToolbarContainer/ToolbarContainer";
 import dragImg from './components/ImageContainer/dragANDdrop.png';
-import chunkHandler, { ChunkData, ChunkTypes, exportParameters } from "./scripts/chunks/chunkHandler";
+import chunkHandler, { ChunkData, ChunkTypes, exportChunks, exportParameters } from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
 import { listen } from "@tauri-apps/api/event";
 import { swap } from "./scripts/utils";
@@ -173,14 +173,21 @@ export class App extends React.Component<{}, AppState>{
       .catch(e => console.log(e))
   }
 
+  exportAllChunks = () => {
+    if (this.state.chunkArray.length === 0) return
+
+    exportChunks(this.state.chunkArray)
+      .catch(e => console.log(e))
+  }
+
   render(): React.ReactNode {
     return (
-      <div id="#container">
+      <div id="container">
         <ImageContainer imageUrl={this.state.imageUrl} />
         <DragDropContext onDragEnd={this.dropChunk} >
           <ChunkContainer chunkArray={this.state.chunkArray} OnChunksUpdated={this.updateChunkArray} />
         </DragDropContext>
-        <ToolbarContainer OnExportImage={this.saveImage} OnExportParameters={this.exportParams} OnCopyChunks={this.replaceChunksFromAnotherImage} />
+        <ToolbarContainer OnExportImage={this.saveImage} OnExportParameters={this.exportParams} OnExportAllChunks={this.exportAllChunks} OnCopyChunks={this.replaceChunksFromAnotherImage} />
       </div>
     )
   }
