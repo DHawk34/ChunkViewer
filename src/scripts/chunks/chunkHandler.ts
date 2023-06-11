@@ -1,61 +1,42 @@
 import axios from 'axios';
 import { readChunksInOneGo, ChunkReadResult } from './chunkReader'
-import { exportChunk, exportChunks } from './chunkExporter'
+import { exportChunk, exportChunks, exportParameters } from './chunkExporter'
 import chunkSaver, { ChunkTypes } from './chunkSaver'
 import { getSaveFileHandle, pngSaveFilePickerOptions, save } from '../save.utils';
 
-class ReadSettings {
-    public readUsingStream: boolean;
-    public rememberLastOpenedImage: boolean;
-
-    constructor(readUsingStream: boolean, rememberLastOpenedImage: boolean) {
-        this.readUsingStream = readUsingStream;
-        this.rememberLastOpenedImage = rememberLastOpenedImage;
-    }
+export type ChunkData = {
+    name: string
+    value: string
 }
 
 export default {
-    ReadSettings, readChunks, exportChunk, exportChunks, saveImageWithNewChunks, ChunkTypes
+    readChunks, exportChunk, exportChunks, exportParameters, saveImageWithNewChunks, ChunkTypes
 }
 
 export {
-    ReadSettings, exportChunk, exportChunks, ChunkTypes
+    exportChunk, exportChunks, exportParameters, ChunkTypes
 }
 
 
 
-var _settings: ReadSettings;
 var image: Uint8Array;
 var url: string;
 
-// TODO: добавить коллбэк, если чтене будет успешным?
+export async function readChunks(imgUrl: string) {
+    url = imgUrl;
 
-export async function readChunks(imgUrl: string, settings: ReadSettings) {
-    _settings = settings;
-    let chunks = await getChunksInOneGo(imgUrl);
-
-    if (settings.rememberLastOpenedImage)
-        url = imgUrl;
-
-    return chunks;
-}
-
-async function getChunksInOneGo(imgUrl: string): Promise<ChunkReadResult> {
     let result: ChunkReadResult = {
         chunks: [],
         message: 'Неожиданная ошибка при чтении картинки (такого быть не должно)!',
         error: true
-    };
+    }
 
     await axios.get(imgUrl, { responseType: 'arraybuffer' })
-        .then((response) => {
-            let img = new Uint8Array(response.data);
-            if (_settings.rememberLastOpenedImage)
-                image = img;
-
-            result = readChunksInOneGo(img);
+        .then(response => {
+            image = new Uint8Array(response.data)
+            result = readChunksInOneGo(image)
         })
-        .catch((e) => {
+        .catch(e => {
             result = {
                 chunks: [],
                 message: 'Не удалось прочитать картинку!',
@@ -64,24 +45,22 @@ async function getChunksInOneGo(imgUrl: string): Promise<ChunkReadResult> {
             console.log(e)
         })
 
-    return result;
+    return result
 }
 
+export async function saveImageWithNewChunks(chunks: ChunkData[], chunkType: Object): Promise<void> {
+    const filePickerOptions = pngSaveFilePickerOptions('modified.png')
+    const fileHandle = await getSaveFileHandle(filePickerOptions)
 
-
-export async function saveImageWithNewChunks(chunks: { name: string, value: string | Object }[], chunkType: Object): Promise<void> {
-    const filePickerOptions = pngSaveFilePickerOptions('modified.png');
-    const fileHandle = await getSaveFileHandle(filePickerOptions);
-
-    if (_settings.readUsingStream || image == null || image.length == 0) {
-        let response = await axios.get(url, { responseType: 'arraybuffer' });
-        image = new Uint8Array(response.data);
+    if (!image || image.length == 0) {
+        const response = await axios.get(url, { responseType: 'arraybuffer' })
+        image = new Uint8Array(response.data)
     }
 
-    let result = chunkSaver.saveChunksToImageBytes(chunks, image, chunkType);
+    const result = chunkSaver.saveChunksToImageBytes(chunks, image, chunkType)
     return result.succeeded
         ? save(result.imageBytes!, filePickerOptions, fileHandle)
-        : Promise.reject(result.errorMessage);
+        : Promise.reject(result.errorMessage)
 }
 
 

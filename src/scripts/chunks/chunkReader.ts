@@ -1,13 +1,12 @@
 import { isPng, bytes2UInt32BigEndian } from './binary.utils'
-const textDecoder = new TextDecoder('utf-8');
+import { ChunkData } from './chunkHandler';
 
-export interface Chunk {
-    name: string,
-    value: string,
-}
+const textDecoder = new TextDecoder('utf-8')
 
 export type ChunkReadResult = {
-    chunks: Chunk[], error: boolean, message: string
+    chunks: ChunkData[]
+    error: boolean
+    message: string
 }
 
 

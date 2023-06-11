@@ -5,16 +5,14 @@ import { ImageContainer } from "./components/ImageContainer/ImageContainer";
 import { ChunkContainer } from "./components/ChunkContainer/ChunkContainer";
 import { ToolbarContainer } from "./components/ToolbarContainer/ToolbarContainer";
 import dragImg from './components/ImageContainer/dragANDdrop.png';
-import chunkHandler, { ChunkTypes, ReadSettings } from "./scripts/chunks/chunkHandler";
+import chunkHandler, { ChunkData, ChunkTypes, exportParameters } from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
 import { listen } from "@tauri-apps/api/event";
 import { swap } from "./scripts/utils";
-import { Parameters, parseParameters } from "./scripts/sdParamParser";
-import { dialog } from '@tauri-apps/api'
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 
 export type AppState = {
-  chunkArray: { name: string, value: string }[],
+  chunkArray: ChunkData[]
   imageUrl: string
 }
 
@@ -45,21 +43,20 @@ export class App extends React.Component<{}, AppState>{
   }
 
   componentDidMount(): void {
-    this.setupDragAndDrop();
+    this.setupDragAndDrop()
 
     if (!this.argsLoaded) {
-      this.loadImageFromArgs();
-      this.argsLoaded = true;
+      this.loadImageFromArgs()
+      this.argsLoaded = true
     }
   }
 
   setupDragAndDrop = () => {
     listen('tauri://file-drop', event => {
-      var payloads = event.payload as Array<string>;
+      var payloads = event.payload as string[]
       var imgPath = this.getImageFromPayloads(payloads)
 
-      if (imgPath == null)
-        return
+      if (!imgPath) return
 
       this.loadImage(imgPath);
     })
@@ -67,9 +64,9 @@ export class App extends React.Component<{}, AppState>{
 
   loadImageFromArgs = () => {
     getMatches().then(async ({ args, subcommand }) => {
-      let fileName = args['fileName'].value;
+      let fileName = args['fileName'].value
 
-      if (fileName && typeof (fileName) === 'string' && fileName != '') {
+      if (fileName && typeof (fileName) === 'string' && fileName !== '') {
         await tauri.invoke('extend_scope', { path: fileName })
         this.loadImage(fileName)
       }
@@ -77,12 +74,12 @@ export class App extends React.Component<{}, AppState>{
   }
 
   //#region chunks
-  updateChunkArray = (newChunkArray: { name: string; value: string }[]) => {
+  updateChunkArray = (newChunkArray: ChunkData[]) => {
     this.setState({ chunkArray: newChunkArray })
   }
 
-  loadChunks = async (path: string, readSettings: ReadSettings): Promise<boolean> => {
-    return chunkHandler.readChunks(path, readSettings)
+  loadChunks = async (path: string): Promise<boolean> => {
+    return chunkHandler.readChunks(path)
       .then(({ chunks, error, message }) => {
         if (error) {
           this.showMessage(message)
@@ -93,35 +90,30 @@ export class App extends React.Component<{}, AppState>{
         if (message && message != '')
           this.showMessage(message);
 
-        let chunkArray: { name: string, value: string }[] = []
-
-        chunks.forEach(chunk => {
-          chunkArray.push({ name: chunk.name, value: chunk.value })
-        });
-
-        this.updateChunkArray(chunkArray)
+        this.updateChunkArray(chunks)
         return Promise.resolve(true)
       })
-      .catch((err) => {
+      .catch(e => {
         this.showMessage('Не удалось загрузить картинку!');
-        console.log(err)
+        console.log(e)
         return Promise.resolve(false)
       })
   }
   //#endregion
 
   //#region Image loading
-  getImageFromPayloads = (payloads: Array<string>) => {
+  getImageFromPayloads = (payloads: string[]) => {
     for (let i = 0; i < payloads.length; i++) {
       const payload = payloads[i];
-      if (payload.endsWith(".png"))
+
+      if (payload.endsWith('.png'))
         return payload
     }
   }
 
   loadImage = (imgPath: string) => {
     let apiPath = tauri.convertFileSrc(imgPath)
-    this.loadChunks(apiPath, new ReadSettings(false, true))
+    this.loadChunks(apiPath)
       .then((succeeded) => {
         if (succeeded)
           this.setState({ imageUrl: apiPath })
@@ -144,7 +136,7 @@ export class App extends React.Component<{}, AppState>{
 
 
   replaceChunksFromAnotherImage = (imgUrl: string) => {
-    this.loadChunks(imgUrl, new ReadSettings(false, false))
+    this.loadChunks(imgUrl)
   }
 
 
@@ -173,6 +165,13 @@ export class App extends React.Component<{}, AppState>{
     this.setState({ chunkArray: newArr })
   }
 
+  exportParams = () => {
+    const chunks = this.state.chunkArray.filter(x => x.name === 'parameters' || x.name === 'extras' || x.name === 'postprocessing')
+    if (chunks.length === 0) return
+
+    exportParameters(chunks)
+      .catch(e => console.log(e))
+  }
 
   render(): React.ReactNode {
     return (
@@ -181,8 +180,8 @@ export class App extends React.Component<{}, AppState>{
         <DragDropContext onDragEnd={this.dropChunk} >
           <ChunkContainer chunkArray={this.state.chunkArray} OnChunksUpdated={this.updateChunkArray} />
         </DragDropContext>
-        <ToolbarContainer OnExportImage={this.saveImage} OnCopyChunks={this.replaceChunksFromAnotherImage} />
+        <ToolbarContainer OnExportImage={this.saveImage} OnExportParameters={this.exportParams} OnCopyChunks={this.replaceChunksFromAnotherImage} />
       </div>
-    );
+    )
   }
 }

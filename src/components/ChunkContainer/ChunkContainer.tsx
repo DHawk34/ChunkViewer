@@ -5,10 +5,11 @@ import { Droppable } from 'react-beautiful-dnd';
 import { Parameters } from '../../scripts/sdParamParser';
 import { ChunkParams } from '../ChunkParams/ChunkParams';
 import { StrictModeDroppable } from '../StrictModeDroppable';
+import { ChunkData } from '../../scripts/chunks/chunkHandler';
 
 type MyProps = {
-    chunkArray: { name: string, value: string }[],
-    OnChunksUpdated: (chunk: { name: string, value: string }[]) => void
+    chunkArray: ChunkData[],
+    OnChunksUpdated: (chunk: ChunkData[]) => void
 };
 
 export class ChunkContainer extends React.Component<MyProps, {}> {
@@ -21,12 +22,12 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
 
 
     addChunk = () => {
-        let source = [...this.props.chunkArray, { name: "New Chunk", value: "" }];
+        let source = [...this.props.chunkArray, { name: 'New Chunk', value: '' }];
         // console.log(source);
         this.props.OnChunksUpdated(source)
     }
 
-    chunkUpdate = (index: number, newValue: { name: string; value: string }) => {
+    chunkUpdate = (index: number, newValue: ChunkData) => {
         let list = [...this.props.chunkArray];
         list[index] = newValue;
         this.props.OnChunksUpdated(list)
@@ -40,9 +41,9 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
 
     render(): React.ReactNode {
         //console.log(this.props.chunkArray)
-        let chunkElements = this.props.chunkArray.map((item: { name: string; value: string; }, index: number) => {
+        let chunkElements = this.props.chunkArray.map((chunk: ChunkData, index: number) => {
             //if (typeof (item.value) === 'string') {
-            return <Chunk index={index} chunk={{ name: item.name, value: item.value }} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index} />
+            return <Chunk index={index} chunk={chunk} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index} />
             //}
             // else{
             //     return <ChunkParams index={index} chunk={{name: item.name, value: item.value}} OnDelete={this.chunkDelete} OnUpdate={this.chunkUpdate} key={index}/>
