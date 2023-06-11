@@ -1,4 +1,8 @@
 #container {
+  display: grid;
+  grid-template-columns: 35vw 40vw 25vw;
+  grid-template-rows: 100vh;
+  
   margin: 0;
   padding: 0;
 }

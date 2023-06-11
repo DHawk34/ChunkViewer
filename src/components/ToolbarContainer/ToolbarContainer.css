@@ -1,10 +1,8 @@
 #toolbar_container {
     display: inline-block;
     box-sizing: border-box;
-    background-color: #26282c;
+    background-color: var(--background-dark);
     vertical-align: top;
-    width: 25vw;
-    height: 100vh;
 }
 
 
@@ -26,7 +24,7 @@
 }
 
 .react-tabs__tab {
-    background: #1e1f22;
+    background: var(--foreground);
     width: 50%;
     padding: 1rem;
     list-style: none;

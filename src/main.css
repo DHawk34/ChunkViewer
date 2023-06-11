@@ -1,11 +1,18 @@
-html{
+:root {
+  --background: #313338;
+  --background-dark: #26282c;
+  --foreground: #1e1f22;
+}
+
+html {
+  font-family: 'Segoe UI', Inter, Avenir, Helvetica, Arial, sans-serif;
   overflow: hidden;
-  background-color: #313338;
+  background-color: var(--background);
   color: white;
   width: 100%;
 }
 
-body{
+body {
   padding: 0;
   margin: 0;
 }
@@ -13,13 +20,15 @@ body{
 button {
   display: block;
   margin: auto;
-  background-color: #232427;
   box-sizing: border-box;
-  border-radius: 8px;
   text-align: center;
+  border-radius: 8px;
   padding: 10px;
+  
   border: inherit;
+  font: inherit;
   color: white;
+  background-color: #232427;
 }
 
 button:hover {
@@ -31,9 +40,7 @@ button:active {
   background-color: #232427;
 }
 
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-}
+
 
 /* :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
