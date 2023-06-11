@@ -10,6 +10,7 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import { swap } from "./scripts/utils";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import "./App.css";
+import { SaveOptions } from "./scripts/chunks/chunkSaver";
 
 export function App() {
   const [chunkArray, setChunkArray] = useState<ChunkData[]>([])
@@ -98,9 +99,11 @@ export function App() {
 
 
   function saveImage() {
-    // TODO: retrieve ChunkTypes from settings
+    // TODO: retrieve ChunkTypes & allowUnsafeChunkNames from settings
 
-    chunkHandler.saveImageWithNewChunks(chunkArray, ChunkTypes.tEXt)
+    const saveOptions: SaveOptions = { chunkType: ChunkTypes.tEXt, allowUnsafeChunkNames: false }
+
+    chunkHandler.saveImageWithNewChunks(chunkArray, saveOptions)
       .then(() => {
         console.log('Сохранилося )')
       })

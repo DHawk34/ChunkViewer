@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { readChunksInOneGo } from './chunkReader'
 import { exportChunk, exportChunks, exportParameters } from './chunkExporter'
-import { ChunkTypes, saveChunksToImageBytes } from './chunkSaver'
+import { ChunkTypes, SaveOptions, saveChunksToImageBytes } from './chunkSaver'
 import { getSaveFileHandle, pngSaveFilePickerOptions, save } from '../save.utils';
 
 export type ChunkData = {
@@ -36,7 +36,7 @@ export async function readChunks(imgUrl: string) {
     return readResult
 }
 
-export async function saveImageWithNewChunks(chunks: ChunkData[], chunkType: Object): Promise<void> {
+export async function saveImageWithNewChunks(chunks: ChunkData[], saveOptions: SaveOptions): Promise<void> {
     const filePickerOptions = pngSaveFilePickerOptions('modified.png')
     const fileHandle = await getSaveFileHandle(filePickerOptions)
 
@@ -45,7 +45,7 @@ export async function saveImageWithNewChunks(chunks: ChunkData[], chunkType: Obj
         image = new Uint8Array(response.data)
     }
 
-    const result = saveChunksToImageBytes(chunks, image, chunkType)
+    const result = saveChunksToImageBytes(chunks, image, saveOptions)
     return result.succeeded
         ? save(result.imageBytes!, filePickerOptions, fileHandle)
         : Promise.reject(result.errorMessage)
@@ -53,17 +53,17 @@ export async function saveImageWithNewChunks(chunks: ChunkData[], chunkType: Obj
 
 
 
-function debugChunks(chunks: Object) {
-    let keys = Object.keys(chunks);
-    let values = Object.values(chunks);
+// function debugChunks(chunks: Object) {
+//     let keys = Object.keys(chunks);
+//     let values = Object.values(chunks);
 
-    for (let i = 0; i < keys.length; i++) {
-        if (values[i] instanceof Object) {
-            console.log(keys[i] + ':');
-            debugChunks(values[i]);
-        }
-        else {
-            console.log(keys[i] + ': ' + values[i]);
-        }
-    }
-}
+//     for (let i = 0; i < keys.length; i++) {
+//         if (values[i] instanceof Object) {
+//             console.log(keys[i] + ':');
+//             debugChunks(values[i]);
+//         }
+//         else {
+//             console.log(keys[i] + ': ' + values[i]);
+//         }
+//     }
+// }

@@ -14,14 +14,16 @@ for (let n = 0; n < 256; n++) {
 
 
 
+const initialCrc = 0xffffffff;
+
 function updateCrc(data: Uint8Array, length: number): number {
-    let c = 0xffffffff;
+    let c = initialCrc;
     for (let n = 0; n < length; n++) {
         c = crcTable[(c ^ data[n]) & 0xff] ^ (c >>> 8);
     }
-    return c ^ 0xffffffff;
+    return c ^ initialCrc;
 }
 
-export function getCrc(data: Uint8Array, length: number): number {
-    return updateCrc(data, length) >>> 0;
+export function getCrc(data: Uint8Array): number {
+    return updateCrc(data, data.length) >>> 0;
 }
