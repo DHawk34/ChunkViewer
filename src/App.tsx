@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { tauri } from "@tauri-apps/api";
 import { ImageContainer } from "./components/ImageContainer/ImageContainer";
 import { ChunkContainer } from "./components/ChunkContainer/ChunkContainer";
@@ -6,7 +6,7 @@ import { ToolbarContainer } from "./components/ToolbarContainer/ToolbarContainer
 import dragImg from './components/ImageContainer/dragANDdrop.png';
 import chunkHandler, { ChunkData, ChunkTypes } from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
-import { listen } from "@tauri-apps/api/event";
+import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import { swap } from "./scripts/utils";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import "./App.css";
@@ -14,25 +14,28 @@ import "./App.css";
 export function App() {
   const [chunkArray, setChunkArray] = useState<ChunkData[]>([])
   const [imageUrl, setImageUrl] = useState<string>(dragImg)
-  const [argsLoaded, setArgsLoaded] = useState(false)
+  const unlistenDnd = useRef<UnlistenFn>()
 
   useEffect(() => {
     setupDragAndDrop()
+    loadImageFromArgs()
 
-    if (!argsLoaded) {
-      loadImageFromArgs()
-      setArgsLoaded(true)
+    return () => {
+      if (unlistenDnd.current)
+        unlistenDnd.current()
     }
   }, [])
 
-  function setupDragAndDrop() {
-    listen('tauri://file-drop', event => {
+  async function setupDragAndDrop() {
+    const unlisten = await listen('tauri://file-drop', event => {
       var payloads = event.payload as string[]
       var imgPath = getImageFromPayloads(payloads)
 
       if (!imgPath) return
       loadImage(imgPath)
     })
+
+    unlistenDnd.current = unlisten
   }
 
   function loadImageFromArgs() {
@@ -52,25 +55,23 @@ export function App() {
   }
 
   async function loadChunks(path: string): Promise<boolean> {
-    return chunkHandler.readChunks(path)
-      .then(({ chunks, error, message }) => {
-        if (error) {
-          showMessage(message)
-          console.log(message)
-          return Promise.resolve(false);
-        }
+    let succeeded = false
 
+    await chunkHandler.readChunks(path)
+      .then(({ chunks, message }) => {
         if (message && message !== '')
-          showMessage(message);
+          showMessage(message)
 
         updateChunkArray(chunks)
-        return Promise.resolve(true)
+        succeeded = true
       })
       .catch(e => {
-        showMessage('Не удалось загрузить картинку!');
         console.log(e)
-        return Promise.resolve(false)
+        showMessage(e?.message ?? e)
+        succeeded = false
       })
+
+    return succeeded
   }
   //#endregion
 
@@ -87,7 +88,7 @@ export function App() {
   function loadImage(imgPath: string) {
     let apiPath = tauri.convertFileSrc(imgPath)
     loadChunks(apiPath)
-      .then((succeeded) => {
+      .then(succeeded => {
         if (succeeded)
           setImageUrl(apiPath)
       })

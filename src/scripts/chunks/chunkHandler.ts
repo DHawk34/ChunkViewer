@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { readChunksInOneGo, ChunkReadResult } from './chunkReader'
+import { readChunksInOneGo } from './chunkReader'
 import { exportChunk, exportChunks, exportParameters } from './chunkExporter'
-import chunkSaver, { ChunkTypes } from './chunkSaver'
+import { ChunkTypes, saveChunksToImageBytes } from './chunkSaver'
 import { getSaveFileHandle, pngSaveFilePickerOptions, save } from '../save.utils';
 
 export type ChunkData = {
@@ -23,29 +23,17 @@ var image: Uint8Array;
 var url: string;
 
 export async function readChunks(imgUrl: string) {
-    url = imgUrl;
+    const response = await axios.get(imgUrl, { responseType: 'arraybuffer' })
 
-    let result: ChunkReadResult = {
-        chunks: [],
-        message: 'Неожиданная ошибка при чтении картинки (такого быть не должно)!',
-        error: true
-    }
+    url = imgUrl
+    image = new Uint8Array(response.data)
 
-    await axios.get(imgUrl, { responseType: 'arraybuffer' })
-        .then(response => {
-            image = new Uint8Array(response.data)
-            result = readChunksInOneGo(image)
-        })
-        .catch(e => {
-            result = {
-                chunks: [],
-                message: 'Не удалось прочитать картинку!',
-                error: true
-            }
-            console.log(e)
-        })
+    const readResult = readChunksInOneGo(image)
 
-    return result
+    if (readResult.error)
+        return Promise.reject(readResult)
+
+    return readResult
 }
 
 export async function saveImageWithNewChunks(chunks: ChunkData[], chunkType: Object): Promise<void> {
@@ -57,7 +45,7 @@ export async function saveImageWithNewChunks(chunks: ChunkData[], chunkType: Obj
         image = new Uint8Array(response.data)
     }
 
-    const result = chunkSaver.saveChunksToImageBytes(chunks, image, chunkType)
+    const result = saveChunksToImageBytes(chunks, image, chunkType)
     return result.succeeded
         ? save(result.imageBytes!, filePickerOptions, fileHandle)
         : Promise.reject(result.errorMessage)
