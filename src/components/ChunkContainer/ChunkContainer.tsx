@@ -21,7 +21,7 @@ export function ChunkContainer(props: Props) {
     }
 
     function chunkDelete(index: number) {
-        const list = props.chunkArray
+        const list = [...props.chunkArray]
         list.splice(index, 1)
         props.OnChunksUpdated(list)
     }
