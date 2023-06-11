@@ -48,7 +48,7 @@ export class ImageContainer extends React.Component<MyProps, MyState> {
         return (
             <div id="image_container">
                 <img id="preview" src={this.props.imageUrl} />
-                <p>{`${this.state.imageSize.width}x${this.state.imageSize.height}`}</p>
+                <p>{`${this.state.imageSize.width} x ${this.state.imageSize.height}`}</p>
             </div>
         )
     }
