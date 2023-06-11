@@ -1,6 +1,7 @@
 import { isPng, concatUInt8Arrays, bytes2UInt32BigEndian, uint32BigEndianToBytes, getSubArrayIndex, IHDR_BYTES, IDAT_BYTES } from './binary.utils'
 import { getCrc } from "./crcCoder";
-const textEncoder = new TextEncoder();
+
+const textEncoder = new TextEncoder()
 
 export const ChunkTypes = {
     tEXt : 'tEXt',
