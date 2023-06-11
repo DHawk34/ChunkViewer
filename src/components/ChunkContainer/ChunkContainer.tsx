@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Chunk } from '../Chunk/Chunk';
 import { Droppable } from 'react-beautiful-dnd';
 import { Parameters } from '../../scripts/sdParamParser';
-import { ChunkParams } from '../ChunkParams/ChunkParams';
 import { StrictModeDroppable } from '../StrictModeDroppable';
 import { ChunkData } from '../../scripts/chunks/chunkHandler';
 
