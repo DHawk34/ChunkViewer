@@ -95,7 +95,7 @@ export function Chunk(props: Props) {
                 <div className='chunk' key={props.index}
                     {...provided.draggableProps} ref={provided.innerRef}>
                     <div className='chunk_header'>
-                        <div  {...provided.dragHandleProps} id='chunk_dragger'><svg width={16} height={35} fill='white' viewBox="64 -11.5 128 256"><rect width="128" height="256" fill="none" /><circle cx="92" cy="60" r="12" /><circle cx="164" cy="60" r="12" /><circle cx="92" cy="128" r="12" /><circle cx="164" cy="128" r="12" /><circle cx="92" cy="196" r="12" /><circle cx="164" cy="196" r="12" /></svg></div>
+                        <div  {...provided.dragHandleProps} id='chunk_dragger' onMouseDown={() => document.querySelector<HTMLTextAreaElement>('.editable_textarea')?.blur()}><svg width={16} height={35} fill='white' viewBox="64 -11.5 128 256"><rect width="128" height="256" fill="none" /><circle cx="92" cy="60" r="12" /><circle cx="164" cy="60" r="12" /><circle cx="92" cy="128" r="12" /><circle cx="164" cy="128" r="12" /><circle cx="92" cy="196" r="12" /><circle cx="164" cy="196" r="12" /></svg></div>
                         <div className='chunk_name' onDoubleClick={(e) => spawnInput(e.currentTarget, props.index)}>{props.chunk.name}</div>
                         {
                             props.chunk.name === 'parameters' &&
