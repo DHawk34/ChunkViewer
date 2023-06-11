@@ -31,9 +31,9 @@ export class FeaturesContainer extends React.Component<MyProps, {}> {
     render(): React.ReactNode {
         return (
             <div id="features_container">
-                <a className="button" onClick={this.props.OnExportImage}>Export Image</a>
-                <a className="button" onClick={this.props.OnExportParameters}>Export parameters</a>
-                <a className="button" onClick={this.replaceChunks}>Replace chunks from image</a>
+                <button onClick={this.props.OnExportImage}>Export Image</button>
+                <button onClick={this.props.OnExportParameters}>Export parameters</button>
+                <button onClick={this.replaceChunks}>Replace chunks from image</button>
             </div>
         )
     }

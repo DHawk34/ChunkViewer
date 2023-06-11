@@ -63,7 +63,7 @@ export class ChunkContainer extends React.Component<MyProps, {}> {
                         </div>
                     )}
                 </StrictModeDroppable>
-                <a id="add_chunk_button" className="button" onClick={this.addChunk}>+</a>
+                <button id="add_chunk_button" className="button" onClick={this.addChunk}>+</button>
             </div>
         )
     }

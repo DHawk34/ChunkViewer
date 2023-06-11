@@ -13,6 +13,10 @@
   align-items: center;
 }
 
+#image_container p {
+  margin: 0;
+}
+
 #preview {
   margin: auto;
   max-height: 100%;
