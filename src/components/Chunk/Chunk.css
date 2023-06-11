@@ -8,6 +8,28 @@
   min-width: 35px;
 }
 
+.change_view_chunk_button {
+  display: inline-block;
+  padding: 5px;
+  background-color: transparent;
+  color: royalblue;
+  margin-left: 4px;
+  margin-right: 4px;
+  min-width: 35px;
+}
+
+.change_view_chunk_button:hover {
+  padding: 5px;
+  color: #dedede;
+  background-color: royalblue;
+}
+
+.change_view_chunk_button:active {
+  padding: 5px;
+  color: #dedede;
+  background-color: #2a4eba
+}
+
 .export_chunk_button {
   display: inline-block;
   padding: 5px;
@@ -57,6 +79,27 @@
   cursor: grab;
 }
 
+tr:nth-child(even){
+  background-color: #26282c
+}
+
+table{
+  border-collapse: collapse;
+}
+
+/* .param_name{
+  border-right: 2px solid #1e1f22;
+} */
+
+td{
+  padding-left: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+/* td {
+  border: 1px solid;
+} */
+
 .chunk {
   display: block;
   width: 90%;
@@ -88,7 +131,7 @@
   display: inline-block;
   flex-grow: 1;
   margin-right: 12px;
-  min-width: 50%;
+  min-width: 40%;
   min-height: 1em;
   font-size: 1.1em;
 }
