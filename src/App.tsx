@@ -55,10 +55,10 @@ export function App() {
     setChunkArray(newChunkArray)
   }
 
-  async function loadChunks(path: string): Promise<boolean> {
+  async function loadChunks(path: string, rememberImageBytes?: boolean): Promise<boolean> {
     let succeeded = false
 
-    await chunkHandler.readChunks(path)
+    await chunkHandler.readChunks(path, rememberImageBytes)
       .then(({ chunks, message }) => {
         if (message && message !== '')
           showMessage(message)
@@ -88,7 +88,7 @@ export function App() {
 
   function loadImage(imgPath: string) {
     let apiPath = tauri.convertFileSrc(imgPath)
-    loadChunks(apiPath)
+    loadChunks(apiPath, true)
       .then(succeeded => {
         if (succeeded)
           setImageUrl(apiPath)

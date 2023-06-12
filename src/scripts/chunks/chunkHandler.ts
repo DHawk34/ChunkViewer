@@ -20,15 +20,14 @@ export {
 
 
 var image: Uint8Array;
-var url: string;
 
-export async function readChunks(imgUrl: string) {
+export async function readChunks(imgUrl: string, rememberImageBytes?: boolean) {
     const response = await axios.get(imgUrl, { responseType: 'arraybuffer' })
 
-    url = imgUrl
-    image = new Uint8Array(response.data)
+    const img = new Uint8Array(response.data)
+    if (rememberImageBytes) image = img
 
-    const readResult = readChunksInOneGo(image)
+    const readResult = readChunksInOneGo(img)
 
     if (readResult.error)
         return Promise.reject(readResult)
@@ -40,9 +39,8 @@ export async function saveImageWithNewChunks(chunks: ChunkData[], saveOptions: S
     const filePickerOptions = pngSaveFilePickerOptions('modified.png')
     const fileHandle = await getSaveFileHandle(filePickerOptions)
 
-    if (!image || image.length == 0) {
-        const response = await axios.get(url, { responseType: 'arraybuffer' })
-        image = new Uint8Array(response.data)
+    if (!image || image.length === 0) {
+        return Promise.reject('В памяти нет картинки. Некуда сохранять!')
     }
 
     const result = saveChunksToImageBytes(chunks, image, saveOptions)
