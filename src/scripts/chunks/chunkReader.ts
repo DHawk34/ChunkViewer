@@ -4,9 +4,12 @@ import { getCrc } from './crcCoder';
 
 const textDecoder = new TextDecoder('utf-8')
 
+interface ReadChunkData extends ChunkData {
+    crcIsBad: boolean
+}
+
 export type ChunkReadResult = {
-    chunks: ChunkData[]
-    crcIsBad: boolean[]
+    chunks: ReadChunkData[]
     error: boolean
     message: string
 }
@@ -16,7 +19,6 @@ export type ChunkReadResult = {
 export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
     const result: ChunkReadResult = {
         chunks: [],
-        crcIsBad: [],
         error: false,
         message: ''
     }
@@ -60,12 +62,12 @@ export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
             break
         }
 
-        if ((blockName === 'tEXt' || blockName === 'iTXt' || blockName === 'zTXt') && processTxtChunk()) {
-            return result
+        if (blockName === 'tEXt' || blockName === 'iTXt' || blockName === 'zTXt') {
+            if (processTxtChunk())
+                return result
         }
         else if (blockName !== 'IHDR') {
-            result.chunks.push({ name: blockName, value: bytes2String(bytes, pos, length) })
-            addCrcCheckToResult()
+            result.chunks.push({ name: blockName, value: bytes2String(bytes, pos, length), crcIsBad: checkCrcIsBad() })
         }
 
         pos += length + 4           // +4 -- CRC (окончание чанка)
@@ -90,20 +92,20 @@ export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
         }
         blockName = bytes2String(bytes, pos, endNameIndex - pos)
 
-        addCrcCheckToResult()
+        const crcIsBad = checkCrcIsBad()
 
         length -= blockName.length + 1
         pos += blockName.length + 1
 
-        result.chunks.push({ name: blockName, value: decompressChunk(chunkType) })
+        result.chunks.push({ name: blockName, value: decompressChunk(chunkType), crcIsBad: crcIsBad })
     }
 
-    function addCrcCheckToResult() {
+    function checkCrcIsBad(): boolean {
         // -4 and +4 is for chunkType code (4 bytes)
         const calculatedCrc = getCrc(bytes, pos - 4, length + 4)
         const providedCrc = bytes2UInt32BigEndian(bytes, pos + length)
 
-        result.crcIsBad.push(calculatedCrc !== providedCrc)
+        return calculatedCrc !== providedCrc
     }
 
     function decompressChunk(chunkType: string): string {
