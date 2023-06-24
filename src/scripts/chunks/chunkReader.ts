@@ -1,10 +1,12 @@
 import { isPng, bytes2UInt32BigEndian } from './binary.utils'
 import { ChunkData } from './chunkHandler';
+import { getCrc } from './crcCoder';
 
 const textDecoder = new TextDecoder('utf-8')
 
 export type ChunkReadResult = {
     chunks: ChunkData[]
+    crcIsBad: boolean[]
     error: boolean
     message: string
 }
@@ -14,6 +16,7 @@ export type ChunkReadResult = {
 export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
     let result: ChunkReadResult = {
         chunks: [],
+        crcIsBad: [],
         error: false,
         message: ''
     };
@@ -63,6 +66,7 @@ export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
         }
         else if (blockName != 'IHDR') {
             result.chunks.push({ name: blockName, value: bytes2String(bytes, pos, length) });
+            addCrcCheckToResult()
         }
 
         pos += length + 4; // +4 -- CRC (окончание чанка)
@@ -85,10 +89,20 @@ export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
         }
         blockName = bytes2String(bytes, pos, endNameIndex - pos);
 
+        addCrcCheckToResult()
+
         length -= blockName.length + 1;
         pos += blockName.length + 1;
 
         result.chunks.push({ name: blockName, value: decompressChunk(chunkType) });
+    }
+
+    function addCrcCheckToResult() {
+        // -4 and +4 is for chunkType code (4 bytes)
+        const calculatedCrc = getCrc(bytes, pos - 4, length + 4)
+        const providedCrc = bytes2UInt32BigEndian(bytes, pos + length)
+
+        result.crcIsBad.push(calculatedCrc !== providedCrc)
     }
 
     function decompressChunk(chunkType: string): string {
@@ -149,7 +163,7 @@ export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
 
 
 
-function bytes2String(bytes: Uint8Array, offset: number, length: number): string {
+function bytes2String(bytes: Uint8Array, offset: number = 0, length: number = bytes.length): string {
     return textDecoder.decode(bytes.slice(offset, offset + length));
 }
 
