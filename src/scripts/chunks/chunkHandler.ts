@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { readChunksInOneGo } from './chunkReader'
+import { ChunkReadResult, readChunksInOneGo } from './chunkReader'
 import { exportChunk, exportChunks, exportParameters } from './chunkExporter'
 import { ChunkTypes, SaveOptions, saveChunksToImageBytes } from './chunkSaver'
 import { getSaveFileHandle, pngSaveFilePickerOptions, save } from '../save.utils';
@@ -21,7 +21,7 @@ export {
 
 var image: Uint8Array;
 
-export async function readChunks(imgUrl: string, rememberImageBytes?: boolean) {
+export async function readChunks(imgUrl: string, rememberImageBytes?: boolean): Promise<ChunkReadResult> {
     const response = await axios.get(imgUrl, { responseType: 'arraybuffer' })
 
     const img = new Uint8Array(response.data)
