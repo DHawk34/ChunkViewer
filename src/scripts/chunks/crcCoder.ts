@@ -1,7 +1,7 @@
 const crcTable: number[] = [];
 
-for (let n = 0; n < 256; n++) {
-    let c = n;
+for (let i = 0; i < 256; i++) {
+    let c = i;
     for (let k = 0; k < 8; k++) {
         if (c & 1) {
             c = 0xedb88320 ^ (c >>> 1);
@@ -9,21 +9,23 @@ for (let n = 0; n < 256; n++) {
             c = c >>> 1;
         }
     }
-    crcTable[n] = c;
+    crcTable[i] = c;
 }
 
 
 
 const initialCrc = 0xffffffff;
 
-function updateCrc(data: Uint8Array, length: number): number {
+// startIndex is inclusive, endIndex is exclusive
+function updateCrc(data: Uint8Array, start: number, end: number): number {
     let c = initialCrc;
-    for (let n = 0; n < length; n++) {
-        c = crcTable[(c ^ data[n]) & 0xff] ^ (c >>> 8);
+    for (let i = start; i < end; i++) {
+        c = crcTable[(c ^ data[i]) & 0xff] ^ (c >>> 8);
     }
-    return c ^ initialCrc;
+    return (c ^ initialCrc) >>> 0;
 }
 
-export function getCrc(data: Uint8Array): number {
-    return updateCrc(data, data.length) >>> 0;
+export function getCrc(data: Uint8Array, startIndex: number = 0, lenght?: number): number {
+    const endIndexExclusive = lenght ? lenght + startIndex : data.length;
+    return updateCrc(data, startIndex, endIndexExclusive);
 }
