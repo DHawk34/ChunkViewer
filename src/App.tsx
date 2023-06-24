@@ -51,10 +51,6 @@ export function App() {
   }
 
   //#region chunks
-  function updateChunkArray(newChunkArray: ChunkData[]) {
-    setChunkArray(newChunkArray)
-  }
-
   async function loadChunks(path: string, rememberImageBytes?: boolean): Promise<boolean> {
     let succeeded = false
 
@@ -63,7 +59,7 @@ export function App() {
         if (message && message !== '')
           showMessage(message)
 
-        updateChunkArray(chunks)
+        setChunkArray(chunks)
         succeeded = true
       })
       .catch(e => {
@@ -155,7 +151,7 @@ export function App() {
       <DragDropContext onDragEnd={dropChunk} >
         <ChunkContainer
           chunkArray={chunkArray}
-          OnChunksUpdated={updateChunkArray} />
+          OnChunksUpdated={setChunkArray} />
       </DragDropContext>
 
       <ToolbarContainer
