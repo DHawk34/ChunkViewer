@@ -29,10 +29,6 @@ export async function readChunks(imgUrl: string, rememberImageBytes?: boolean): 
 
     const readResult = readChunksInOneGo(img)
 
-    if (readResult.chunks.length !== readResult.crcIsBad.length) {
-        readResult.message += 'Внутренняя ошибка: Кол-во чанков не равно кол-ву проверок цельности CRC кода.'
-    }
-
     if (readResult.error)
         return Promise.reject(readResult)
 
