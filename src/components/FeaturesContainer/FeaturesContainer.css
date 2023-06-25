@@ -1,10 +1,10 @@
 #features_container > button{
     width: 90%;
-    background: #1e1f22;
+    background: #18191c;
     margin-bottom: 10px;
 }
 
 #features_container > button:hover{
     width: 90%;
-    background: #131315;
+    background: #0b0b0c;
 }
