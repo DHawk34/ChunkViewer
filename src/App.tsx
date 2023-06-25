@@ -11,11 +11,17 @@ import { swap } from "./scripts/utils";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import "./App.css";
 import { SaveOptions } from "./scripts/chunks/chunkSaver";
+import { StatusBar, logMessage } from "./components/StatusBar/StatusBar";
+import React from "react";
 
 export function App() {
   const [chunkArray, setChunkArray] = useState<ChunkData[]>([])
   const [imageUrl, setImageUrl] = useState<string>(dragImg)
+  const [logs, setLogs] = useState<logMessage[]>([])
+
+
   const unlistenDnd = useRef<UnlistenFn>()
+  const statusBarRef = React.createRef();
 
   useEffect(() => {
     setupDragAndDrop()
@@ -34,6 +40,7 @@ export function App() {
 
       if (!imgPath) return
       loadImage(imgPath)
+      addLog('Load ' + imgPath.replace(/^.*(\\|\/|:)/, ''))
     })
 
     unlistenDnd.current = unlisten
@@ -57,13 +64,14 @@ export function App() {
     await chunkHandler.readChunks(path, rememberImageBytes)
       .then(({ chunks, message }) => {
         if (message && message !== '')
-          showMessage(message)
+          addLog(message)
 
         setChunkArray(chunks)
         succeeded = true
       })
       .catch(e => {
         console.log(e)
+        addLog('ERROR: ' + e?.message ?? e, true)
         showMessage(e?.message ?? e)
         succeeded = false
       })
@@ -93,6 +101,19 @@ export function App() {
   //#endregion
 
 
+  function addLog(message: string, error: boolean = false) {
+    // let newLogs = [...logs, { message: `${getTime()} ${message}`, error: error }];
+    // console.log('logs ' + logs.length)
+    // console.log('newLogs ' +newLogs.length);
+    setLogs((logs) => {
+      let newLogs = [...logs, { message: `${getTime()} ${message}`, error: error }];
+      return newLogs;
+    });
+  }
+
+  function getTime() {
+    return `[${new Date().toLocaleTimeString()}]`
+  }
 
   function saveImage() {
     // TODO: retrieve ChunkTypes & allowUnsafeChunkNames from settings
@@ -101,9 +122,11 @@ export function App() {
 
     chunkHandler.saveImageWithNewChunks(chunkArray, saveOptions)
       .then(() => {
+        addLog('Image saved')
         console.log('Сохранилося )')
       })
       .catch((error) => {
+        addLog('ERROR: ' + error, true)
         console.log('Не сохранилося (\n' + error)
       })
   }
@@ -134,14 +157,22 @@ export function App() {
     if (chunks.length === 0) return
 
     chunkHandler.exportParameters(chunks)
-      .catch(e => console.log(e))
+      .then(() => addLog('Parameters exported'))
+      .catch(e => {
+        addLog('ERROR: ' + e, true)
+        console.log(e)
+      })
   }
 
   function exportAllChunks() {
     if (chunkArray.length === 0) return
 
     chunkHandler.exportChunks(chunkArray)
-      .catch(e => console.log(e))
+      .then(() => addLog('All chunks exported'))
+      .catch(e => {
+        addLog('ERROR: ' + e, true)
+        console.log(e)
+      })
   }
 
   return (
@@ -159,6 +190,10 @@ export function App() {
         OnExportParameters={exportParams}
         OnExportAllChunks={exportAllChunks}
         OnReplaceChunks={loadChunks}
+      />
+
+      <StatusBar
+        logMessage={logs}
       />
     </div>
   )

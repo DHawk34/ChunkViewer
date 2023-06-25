@@ -1,0 +1,58 @@
+#status_bar_container {
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    box-sizing: border-box;
+    background-color: var(--foreground);
+    width: 100%;
+    grid-column: 1/4;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+    height: 30px;
+
+    transition: all 0.2s ease-out;
+}
+
+#status_bar_container.full_open{
+    align-items: flex-start;
+    height: 100vh;
+}
+
+#log_container::-webkit-scrollbar {
+    width: 8px;
+}
+
+#log_container::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #17181b;
+}
+
+#log_container {
+    margin: 0;
+    margin-left: 15px;
+    /* white-space: nowrap; */
+
+    width: calc(100% - 30px);
+     overflow: hidden;
+}
+
+#status_bar_container.full_open #log_container{
+    max-height: 100%;
+    overflow: auto;
+}
+
+#status_bar_container button {
+    margin: 0;
+    margin-left: auto;
+    height: 30px;
+    width: auto;
+    line-height: 0;
+    background: none;
+    padding: 0;
+    padding-right: 5px;
+}
+
+.error {
+    color: red;
+}
