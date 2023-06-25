@@ -53,6 +53,7 @@ export function App() {
       if (fileName && typeof (fileName) === 'string' && fileName !== '') {
         await tauri.invoke('extend_scope', { path: fileName })
         loadImage(fileName)
+        addLog('Load ' + fileName.replace(/^.*(\\|\/|:)/, ''))
       }
     })
   }
