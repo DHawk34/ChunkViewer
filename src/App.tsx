@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useRef, useState } from "react";
 import { tauri } from "@tauri-apps/api";
 import { ImageContainer } from "./components/ImageContainer/ImageContainer";
@@ -9,19 +10,16 @@ import { getMatches } from '@tauri-apps/api/cli'
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import { swap } from "./scripts/utils";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
-import "./App.css";
 import { SaveOptions } from "./scripts/chunks/chunkSaver";
 import { StatusBar, logMessage } from "./components/StatusBar/StatusBar";
-import React from "react";
+import "./App.css";
 
 export function App() {
   const [chunkArray, setChunkArray] = useState<ChunkData[]>([])
   const [imageUrl, setImageUrl] = useState<string>(dragImg)
   const [logs, setLogs] = useState<logMessage[]>([])
 
-
   const unlistenDnd = useRef<UnlistenFn>()
-  const statusBarRef = React.createRef();
 
   useEffect(() => {
     setupDragAndDrop()
@@ -35,12 +33,12 @@ export function App() {
 
   async function setupDragAndDrop() {
     const unlisten = await listen('tauri://file-drop', event => {
-      var payloads = event.payload as string[]
-      var imgPath = getImageFromPayloads(payloads)
+      const payloads = event.payload as string[]
+      const imgPath = getImageFromPayloads(payloads)
 
       if (!imgPath) return
       loadImage(imgPath)
-      addLog('Load ' + imgPath.replace(/^.*(\\|\/|:)/, ''))
+      addLogImageLoaded(imgPath)
     })
 
     unlistenDnd.current = unlisten
@@ -48,14 +46,18 @@ export function App() {
 
   function loadImageFromArgs() {
     getMatches().then(async ({ args }) => {
-      let fileName = args['fileName'].value
+      const fileName = args['fileName'].value
 
       if (fileName && typeof (fileName) === 'string' && fileName !== '') {
         await tauri.invoke('extend_scope', { path: fileName })
         loadImage(fileName)
-        addLog('Load ' + fileName.replace(/^.*(\\|\/|:)/, ''))
+        addLogImageLoaded(fileName)
       }
     })
+  }
+
+  function getFileNameFromPath(filePath: string): string {
+    return filePath.replace(/^.*(\\|\/|:)/, '')
   }
 
   //#region chunks
@@ -72,14 +74,15 @@ export function App() {
       })
       .catch(e => {
         console.log(e)
-        addLog('ERROR: ' + e?.message ?? e, true)
-        showMessage(e?.message ?? e)
+        addLog(e?.message ?? e, true)
         succeeded = false
       })
 
     return succeeded
   }
   //#endregion
+
+
 
   //#region Image loading
   function getImageFromPayloads(payloads: string[]) {
@@ -92,7 +95,8 @@ export function App() {
   }
 
   function loadImage(imgPath: string) {
-    let apiPath = tauri.convertFileSrc(imgPath)
+    const apiPath = tauri.convertFileSrc(imgPath)
+
     loadChunks(apiPath, true)
       .then(succeeded => {
         if (succeeded)
@@ -103,13 +107,16 @@ export function App() {
 
 
   function addLog(message: string, error: boolean = false) {
-    // let newLogs = [...logs, { message: `${getTime()} ${message}`, error: error }];
-    // console.log('logs ' + logs.length)
-    // console.log('newLogs ' +newLogs.length);
-    setLogs((logs) => {
-      let newLogs = [...logs, { message: `${getTime()} ${message}`, error: error }];
-      return newLogs;
-    });
+    if (message.startsWith('AbortError')) return
+    if (error) message = 'ERROR: ' + message
+
+    setLogs(logs => {
+      return [{ message: `${getTime()} ${message}`, error: error }, ...logs];
+    })
+  }
+
+  function addLogImageLoaded(fileName: string) {
+    return addLog(`Loaded "${getFileNameFromPath(fileName)}"`)
   }
 
   function getTime() {
@@ -122,21 +129,11 @@ export function App() {
     const saveOptions: SaveOptions = { chunkType: ChunkTypes.tEXt, allowUnsafeChunkNames: false }
 
     chunkHandler.saveImageWithNewChunks(chunkArray, saveOptions)
-      .then(() => {
-        addLog('Image saved')
-        console.log('Сохранилося )')
-      })
-      .catch((error) => {
-        addLog('ERROR: ' + error, true)
-        console.log('Не сохранилося (\n' + error)
-      })
+      .then(() => addLog('Image saved'))
+      .catch(e => addLog(e, true))
   }
 
 
-
-  function showMessage(message: string) {
-    alert(message)
-  }
 
   function dropChunk(result: DropResult) {
     if (!result.destination)
@@ -158,9 +155,9 @@ export function App() {
     if (chunks.length === 0) return
 
     chunkHandler.exportParameters(chunks)
-      .then(() => addLog('Parameters exported'))
+      .then(() => addLog('Parameters are exported'))
       .catch(e => {
-        addLog('ERROR: ' + e, true)
+        addLog(e, true)
         console.log(e)
       })
   }
@@ -169,9 +166,9 @@ export function App() {
     if (chunkArray.length === 0) return
 
     chunkHandler.exportChunks(chunkArray)
-      .then(() => addLog('All chunks exported'))
+      .then(() => addLog('All chunks are exported'))
       .catch(e => {
-        addLog('ERROR: ' + e, true)
+        addLog(e, true)
         console.log(e)
       })
   }

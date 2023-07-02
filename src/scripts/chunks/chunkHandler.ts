@@ -2,7 +2,7 @@ import axios from 'axios';
 import { ChunkReadResult, readChunksInOneGo } from './chunkReader'
 import { exportChunk, exportChunks, exportParameters } from './chunkExporter'
 import { ChunkTypes, SaveOptions, saveChunksToImageBytes } from './chunkSaver'
-import { getSaveFileHandle, pngSaveFilePickerOptions, save } from '../save.utils';
+import { pngSaveFilePickerOptions, save } from '../save.utils';
 
 export type ChunkData = {
     name: string
@@ -37,7 +37,6 @@ export async function readChunks(imgUrl: string, rememberImageBytes?: boolean): 
 
 export async function saveImageWithNewChunks(chunks: ChunkData[], saveOptions: SaveOptions): Promise<void> {
     const filePickerOptions = pngSaveFilePickerOptions('modified.png')
-    const fileHandle = await getSaveFileHandle(filePickerOptions)
 
     if (!image || image.length === 0) {
         return Promise.reject('В памяти нет картинки. Некуда сохранять!')
@@ -45,7 +44,7 @@ export async function saveImageWithNewChunks(chunks: ChunkData[], saveOptions: S
 
     const result = saveChunksToImageBytes(chunks, image, saveOptions)
     return result.succeeded
-        ? save(result.imageBytes!, filePickerOptions, fileHandle)
+        ? save(result.imageBytes!, filePickerOptions)
         : Promise.reject(result.errorMessage)
 }
 

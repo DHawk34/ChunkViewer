@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import './StatusBar.css'
 
 export type logMessage = {
@@ -22,10 +22,9 @@ export function StatusBar(props: { logMessage: logMessage[] }) {
     function toggleLogs() {
         setClicked(!clicked);
 
-        let container = document.getElementById('status_bar_container');
+        const container = document.getElementById('status_bar_container');
 
         if (clicked) {
-            console.log(props.logMessage.length)
             container?.classList.remove('full_open');
         }
         else {
@@ -38,7 +37,7 @@ export function StatusBar(props: { logMessage: logMessage[] }) {
     })
 
     function getLastMessage() {
-        let msg = props.logMessage.slice(-1).at(0);
+        const msg = props.logMessage[0];
         return <p className={msg?.error ? 'error' : ''}>{msg?.message}</p>
     }
 

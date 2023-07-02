@@ -1,31 +1,23 @@
-export async function save(data: Blob | string | Uint8Array, options: SaveFilePickerOptions, fileHandle?: FileSystemFileHandle) {
-    let blob = data instanceof Blob
+export async function save(data: Blob | string | Uint8Array, options: SaveFilePickerOptions) {
+    const blob = data instanceof Blob
         ? data
         : new Blob([data]);
 
-    if (fileHandle != undefined) {
-        return writeFile(blob, fileHandle);
-    }
-
     if ('showSaveFilePicker' in window) {
-        return exportNativeFileSystem(blob, options);
+        const fileHandle: FileSystemFileHandle = await getSaveFileHandle(options);
+        return writeFile(blob, fileHandle);
     }
 
     return download(blob, options.suggestedName ?? 'new file');
 }
 
-export async function getSaveFileHandle(options: SaveFilePickerOptions) {
+async function getSaveFileHandle(options: SaveFilePickerOptions) {
     const fileHandle: FileSystemFileHandle = await showSaveFilePicker(options);
 
     if (!fileHandle) {
         return Promise.reject('Cannot access filesystem');
     }
     return fileHandle;
-}
-
-async function exportNativeFileSystem(blob: Blob, options: SaveFilePickerOptions) {
-    const fileHandle: FileSystemFileHandle = await getSaveFileHandle(options);
-    return writeFile(blob, fileHandle);
 }
 
 async function writeFile(blob: Blob, fileHandle: FileSystemFileHandle) {

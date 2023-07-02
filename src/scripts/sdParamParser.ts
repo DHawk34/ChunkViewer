@@ -11,7 +11,7 @@ export type Parameters = {
     [key: string]: string
 }
 
-export function parseParameters(parameters: string): Parameters {
+export function parseParameters(parameters: string, parseValueInQuotation?: boolean): Parameters {
     const result: Parameters = {}
     parameters = parameters.replaceAll('\n', '') // regex: replace(/\n/g, "")
 
@@ -21,16 +21,16 @@ export function parseParameters(parameters: string): Parameters {
 
     // Get positive & negative prompt
     retreivePosNegPrompt()
-    
+
     //const params = parameters.split(', ')
     const params = mySplit(parameters, ', ')
 
     for (let i = 0; i < params.length; i++) {
         const index = params[i].indexOf(': ')
         const name = params[i].substring(0, index).trim()
-        const value = params[i].substring(index + 2).replaceAll('"', '')
+        const value = params[i].substring(index + 2)
 
-        result[name] = value
+        result[name] = parseValueInQuotation ? parseValue(value, ', ') : value
     }
 
     return result
@@ -80,7 +80,7 @@ function mySplit(text: string, separator: string): string[] {
         }
         if (blockStarted) continue
 
-        if (isSeparator(i)) {
+        if (isSeparator(text, separator, i)) {
             result.push(text.substring(startIndex, i))
             startIndex = i + separatorLength
         }
@@ -92,20 +92,50 @@ function mySplit(text: string, separator: string): string[] {
     }
 
     return result
-
-
-
-    function isSeparator(i: number): boolean {
-        for (let j = 0; j < separatorLength; j++) {
-            if (text[i + j] !== separator[j])
-                return false
-        }
-
-        return true
-    }
 }
 
 
+
+function parseValue(value: string, separator: string): string {
+    const lengthMinusOne = value.length - 1
+
+    if (value[0] !== '"' || value[lengthMinusOne] !== '"') {
+        return value
+    }
+
+    value = value.substring(1, lengthMinusOne) // remove First and Last " symbols
+    const separatorLength = separator.length
+    let bracketsStarted: boolean = false
+
+    for (let i = 0; i < lengthMinusOne; i++) {
+        if (value[i] === '(') {
+            bracketsStarted = true
+            continue
+        }
+        if (value[i] === ')') {
+            bracketsStarted = false
+            continue
+        }
+        if (bracketsStarted) continue
+
+        if (isSeparator(value, separator, i)) {
+            value = value.substring(0, i + 1) + '\n' + value.substring(i + separatorLength)
+        }
+    }
+
+    return value
+}
+
+
+
+function isSeparator(text: string, separator: string, startIndex: number): boolean {
+    for (let j = 0; j < separator.length; j++) {
+        if (text[startIndex + j] !== separator[j])
+            return false
+    }
+
+    return true
+}
 
 /** Returns -1 if not found. */
 function indexOfPromptEnd(parameters: string): number {

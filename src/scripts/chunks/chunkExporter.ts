@@ -1,4 +1,4 @@
-import { getSaveFileHandle, txtSaveFilePickerOptions, save } from "../save.utils";
+import { txtSaveFilePickerOptions, save } from "../save.utils";
 import { Parameters, parseParameters } from "../sdParamParser";
 import { ChunkData } from "./chunkHandler";
 
@@ -10,20 +10,18 @@ export default {
 
 export async function exportChunk(chunk: ChunkData) {
     const filePickerOptions = txtSaveFilePickerOptions(chunk.name + '.txt')
-    const fileHandle = await getSaveFileHandle(filePickerOptions)
     const content = chunk.value
 
-    return save(content, filePickerOptions, fileHandle)
+    return save(content, filePickerOptions)
 }
 
 export async function exportChunks(chunks: ChunkData[]) {
     if (chunks.length === 0) return
 
     const filePickerOptions = txtSaveFilePickerOptions('chunks.txt')
-    const fileHandle = await getSaveFileHandle(filePickerOptions)
     const content = getChunksContent(chunks)
 
-    return save(content, filePickerOptions, fileHandle)
+    return save(content, filePickerOptions)
 }
 
 export async function exportParameters(chunks: ChunkData[]): Promise<void> {
