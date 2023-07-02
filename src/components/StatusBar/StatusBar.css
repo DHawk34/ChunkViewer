@@ -14,7 +14,7 @@
     transition: all 0.2s ease-out;
 }
 
-#status_bar_container.full_open{
+#status_bar_container.full_open {
     align-items: flex-start;
     height: 100vh;
 }
@@ -31,16 +31,21 @@
 #log_container {
     margin: 0;
     margin-left: 15px;
-    /* white-space: nowrap; */
 
     width: calc(100% - 30px);
-     overflow: hidden;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
-#status_bar_container.full_open #log_container{
+#status_bar_container.full_open #log_container {
     max-height: 100%;
     overflow: auto;
+    white-space: normal;
 }
+
+/* #status_bar_container.full_open #log_container p:nth-of-type(2n) {
+    background-color: var(--background);
+} */
 
 #status_bar_container button {
     margin: 0;

@@ -90,15 +90,16 @@ tr:nth-child(even) {
   padding-left: 10px;
 } */
 
-table {
+#parameters_table {
   table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
+  white-space: pre-wrap;
 }
 
 .param_name_col {
-  max-width: 85px;
-  width: min(85px, 10vw);
+  max-width: 110px;
+  width: min(110px, 11vw);
 }
 
 /* .param_value_col{
