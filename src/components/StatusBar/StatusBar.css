@@ -38,24 +38,40 @@
 }
 
 #status_bar_container.full_open #log_container {
+    width: 100%;
     max-height: 100%;
+    margin: 0;
     overflow: auto;
     white-space: normal;
 }
+#status_bar_container.full_open #log_container p{
+    margin: 0;
+    padding: 10px;
+    padding-right: 45px;
+    padding-left: 15px;
+    /* word-break: break-all; */
+}
 
-/* #status_bar_container.full_open #log_container p:nth-of-type(2n) {
-    background-color: var(--background);
-} */
+#status_bar_container.full_open #log_container p:nth-of-type(2n) {
+    background-color: var(--background-dark);
+}
+
+#status_bar_container.full_open button {
+    background: none;
+}
 
 #status_bar_container button {
+    position: absolute;
+    right: 0;
     margin: 0;
     margin-left: auto;
     height: 30px;
     width: auto;
     line-height: 0;
-    background: none;
+    background: var(--foreground);
     padding: 0;
-    padding-right: 5px;
+    padding-right: 15px;
+    padding-left: 15px;
 }
 
 .error {
