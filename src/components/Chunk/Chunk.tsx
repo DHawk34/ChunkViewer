@@ -94,7 +94,7 @@ export function Chunk(props: Props) {
 
 
 
-    let parameters = objectToArray<string>(parseParameters(props.chunk.value))?.map((param: { key: string, value: string }, index: number) => {
+    const parameters = objectToArray<string>(parseParameters(props.chunk.value, true))?.map((param: { key: string, value: string }, index: number) => {
         return <tr key={index}>
             <td className='param_name'>{param.key}</td>
             <td className='param_text'>{param.value}</td>
