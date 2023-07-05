@@ -60,7 +60,8 @@ export function App() {
     return filePath.replace(/^.*(\\|\/|:)/, '')
   }
 
-  //#region chunks
+
+
   async function loadChunks(path: string, rememberImageBytes?: boolean): Promise<boolean> {
     let succeeded = false
 
@@ -73,14 +74,12 @@ export function App() {
         succeeded = true
       })
       .catch(e => {
-        console.log(e)
         addLog(e?.message ?? e, true)
         succeeded = false
       })
 
     return succeeded
   }
-  //#endregion
 
 
 
@@ -103,12 +102,26 @@ export function App() {
           setImageUrl(apiPath)
       })
   }
+
+  function saveImage() {
+    // TODO: retrieve ChunkTypes & allowUnsafeChunkNames from settings
+
+    const saveOptions: SaveOptions = { chunkType: ChunkTypes.tEXt, allowUnsafeChunkNames: false }
+
+    chunkHandler.saveImageWithNewChunks(chunkArray, saveOptions)
+      .then(() => addLog('Image saved'))
+      .catch(e => addLog(e, true))
+  }
   //#endregion
+
 
 
   function addLog(message: string, error: boolean = false) {
     if (message.startsWith('AbortError')) return
-    if (error) message = 'ERROR: ' + message
+    if (error) {
+      console.log(message)
+      message = 'ERROR: ' + message
+    }
 
     setLogs(logs => {
       return [{ message: `${getTime()} ${message}`, error: error }, ...logs];
@@ -121,16 +134,6 @@ export function App() {
 
   function getTime() {
     return `[${new Date().toLocaleTimeString()}]`
-  }
-
-  function saveImage() {
-    // TODO: retrieve ChunkTypes & allowUnsafeChunkNames from settings
-
-    const saveOptions: SaveOptions = { chunkType: ChunkTypes.tEXt, allowUnsafeChunkNames: false }
-
-    chunkHandler.saveImageWithNewChunks(chunkArray, saveOptions)
-      .then(() => addLog('Image saved'))
-      .catch(e => addLog(e, true))
   }
 
 
@@ -156,10 +159,7 @@ export function App() {
 
     chunkHandler.exportParameters(chunks)
       .then(() => addLog('Parameters are exported'))
-      .catch(e => {
-        addLog(e, true)
-        console.log(e)
-      })
+      .catch(e => addLog(e, true))
   }
 
   function exportAllChunks() {
@@ -167,12 +167,11 @@ export function App() {
 
     chunkHandler.exportChunks(chunkArray)
       .then(() => addLog('All chunks are exported'))
-      .catch(e => {
-        addLog(e, true)
-        console.log(e)
-      })
+      .catch(e => addLog(e, true))
   }
 
+
+  
   return (
     <div id='container'>
       <ImageContainer imageUrl={imageUrl} />
@@ -191,7 +190,7 @@ export function App() {
       />
 
       <StatusBar
-        logMessage={logs}
+        logMessages={logs}
       />
     </div>
   )

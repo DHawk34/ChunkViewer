@@ -6,7 +6,7 @@ export type logMessage = {
     error: boolean
 }
 
-export function StatusBar(props: { logMessage: logMessage[] }) {
+export function StatusBar(props: { logMessages: logMessage[] }) {
     const [clicked, setClicked] = useState<boolean>(false);
 
     // useEffect(() => {
@@ -32,12 +32,12 @@ export function StatusBar(props: { logMessage: logMessage[] }) {
         }
     }
 
-    const logMessageElements = props.logMessage.map((msg: { message: string, error: boolean }, index: number) => {
+    const logMessageElements = props.logMessages.map((msg: { message: string, error: boolean }, index: number) => {
         return <p key={index} className={msg.error ? 'error' : ''}>{msg.message}</p>
     })
 
     function getLastMessage() {
-        const msg = props.logMessage[0];
+        const msg = props.logMessages[0];
         return <p className={msg?.error ? 'error' : ''}>{msg?.message}</p>
     }
 
