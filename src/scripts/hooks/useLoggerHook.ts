@@ -6,7 +6,14 @@ export type LogMessage = {
     type: 'message' | 'error'
 }
 
-export function useLogger() {
+export type Logger = {
+    logs: LogMessage[],
+    setLogs: React.Dispatch<React.SetStateAction<LogMessage[]>>
+    log: (message: string) => void,
+    logError: (message: string) => void,
+}
+
+export function useLogger(): Logger {
     const [logs, setLogs] = useState<LogMessage[]>([])
 
     function log(message: string) {

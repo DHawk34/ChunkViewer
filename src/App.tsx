@@ -8,9 +8,8 @@ import dragImg from './components/ImageContainer/dragANDdrop.png';
 import chunkHandler, { ChunkData, ChunkTypes } from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
-import { swap } from "./scripts/utils";
+import { getFileNameFromPath, swap } from "./scripts/utils";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
-import { SaveOptions } from "./scripts/chunks/chunkSaver";
 import { StatusBar } from "./components/StatusBar/StatusBar";
 import { useLogger } from "./scripts/hooks/useLoggerHook";
 import "./App.css";
@@ -18,7 +17,9 @@ import "./App.css";
 export function App() {
   const [chunkArray, setChunkArray] = useState<ChunkData[]>([])
   const [imageUrl, setImageUrl] = useState<string>(dragImg)
-  const { logs, log, logError } = useLogger()
+
+  const logger = useLogger()
+  const { logs, log, logError } = logger
 
   const unlistenDnd = useRef<UnlistenFn>()
 
@@ -32,6 +33,12 @@ export function App() {
     }
   }, [])
 
+
+
+  function logImageLoaded(fileName: string) {
+    return log(`Loaded "${getFileNameFromPath(fileName)}"`)
+  }
+
   async function setupDragAndDrop() {
     const unlisten = await listen('tauri://file-drop', event => {
       const payloads = event.payload as string[]
@@ -39,7 +46,7 @@ export function App() {
 
       if (!imgPath) return
       loadImage(imgPath)
-      addLogImageLoaded(imgPath)
+      logImageLoaded(imgPath)
     })
 
     unlistenDnd.current = unlisten
@@ -52,39 +59,13 @@ export function App() {
       if (fileName && typeof (fileName) === 'string' && fileName !== '') {
         await tauri.invoke('extend_scope', { path: fileName })
         loadImage(fileName)
-        addLogImageLoaded(fileName)
+        logImageLoaded(fileName)
       }
     })
   }
 
-  function getFileNameFromPath(filePath: string): string {
-    return filePath.replace(/^.*(\\|\/|:)/, '')
-  }
 
 
-
-  async function loadChunks(path: string, rememberImageBytes?: boolean): Promise<boolean> {
-    let succeeded = false
-
-    await chunkHandler.readChunks(path, rememberImageBytes)
-      .then(({ chunks, message }) => {
-        if (message && message !== '')
-          log(message)
-
-        setChunkArray(chunks)
-        succeeded = true
-      })
-      .catch(e => {
-        logError(e?.message ?? e)
-        succeeded = false
-      })
-
-    return succeeded
-  }
-
-
-
-  //#region Image loading
   function getImageFromPayloads(payloads: string[]) {
     for (let i = 0; i < payloads.length; i++) {
       const payload = payloads[i]
@@ -95,30 +76,17 @@ export function App() {
   }
 
   function loadImage(imgPath: string) {
-    const apiPath = tauri.convertFileSrc(imgPath)
+    const url = tauri.convertFileSrc(imgPath)
 
-    loadChunks(apiPath, true)
-      .then(succeeded => {
-        if (succeeded)
-          setImageUrl(apiPath)
+    chunkHandler.readChunks(url, true)
+      .then(({ chunks, message }) => {
+        if (message && message !== '')
+          log(message)
+
+        setChunkArray(chunks)
+        setImageUrl(url)
       })
-  }
-
-  function saveImage() {
-    // TODO: retrieve ChunkTypes & allowUnsafeChunkNames from settings
-
-    const saveOptions: SaveOptions = { chunkType: ChunkTypes.tEXt, allowUnsafeChunkNames: false }
-
-    chunkHandler.saveImageWithNewChunks(chunkArray, saveOptions)
-      .then(() => log('Image saved'))
-      .catch(e => logError(e))
-  }
-  //#endregion
-
-
-
-  function addLogImageLoaded(fileName: string) {
-    return log(`Loaded "${getFileNameFromPath(fileName)}"`)
+      .catch(e => logError(e?.message ?? e))
   }
 
 
@@ -138,23 +106,6 @@ export function App() {
     setChunkArray(newArr)
   }
 
-  function exportParams() {
-    const chunks = chunkArray.filter(x => x.name === 'parameters' || x.name === 'extras' || x.name === 'postprocessing')
-    if (chunks.length === 0) return
-
-    chunkHandler.exportParameters(chunks)
-      .then(() => log('Parameters are exported'))
-      .catch(e => logError(e))
-  }
-
-  function exportAllChunks() {
-    if (chunkArray.length === 0) return
-
-    chunkHandler.exportChunks(chunkArray)
-      .then(() => log('All chunks are exported'))
-      .catch(e => logError(e))
-  }
-
 
 
   return (
@@ -168,10 +119,9 @@ export function App() {
       </DragDropContext>
 
       <ToolbarContainer
-        OnExportImage={saveImage}
-        OnExportParameters={exportParams}
-        OnExportAllChunks={exportAllChunks}
-        OnReplaceChunks={loadChunks}
+        chunkArray={chunkArray}
+        setChunkArray={setChunkArray}
+        logger={logger}
       />
 
       <StatusBar logs={logs} />

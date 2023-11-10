@@ -15,3 +15,7 @@ export function objectToArray<T>(object: Object) {
 export function getTime(): string {
     return new Date().toLocaleTimeString()
 }
+
+export function getFileNameFromPath(filePath: string): string {
+    return filePath.replace(/^.*(\\|\/|:)/, '')
+}

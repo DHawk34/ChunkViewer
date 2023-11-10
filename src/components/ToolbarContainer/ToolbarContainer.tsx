@@ -1,15 +1,8 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import { FeaturesContainer } from '../FeaturesContainer/FeaturesContainer';
+import { FeaturesContainer, FeaturesProps } from '../FeaturesContainer/FeaturesContainer';
 import './ToolbarContainer.css'
 
-type Props = {
-    OnExportImage: () => void
-    OnExportParameters: () => void
-    OnExportAllChunks: () => void
-    OnReplaceChunks: (imgPath: string) => void
-}
-
-export function ToolbarContainer(props: Props) {
+export function ToolbarContainer(props: FeaturesProps) {
     return (
         <div id="toolbar_container">
             <Tabs>
@@ -17,14 +10,15 @@ export function ToolbarContainer(props: Props) {
                     <Tab>Features</Tab>
                     <Tab>Options</Tab>
                 </TabList>
+                
                 <TabPanel>
                     <FeaturesContainer
-                        OnExportImage={props.OnExportImage}
-                        OnExportParameters={props.OnExportParameters}
-                        OnExportAllChunks={props.OnExportAllChunks}
-                        OnReplaceChunks={props.OnReplaceChunks}
+                        chunkArray={props.chunkArray}
+                        setChunkArray={props.setChunkArray}
+                        logger={props.logger}
                     />
                 </TabPanel>
+
                 <TabPanel>
                     <p>Comming soon!</p>
                 </TabPanel>
