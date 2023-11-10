@@ -7,7 +7,7 @@ import { objectToArray } from '../../scripts/utils';
 import { UnlistenFn } from "@tauri-apps/api/event";
 import './Chunk.css'
 
-const maxTextChunkNameSize: number = 79
+const maxChunkNameSize: number = 79
 
 type Props = {
     index: number
@@ -48,6 +48,10 @@ export function Chunk(props: Props) {
         setCurInput(input)
         input.setAttribute('class', 'editable_textarea')
 
+        if (element.className === 'chunk_name') {
+            input.setAttribute('maxlength', maxChunkNameSize.toString())
+        }
+
         input.oninput = () => {
             autoGrow(input)
         }
@@ -55,7 +59,7 @@ export function Chunk(props: Props) {
         input.value = val;
         input.onblur = () => {
             if (element.className === 'chunk_name') {
-                let val = input.value.substring(0, maxTextChunkNameSize).trim()
+                let val = input.value.substring(0, maxChunkNameSize).trim()
                 if (val.length === 0) val = '?'
 
                 props.chunk.name = element.textContent = val
