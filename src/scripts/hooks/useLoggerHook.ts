@@ -17,10 +17,14 @@ export function useLogger(): Logger {
     const [logs, setLogs] = useState<LogMessage[]>([])
 
     function log(message: string) {
+        if (!filter(message)) return
+
         log_internal({ message, type: 'message' })
     }
 
     function logError(message: string) {
+        if (!filter(message)) return
+
         console.log(message)
         message = 'ERROR: ' + message
 
@@ -30,11 +34,17 @@ export function useLogger(): Logger {
 
 
     function log_internal(log: LogMessage) {
-        if (log.message.startsWith('AbortError')) return
-
         log.message = `[${getTime()}] ${log.message}`
         setLogs(logs => [log, ...logs])
     }
 
     return { logs, setLogs, log, logError }
+}
+
+
+
+function filter(message: string): boolean {
+    if (message.startsWith('AbortError')) return false
+
+    return true
 }

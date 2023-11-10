@@ -34,7 +34,7 @@ export function replaceChunks(setChunkArray: React.Dispatch<React.SetStateAction
     dialog.open({
         multiple: false,
         filters: [{
-            name: 'Image',
+            name: 'png image',
             extensions: ['png']
         }]
     }).then(fileName => {
@@ -50,5 +50,5 @@ export function replaceChunks(setChunkArray: React.Dispatch<React.SetStateAction
                 })
                 .catch(e => logger.logError(e?.message ?? e))
         }
-    }).catch(() => { })
+    }).catch(e => logger.logError(e))
 }
