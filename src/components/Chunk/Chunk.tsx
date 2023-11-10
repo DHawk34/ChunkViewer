@@ -93,11 +93,15 @@ export function Chunk(props: Props) {
     }
 
     function exportChunk() {
-        chunkHandler.exportChunk(props.chunk)
+        if(showParameters){
+            chunkHandler.exportParameters([props.chunk])
             .catch(e => console.log(e))
+        }
+        else{
+            chunkHandler.exportChunk(props.chunk)
+            .catch(e => console.log(e))
+        }
     }
-
-
 
     const parameters = objectToArray<string>(parseParameters(props.chunk.value, true))?.map((param: { key: string, value: string }, index: number) => {
         return <tr key={index}>
