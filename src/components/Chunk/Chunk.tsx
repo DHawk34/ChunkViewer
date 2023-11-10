@@ -7,6 +7,8 @@ import { objectToArray } from '../../scripts/utils';
 import { UnlistenFn } from "@tauri-apps/api/event";
 import './Chunk.css'
 
+const maxTextChunkNameSize: number = 79
+
 type Props = {
     index: number
     chunk: ChunkData
@@ -52,16 +54,15 @@ export function Chunk(props: Props) {
 
         input.value = val;
         input.onblur = () => {
-            const val = input.value
-
             if (element.className === 'chunk_name') {
-                element.textContent = val.trim()
-                props.chunk.name = val.trim()
+                let val = input.value.substring(0, maxTextChunkNameSize).trim()
+                if (val.length === 0) val = '?'
+
+                props.chunk.name = element.textContent = val
                 props.OnUpdate(index, props.chunk)
             }
             else {
-                element.textContent = val
-                props.chunk.value = input.value
+                props.chunk.value = element.textContent = input.value
                 props.OnUpdate(index, props.chunk)
             }
             setCurInput(undefined)
