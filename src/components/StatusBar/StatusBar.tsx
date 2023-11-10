@@ -1,44 +1,30 @@
 import { useState } from "react";
+import { LogMessage } from "../../scripts/hooks/useLoggerHook";
 import './StatusBar.css'
 
-export type logMessage = {
-    message: string
-    error: boolean
-}
-
-export function StatusBar(props: { logMessages: logMessage[] }) {
-    const [clicked, setClicked] = useState<boolean>(false);
-
-    // useEffect(() => {
-    //     var log_message = document.getElementById('log_message');
-    //     if (props.logMessage.slice(-1).at(0)?.error) {
-    //         log_message?.classList.add('error')
-    //     } else {
-    //         log_message?.classList.remove('error')
-    //     }
-
-    // }, [props])
+export function StatusBar(props: { logs: LogMessage[] }) {
+    const [clicked, setClicked] = useState<boolean>(false)
 
     function toggleLogs() {
-        setClicked(!clicked);
+        setClicked(!clicked)
 
-        const container = document.getElementById('status_bar_container');
+        const container = document.getElementById('status_bar_container')
 
         if (clicked) {
-            container?.classList.remove('full_open');
+            container?.classList.remove('full_open')
         }
         else {
             container?.classList.add('full_open')
         }
     }
 
-    const logMessageElements = props.logMessages.map((msg: { message: string, error: boolean }, index: number) => {
-        return <p key={index} className={msg.error ? 'error' : ''}>{msg.message}</p>
+    const logMessageElements = props.logs.map((msg: LogMessage, index: number) => {
+        return <p key={index} className={msg.type === 'error' ? 'error' : ''}>{msg.message}</p>
     })
 
     function getLastMessage() {
-        const msg = props.logMessages[0];
-        return <p className={msg?.error ? 'error' : ''}>{msg?.message}</p>
+        const msg = props.logs[0]
+        return <p className={msg?.type === 'error' ? 'error' : ''}>{msg?.message}</p>
     }
 
     return (

@@ -11,3 +11,7 @@ export function objectToArray<T>(object: Object) {
         return { key: key, value: values[index] }
     })
 }
+
+export function getTime(): string {
+    return new Date().toLocaleTimeString()
+}

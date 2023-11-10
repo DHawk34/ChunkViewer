@@ -11,13 +11,14 @@ import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import { swap } from "./scripts/utils";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { SaveOptions } from "./scripts/chunks/chunkSaver";
-import { StatusBar, logMessage } from "./components/StatusBar/StatusBar";
+import { StatusBar } from "./components/StatusBar/StatusBar";
+import { useLogger } from "./scripts/hooks/useLoggerHook";
 import "./App.css";
 
 export function App() {
   const [chunkArray, setChunkArray] = useState<ChunkData[]>([])
   const [imageUrl, setImageUrl] = useState<string>(dragImg)
-  const [logs, setLogs] = useState<logMessage[]>([])
+  const { logs, log, logError } = useLogger()
 
   const unlistenDnd = useRef<UnlistenFn>()
 
@@ -68,13 +69,13 @@ export function App() {
     await chunkHandler.readChunks(path, rememberImageBytes)
       .then(({ chunks, message }) => {
         if (message && message !== '')
-          addLog(message)
+          log(message)
 
         setChunkArray(chunks)
         succeeded = true
       })
       .catch(e => {
-        addLog(e?.message ?? e, true)
+        logError(e?.message ?? e)
         succeeded = false
       })
 
@@ -109,31 +110,15 @@ export function App() {
     const saveOptions: SaveOptions = { chunkType: ChunkTypes.tEXt, allowUnsafeChunkNames: false }
 
     chunkHandler.saveImageWithNewChunks(chunkArray, saveOptions)
-      .then(() => addLog('Image saved'))
-      .catch(e => addLog(e, true))
+      .then(() => log('Image saved'))
+      .catch(e => logError(e))
   }
   //#endregion
 
 
 
-  function addLog(message: string, error: boolean = false) {
-    if (message.startsWith('AbortError')) return
-    if (error) {
-      console.log(message)
-      message = 'ERROR: ' + message
-    }
-
-    setLogs(logs => {
-      return [{ message: `${getTime()} ${message}`, error: error }, ...logs];
-    })
-  }
-
   function addLogImageLoaded(fileName: string) {
-    return addLog(`Loaded "${getFileNameFromPath(fileName)}"`)
-  }
-
-  function getTime() {
-    return `[${new Date().toLocaleTimeString()}]`
+    return log(`Loaded "${getFileNameFromPath(fileName)}"`)
   }
 
 
@@ -158,20 +143,20 @@ export function App() {
     if (chunks.length === 0) return
 
     chunkHandler.exportParameters(chunks)
-      .then(() => addLog('Parameters are exported'))
-      .catch(e => addLog(e, true))
+      .then(() => log('Parameters are exported'))
+      .catch(e => logError(e))
   }
 
   function exportAllChunks() {
     if (chunkArray.length === 0) return
 
     chunkHandler.exportChunks(chunkArray)
-      .then(() => addLog('All chunks are exported'))
-      .catch(e => addLog(e, true))
+      .then(() => log('All chunks are exported'))
+      .catch(e => logError(e))
   }
 
 
-  
+
   return (
     <div id='container'>
       <ImageContainer imageUrl={imageUrl} />
@@ -189,9 +174,7 @@ export function App() {
         OnReplaceChunks={loadChunks}
       />
 
-      <StatusBar
-        logMessages={logs}
-      />
+      <StatusBar logs={logs} />
     </div>
   )
 }
