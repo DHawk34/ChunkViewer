@@ -19,6 +19,8 @@ type Props = {
 export function Chunk(props: Props) {
     const [showParameters, setShowParameters] = useState(false)
     const [curInput, setCurInput] = useState<HTMLElement | undefined>()
+    const [needReParse, setNeedReParse] = useState(false)
+    const [parsedParams, setParsedParams] = useState<{ key: string, value: string }[]>([])
     const unlistenResize = useRef<UnlistenFn>()
 
     useEffect(() => {
@@ -28,6 +30,10 @@ export function Chunk(props: Props) {
             if (unlistenResize.current) unlistenResize.current()
         }
     }, [])
+
+    useEffect(() => {
+        setNeedReParse(true)
+    }, [props.chunk.value])
 
     async function sub2Event() {
         const unlisten = await appWindow.listen('tauri://resize', () => {
@@ -93,17 +99,28 @@ export function Chunk(props: Props) {
     }
 
     function exportChunk() {
-        if(showParameters){
+        if (showParameters) {
             chunkHandler.exportParameters([props.chunk])
-            .catch(e => console.log(e))
+                .catch(e => console.log(e))
         }
-        else{
+        else {
             chunkHandler.exportChunk(props.chunk)
-            .catch(e => console.log(e))
+                .catch(e => console.log(e))
         }
     }
 
-    const parameters = objectToArray<string>(parseParameters(props.chunk.value, true))?.map((param: { key: string, value: string }, index: number) => {
+    function getParsedParams() {
+        if (!needReParse)
+            return parsedParams
+        else {
+            setNeedReParse(false)
+            var params = objectToArray<string>(parseParameters(props.chunk.value, true));
+            setParsedParams(params)
+            return params;
+        }
+    }
+
+    const parameters = getParsedParams()?.map((param: { key: string, value: string }, index: number) => {
         return <tr key={index}>
             <td className='param_name'>{param.key}</td>
             <td className='param_text'>{param.value}</td>
