@@ -46,7 +46,6 @@ export function App() {
       const imgPath = getImageFromPayloads(payloads)
 
       if (!imgPath) return
-      setImageName(removeExtFromFileName(getFileNameFromPath(imgPath)))
       loadImage(imgPath)
       logImageLoaded(imgPath)
     })
@@ -77,6 +76,7 @@ export function App() {
   }
 
   function loadImage(imgPath: string) {
+    setImageName(removeExtFromFileName(getFileNameFromPath(imgPath)))
     const url = tauri.convertFileSrc(imgPath)
 
     chunkHandler.readChunks(url, true)
