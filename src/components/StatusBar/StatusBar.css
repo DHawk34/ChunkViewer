@@ -60,6 +60,12 @@
     background: none;
 }
 
+#warning_icon{
+    z-index: 9;
+    margin-right: 50px;
+    padding-left: 5px;
+}
+
 #status_bar_container button {
     position: absolute;
     right: 0;
