@@ -84,6 +84,11 @@ export function App() {
         if (message && message !== '')
           log(message)
 
+        chunks.forEach(chunk => {
+          if (chunk.crcIsBad)
+            logError(`Chunk '${chunk.name}' has bad CRC value! Export image to fix it.`)
+        })
+
         setChunkArray(chunks)
         setImageUrl(url)
       })
