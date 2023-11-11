@@ -9,20 +9,22 @@ export type LogMessage = {
 export type Logger = {
     logs: LogMessage[],
     setLogs: React.Dispatch<React.SetStateAction<LogMessage[]>>
-    log: (message: string) => void,
-    logError: (message: string) => void,
+    log: (message: any) => void,
+    logError: (message: any) => void,
 }
 
 export function useLogger(): Logger {
     const [logs, setLogs] = useState<LogMessage[]>([])
 
-    function log(message: string) {
+    function log(message: any) {
+        message = message.toString()
         if (!filter(message)) return
 
         log_internal({ message, type: 'message' })
     }
 
-    function logError(message: string) {
+    function logError(message: any) {
+        message = message.toString()
         if (!filter(message)) return
 
         console.log(message)
