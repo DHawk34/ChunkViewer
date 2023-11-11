@@ -8,23 +8,23 @@ export default {
 
 
 
-export async function exportChunk(chunk: ChunkData) {
-    const filePickerOptions = txtSaveFilePickerOptions(chunk.name + '.txt')
+export async function exportChunk(imageName: string, chunk: ChunkData) {
+    const filePickerOptions = txtSaveFilePickerOptions(`${imageName}-${chunk.name}.txt`)
     const content = chunk.value
 
     return save(content, filePickerOptions)
 }
 
-export async function exportChunks(chunks: ChunkData[]) {
+export async function exportChunks(imageName: string, chunks: ChunkData[]) {
     if (chunks.length === 0) return
 
-    const filePickerOptions = txtSaveFilePickerOptions('chunks.txt')
+    const filePickerOptions = txtSaveFilePickerOptions(`${imageName}-chunks.txt`)
     const content = getChunksContent(chunks)
 
     return save(content, filePickerOptions)
 }
 
-export async function exportParameters(chunks: ChunkData[]): Promise<void> {
+export async function exportParameters(imageName: string, chunks: ChunkData[]): Promise<void> {
     // remove duplicate chunk values
     const chunkValues = new Set<string>()
 
@@ -50,7 +50,7 @@ export async function exportParameters(chunks: ChunkData[]): Promise<void> {
             chunkValue += value + '\n\n'
     }
 
-    return exportChunk({
+    return exportChunk(imageName, {
         name: 'parameters',
         value: chunkValue.slice(0, -2)
     })

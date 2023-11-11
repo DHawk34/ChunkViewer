@@ -8,7 +8,7 @@ import dragImg from './components/ImageContainer/dragANDdrop.png';
 import chunkHandler, { ChunkData, ChunkTypes } from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
-import { getFileNameFromPath, swap } from "./scripts/utils";
+import { getFileNameFromPath, removeExtFromFileName, swap } from "./scripts/utils";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { StatusBar } from "./components/StatusBar/StatusBar";
 import { useLogger } from "./scripts/hooks/useLoggerHook";
@@ -17,6 +17,7 @@ import "./App.css";
 export function App() {
   const [chunkArray, setChunkArray] = useState<ChunkData[]>([])
   const [imageUrl, setImageUrl] = useState<string>(dragImg)
+  const [imageName, setImageName] = useState<string>('')
 
   const logger = useLogger()
   const { logs, log, logError } = logger
@@ -45,6 +46,7 @@ export function App() {
       const imgPath = getImageFromPayloads(payloads)
 
       if (!imgPath) return
+      setImageName(removeExtFromFileName(getFileNameFromPath(imgPath)))
       loadImage(imgPath)
       logImageLoaded(imgPath)
     })
@@ -69,7 +71,6 @@ export function App() {
   function getImageFromPayloads(payloads: string[]) {
     for (let i = 0; i < payloads.length; i++) {
       const payload = payloads[i]
-
       if (payload.endsWith('.png'))
         return payload
     }
@@ -114,6 +115,7 @@ export function App() {
 
       <DragDropContext onDragEnd={dropChunk} >
         <ChunkContainer
+          imageName={imageName}
           chunkArray={chunkArray}
           OnChunksUpdated={setChunkArray} />
       </DragDropContext>
@@ -122,6 +124,7 @@ export function App() {
         chunkArray={chunkArray}
         setChunkArray={setChunkArray}
         logger={logger}
+        imageName={imageName}
       />
 
       <StatusBar logs={logs} />

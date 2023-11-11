@@ -16,6 +16,7 @@ export function ToolbarContainer(props: FeaturesProps) {
                         chunkArray={props.chunkArray}
                         setChunkArray={props.setChunkArray}
                         logger={props.logger}
+                        imageName={props.imageName}
                     />
                 </TabPanel>
 

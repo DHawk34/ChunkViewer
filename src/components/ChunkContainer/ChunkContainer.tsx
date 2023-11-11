@@ -4,7 +4,8 @@ import { StrictModeDroppable } from '../StrictModeDroppable';
 import { ChunkData } from '../../scripts/chunks/chunkHandler';
 
 type Props = {
-    chunkArray: ChunkData[],
+    chunkArray: ChunkData[]
+    imageName: string
     OnChunksUpdated: (chunk: ChunkData[]) => void
 }
 
@@ -29,7 +30,7 @@ export function ChunkContainer(props: Props) {
 
 
     const chunkElements = props.chunkArray.map((chunk: ChunkData, index: number) =>
-        <Chunk index={index} chunk={chunk} OnDelete={chunkDelete} OnUpdate={chunkUpdate} key={index} />
+        <Chunk index={index} chunk={chunk} imageName={props.imageName} OnDelete={chunkDelete} OnUpdate={chunkUpdate} key={index} />
     )
 
     return (

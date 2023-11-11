@@ -12,6 +12,7 @@ const maxChunkNameSize: number = 79
 type Props = {
     index: number
     chunk: ChunkData
+    imageName: string
     OnUpdate: (index: number, newValue: ChunkData) => void
     OnDelete: (index: number) => void
 }
@@ -100,11 +101,11 @@ export function Chunk(props: Props) {
 
     function exportChunk() {
         if (showParameters) {
-            chunkHandler.exportParameters([props.chunk])
+            chunkHandler.exportParameters(props.imageName, [props.chunk])
                 .catch(e => console.log(e))
         }
         else {
-            chunkHandler.exportChunk(props.chunk)
+            chunkHandler.exportChunk(props.imageName, props.chunk)
                 .catch(e => console.log(e))
         }
     }

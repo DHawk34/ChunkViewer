@@ -19,3 +19,7 @@ export function getTime(): string {
 export function getFileNameFromPath(filePath: string): string {
     return filePath.replace(/^.*(\\|\/|:)/, '')
 }
+
+export function removeExtFromFileName(fileName: string): string {
+    return fileName.replace(/\.[^/.]+$/, "")
+}

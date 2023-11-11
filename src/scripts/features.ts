@@ -3,29 +3,29 @@ import chunkHandler, { ChunkData } from "./chunks/chunkHandler"
 import { ChunkTypes, SaveOptions } from "./chunks/chunkSaver"
 import { Logger } from "./hooks/useLoggerHook"
 
-export function exportAllChunks(chunkArray: ChunkData[], logger: Logger) {
+export function exportAllChunks(imageName: string, chunkArray: ChunkData[], logger: Logger) {
     if (chunkArray.length === 0) return
 
-    chunkHandler.exportChunks(chunkArray)
+    chunkHandler.exportChunks(imageName, chunkArray)
         .then(() => logger.log('All chunks are exported'))
         .catch(e => logger.logError(e))
 }
 
-export function saveImage(chunkArray: ChunkData[], logger: Logger) {
+export function saveImage(imageName: string, chunkArray: ChunkData[], logger: Logger) {
     // TODO: retrieve ChunkTypes & allowUnsafeChunkNames from settings
 
     const saveOptions: SaveOptions = { chunkType: ChunkTypes.tEXt, allowUnsafeChunkNames: false }
 
-    chunkHandler.saveImageWithNewChunks(chunkArray, saveOptions)
+    chunkHandler.saveImageWithNewChunks(imageName, chunkArray, saveOptions)
         .then(() => logger.log('Image saved'))
         .catch(e => logger.logError(e))
 }
 
-export function exportParams(chunkArray: ChunkData[], logger: Logger) {
+export function exportParams(imageName: string, chunkArray: ChunkData[], logger: Logger) {
     const chunks = chunkArray.filter(x => x.name === 'parameters' || x.name === 'extras' || x.name === 'postprocessing')
     if (chunks.length === 0) return
 
-    chunkHandler.exportParameters(chunks)
+    chunkHandler.exportParameters(imageName, chunks)
         .then(() => logger.log('Parameters are exported'))
         .catch(e => logger.logError(e))
 }

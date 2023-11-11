@@ -35,8 +35,8 @@ export async function readChunks(imgUrl: string, rememberImageBytes?: boolean): 
     return readResult
 }
 
-export async function saveImageWithNewChunks(chunks: ChunkData[], saveOptions: SaveOptions): Promise<void> {
-    const filePickerOptions = pngSaveFilePickerOptions('modified.png')
+export async function saveImageWithNewChunks(imageName: string, chunks: ChunkData[], saveOptions: SaveOptions): Promise<void> {
+    const filePickerOptions = pngSaveFilePickerOptions(`${imageName}-modified.png`)
 
     if (!image || image.length === 0) {
         return Promise.reject('В памяти нет картинки. Некуда сохранять!')
