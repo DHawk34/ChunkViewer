@@ -1,30 +1,29 @@
 import { txtSaveFilePickerOptions, save } from "../save.utils";
 import { Parameters, parseParameters } from "../sdParamParser";
+import { varStore } from "../variableStore";
 import { ChunkData } from "./chunkHandler";
 
 export default {
     exportChunk, exportChunks, exportParameters
 }
 
-
-
-export async function exportChunk(imageName: string, chunk: ChunkData) {
-    const filePickerOptions = txtSaveFilePickerOptions(`${imageName}-${chunk.name}.txt`)
+export async function exportChunk(chunk: ChunkData) {
+    const filePickerOptions = txtSaveFilePickerOptions(`${varStore.openedImageName} ${chunk.name}.txt`)
     const content = chunk.value
 
     return save(content, filePickerOptions)
 }
 
-export async function exportChunks(imageName: string, chunks: ChunkData[]) {
+export async function exportChunks(chunks: ChunkData[]) {
     if (chunks.length === 0) return
 
-    const filePickerOptions = txtSaveFilePickerOptions(`${imageName}-chunks.txt`)
+    const filePickerOptions = txtSaveFilePickerOptions(`${varStore.openedImageName} chunks.txt`)
     const content = getChunksContent(chunks)
 
     return save(content, filePickerOptions)
 }
 
-export async function exportParameters(imageName: string, chunks: ChunkData[]): Promise<void> {
+export async function exportParameters(chunks: ChunkData[]): Promise<void> {
     // remove duplicate chunk values
     const chunkValues = new Set<string>()
 
@@ -50,7 +49,7 @@ export async function exportParameters(imageName: string, chunks: ChunkData[]): 
             chunkValue += value + '\n\n'
     }
 
-    return exportChunk(imageName, {
+    return exportChunk({
         name: 'parameters',
         value: chunkValue.slice(0, -2)
     })

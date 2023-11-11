@@ -8,15 +8,14 @@ export interface FeaturesProps {
     setChunkArray: React.Dispatch<React.SetStateAction<ChunkData[]>>
     // TODO: transfer settings
     logger: Logger
-    imageName: string
 }
 
 export function FeaturesContainer(props: FeaturesProps) {
-    const {imageName, chunkArray, setChunkArray, logger } = props
+    const { chunkArray, setChunkArray, logger } = props
 
-    const btn_exportImage = () => saveImage(imageName, chunkArray, logger)
-    const btn_exportParameters = () => exportParams(imageName, chunkArray, logger)
-    const btn_exportAllChunks = () => exportAllChunks(imageName, chunkArray, logger)
+    const btn_exportImage = () => saveImage(chunkArray, logger)
+    const btn_exportParameters = () => exportParams(chunkArray, logger)
+    const btn_exportAllChunks = () => exportAllChunks(chunkArray, logger)
     const btn_replaceChunks = () => replaceChunks(setChunkArray, logger)
 
     return (

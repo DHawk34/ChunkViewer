@@ -2,6 +2,10 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { FeaturesContainer, FeaturesProps } from '../FeaturesContainer/FeaturesContainer';
 import './ToolbarContainer.css'
 
+// TODO: app version
+// import { getVersion } from '@tauri-apps/api/app';
+// const appVersion = await getVersion();
+
 export function ToolbarContainer(props: FeaturesProps) {
     return (
         <div id="toolbar_container">
@@ -16,7 +20,6 @@ export function ToolbarContainer(props: FeaturesProps) {
                         chunkArray={props.chunkArray}
                         setChunkArray={props.setChunkArray}
                         logger={props.logger}
-                        imageName={props.imageName}
                     />
                 </TabPanel>
 

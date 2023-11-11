@@ -12,12 +12,12 @@ import { getFileNameFromPath, removeExtFromFileName, swap } from "./scripts/util
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { StatusBar } from "./components/StatusBar/StatusBar";
 import { useLogger } from "./scripts/hooks/useLoggerHook";
+import { varStore } from "./scripts/variableStore";
 import "./App.css";
 
 export function App() {
   const [chunkArray, setChunkArray] = useState<ChunkData[]>([])
   const [imageUrl, setImageUrl] = useState<string>(dragImg)
-  const [imageName, setImageName] = useState<string>('')
 
   const logger = useLogger()
   const { logs, log, logError } = logger
@@ -76,7 +76,7 @@ export function App() {
   }
 
   function loadImage(imgPath: string) {
-    setImageName(removeExtFromFileName(getFileNameFromPath(imgPath)))
+    varStore.openedImageName = removeExtFromFileName(getFileNameFromPath(imgPath))
     const url = tauri.convertFileSrc(imgPath)
 
     chunkHandler.readChunks(url, true)
@@ -120,7 +120,6 @@ export function App() {
 
       <DragDropContext onDragEnd={dropChunk} >
         <ChunkContainer
-          imageName={imageName}
           chunkArray={chunkArray}
           OnChunksUpdated={setChunkArray} />
       </DragDropContext>
@@ -129,7 +128,6 @@ export function App() {
         chunkArray={chunkArray}
         setChunkArray={setChunkArray}
         logger={logger}
-        imageName={imageName}
       />
 
       <StatusBar logs={logs} />

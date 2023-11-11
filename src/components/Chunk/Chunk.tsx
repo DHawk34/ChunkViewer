@@ -12,7 +12,6 @@ const maxChunkNameSize: number = 79
 type Props = {
     index: number
     chunk: ChunkData
-    imageName: string
     OnUpdate: (index: number, newValue: ChunkData) => void
     OnDelete: (index: number) => void
 }
@@ -20,8 +19,7 @@ type Props = {
 export function Chunk(props: Props) {
     const [showParameters, setShowParameters] = useState(false)
     const [curInput, setCurInput] = useState<HTMLElement | undefined>()
-    const [needReParse, setNeedReParse] = useState(false)
-    const [parsedParams, setParsedParams] = useState<{ key: string, value: string }[]>([])
+    const [parsedParams, setParsedParams] = useState<{ key: string, value: string }[] | undefined>(undefined)
     const unlistenResize = useRef<UnlistenFn>()
 
     useEffect(() => {
@@ -33,7 +31,7 @@ export function Chunk(props: Props) {
     }, [])
 
     useEffect(() => {
-        setNeedReParse(true)
+        setParsedParams(undefined)
     }, [props.chunk.value])
 
     async function sub2Event() {
@@ -96,37 +94,36 @@ export function Chunk(props: Props) {
 
     function changeView() {
         setShowParameters(!showParameters)
-        // parseParameters
     }
 
     function exportChunk() {
         if (showParameters) {
-            chunkHandler.exportParameters(props.imageName, [props.chunk])
+            chunkHandler.exportParameters([props.chunk])
                 .catch(e => console.log(e))
         }
         else {
-            chunkHandler.exportChunk(props.imageName, props.chunk)
+            chunkHandler.exportChunk(props.chunk)
                 .catch(e => console.log(e))
         }
     }
 
     function getParsedParams() {
-        if (!needReParse)
+        if (parsedParams) {
             return parsedParams
-        else {
-            setNeedReParse(false)
-            var params = objectToArray<string>(parseParameters(props.chunk.value, true));
-            setParsedParams(params)
-            return params;
         }
+
+        const params = objectToArray<string>(parseParameters(props.chunk.value, true))
+        setParsedParams(params)
+
+        return params
     }
 
-    const parameters = getParsedParams()?.map((param: { key: string, value: string }, index: number) => {
+    const parameters = showParameters ? getParsedParams().map((param: { key: string, value: string }, index: number) => {
         return <tr key={index}>
             <td className='param_name'>{param.key}</td>
             <td className='param_text'>{param.value}</td>
         </tr>
-    })
+    }) : undefined
 
     return (
         <Draggable draggableId={props.index.toString()} key={props.index} index={props.index}>
