@@ -2,9 +2,8 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { FeaturesContainer, FeaturesProps } from '../FeaturesContainer/FeaturesContainer';
 import './ToolbarContainer.css'
 
-// TODO: app version
-// import { getVersion } from '@tauri-apps/api/app';
-// const appVersion = await getVersion();
+import { getVersion } from '@tauri-apps/api/app';
+const appVersion = await getVersion();
 
 export function ToolbarContainer(props: FeaturesProps) {
     return (
@@ -27,6 +26,7 @@ export function ToolbarContainer(props: FeaturesProps) {
                     <p>Comming soon!</p>
                 </TabPanel>
             </Tabs>
+            <p id="version_label">V.{appVersion}</p>
         </div>
     )
 }
