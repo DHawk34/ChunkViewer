@@ -7,7 +7,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "png-chunk-viewer",
+    "productName": "png_chunk_viewer",
     "version": "0.8.5"
   },
   "tauri": {

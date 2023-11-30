@@ -1,5 +1,5 @@
 [package]
-name = "png-chunk-viewer"
+name = "png_chunk_viewer"
 version = "0.8.5"
 description = "A Tauri App"
 authors = ["Neo", "CompleX"]
