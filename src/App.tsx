@@ -16,6 +16,7 @@ import { varStore } from "./scripts/variableStore";
 import "./App.css";
 
 const cli_image_filename_arg_name = 'filename'
+const cli_parent_window_arg_name = 'parent-window'
 
 export function App() {
   const [chunkArray, setChunkArray] = useState<ChunkData[]>([])
@@ -56,19 +57,27 @@ export function App() {
   }
 
   function loadImageOnStartUp() {
+    tauri.invoke('test')
     getMatches().then(async ({ args }) => {
-      var imgFromBrowser = JSON.parse(await tauri.invoke('return_inp'));
-      console.log(imgFromBrowser)
-
-      if (imgFromBrowser) {
-        loadImage(imgFromBrowser["imgUrl"])
-        logImageLoaded(imgFromBrowser["imgUrl"])
-        return;
-      }
-
       const fileName = args[cli_image_filename_arg_name].value
 
-      if (fileName && typeof (fileName) === 'string' && fileName !== '') {
+      if (!fileName) {
+        const parent_window = args[cli_parent_window_arg_name].value
+        if (!parent_window)
+          return
+
+        var imgFromBrowser = JSON.parse(await tauri.invoke('return_inp'))
+        console.log(imgFromBrowser)
+
+        if (imgFromBrowser) {
+          loadImage(imgFromBrowser["imgUrl"])
+          logImageLoaded(imgFromBrowser["imgUrl"])
+        }
+
+        return
+      }
+
+      if (typeof (fileName) === 'string' && fileName !== '') {
         await tauri.invoke('extend_scope', { path: fileName })
         loadImageFromPath(fileName)
         logImageLoaded(fileName)
