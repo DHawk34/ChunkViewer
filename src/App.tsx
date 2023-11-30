@@ -57,7 +57,7 @@ export function App() {
   }
 
   function loadImageOnStartUp() {
-    tauri.invoke('test')
+    // tauri.invoke('test')
     getMatches().then(async ({ args }) => {
       const fileName = args[cli_image_filename_arg_name].value
 
