@@ -1,11 +1,4 @@
-const NEGATIVE_PROMPT_TEXT = 'Negative prompt: '
-const PARAM_NAMES = [
-    'Steps: ',
-    'Sampler: ',
-    'CFG scale: ',
-    'Seed: ',
-    'Size: ',
-]
+const POSITIVE_PROMT_TEXT = 'Positive prompt: '
 
 export type Parameters = {
     [key: string]: string
@@ -13,97 +6,87 @@ export type Parameters = {
 
 export function parseParameters(parameters: string, parseValueInQuotation?: boolean): Parameters {
     const result: Parameters = {}
-    parameters = parameters.replaceAll('\n', '') // regex: replace(/\n/g, "")
 
     if (parameters.length === 0) {
         return result
     }
 
-    // Get positive & negative prompt
-    retreivePosNegPrompt()
+    if (!parameters.startsWith(POSITIVE_PROMT_TEXT)) {
+        parameters = POSITIVE_PROMT_TEXT + parameters
+    }
 
-    //const params = parameters.split(', ')
-    const params = mySplit(parameters, ', ')
+    let blockStartIndex = 0
+    let blockName = ''
 
-    for (let i = 0; i < params.length; i++) {
-        const index = params[i].indexOf(': ')
-        const name = params[i].substring(0, index).trim()
-        const value = params[i].substring(index + 2)
+    for (let i = 0; i < parameters.length; i++) {
+        const info = findNextBlock(parameters, i)
+        const blockEndIndex: number = info ? info.prevBlockEndIndex : parameters.length
 
-        result[name] = parseValueInQuotation ? parseValue(value, ', ') : value
+        if (blockEndIndex !== -1) { // if it's not the first iteration
+            const inQuotations = isValueInQuotationsMarks(parameters, blockStartIndex, blockEndIndex)
+            const value = inQuotations
+                ? parameters.substring(blockStartIndex + 1, blockEndIndex - 1) // trim quotation marks
+                : parameters.substring(blockStartIndex, blockEndIndex)
+
+            result[blockName] = parseValueInQuotation && inQuotations ? parseValue(value, ', ') : value
+        }
+
+        // if we didn't find next block --> end function
+        if (!info) break
+
+        blockName = info.blockName
+        blockStartIndex = info.blockStartIndex
+        i = blockStartIndex - 1
     }
 
     return result
-
-
-
-    // local functions
-    function retreivePosNegPrompt() {
-        let positive = ''
-        let negative = ''
-
-        const promptEndIndex = indexOfPromptEnd(parameters)
-        if (promptEndIndex === -1) return
-
-        const posNeg = parameters.slice(0, promptEndIndex)
-        parameters = parameters.slice(promptEndIndex)
-
-        if (posNeg.includes(NEGATIVE_PROMPT_TEXT)) {
-            const index = posNeg.indexOf(NEGATIVE_PROMPT_TEXT)
-            positive = posNeg.substring(0, index)
-            negative = posNeg.substring(index + NEGATIVE_PROMPT_TEXT.length)
-        }
-        else {
-            positive = posNeg
-            negative = ''
-        }
-
-        result['Positive prompt'] = positive
-        result['Negative prompt'] = negative
-    }
 }
 
+function findNextBlock(text: string, startIndex: number): { prevBlockEndIndex: number, blockName: string, blockStartIndex: number } | undefined {
+    const delimIndex = indexOf_butIgnoreTextInQuotationMarks(text, ': ', startIndex)
+    if (delimIndex === -1) {
+        return undefined
+    }
 
+    const prevBlockEndIndex = Math.max(text.lastIndexOf(', ', delimIndex - 1), text.lastIndexOf('\n', delimIndex - 1))
+    const blockNameIndex = prevBlockEndIndex === -1
+        ? 0
+        : (text[prevBlockEndIndex] === ',') ? (prevBlockEndIndex + 2) : (prevBlockEndIndex + 1)
 
-function mySplit(text: string, separator: string): string[] {
-    const result: string[] = []
-    const separatorLength = separator.length
-    const checkLength = text.length - separatorLength
+    const blockName = text.substring(blockNameIndex, delimIndex)
+    const blockStartIndex = delimIndex + 2
 
+    return { prevBlockEndIndex, blockName, blockStartIndex }
+}
+
+/**
+ * @param start inclusive
+ * @param end exclusive
+ * */
+function isValueInQuotationsMarks(value: string, start: number = 0, end: number = value.length): boolean {
+    return value[start] === '"' && value[end - 1] === '"'
+}
+
+function indexOf_butIgnoreTextInQuotationMarks(text: string, searchString: string, startIndex: number = 0): number {
     let blockStarted: boolean = false
-    let startIndex = 0
 
-    for (let i = 0; i < checkLength; i++) {
+    for (let i = startIndex; i < text.length; i++) {
         if (text[i] === '"') {
             blockStarted = !blockStarted
             continue
         }
         if (blockStarted) continue
 
-        if (isSeparator(text, separator, i)) {
-            result.push(text.substring(startIndex, i))
-            startIndex = i + separatorLength
+        if (text.startsWith(searchString, i)) {
+            return i
         }
     }
 
-    const last = text.substring(startIndex)
-    if (last && last !== '') {
-        result.push(last)
-    }
-
-    return result
+    return -1
 }
-
-
 
 function parseValue(value: string, separator: string): string {
     const lengthMinusOne = value.length - 1
-
-    if (value[0] !== '"' || value[lengthMinusOne] !== '"') {
-        return value
-    }
-
-    value = value.substring(1, lengthMinusOne) // remove First and Last " symbols
     const separatorLength = separator.length
     let bracketsStarted: boolean = false
 
@@ -118,35 +101,10 @@ function parseValue(value: string, separator: string): string {
         }
         if (bracketsStarted) continue
 
-        if (isSeparator(value, separator, i)) {
+        if (value.startsWith(separator, i)) {
             value = value.substring(0, i + 1) + '\n' + value.substring(i + separatorLength)
         }
     }
 
     return value
-}
-
-
-
-function isSeparator(text: string, separator: string, startIndex: number): boolean {
-    for (let j = 0; j < separator.length; j++) {
-        if (text[startIndex + j] !== separator[j])
-            return false
-    }
-
-    return true
-}
-
-/** Returns -1 if not found. */
-function indexOfPromptEnd(parameters: string): number {
-    let index: number
-
-    for (let paramName of PARAM_NAMES) {
-        index = parameters.lastIndexOf(paramName)
-
-        if (index !== -1)
-            return index
-    }
-
-    return -1
 }
