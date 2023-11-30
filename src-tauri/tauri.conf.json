@@ -27,6 +27,7 @@
         "all": false,
         "asset": true,
         "assetScope": [
+          "*",
           "https://asset.localhost"
         ]
       }
@@ -44,12 +45,21 @@
       "targets": "all"
     },
     "security": {
-      "csp": "default-src 'self'; connect-src 'self' https://asset.localhost; img-src 'self' asset: https://asset.localhost; style-src 'unsafe-inline' 'self'"
+      "csp": "default-src 'self' *; connect-src 'self' https://asset.localhost *; img-src 'self' asset: https://asset.localhost *; style-src 'unsafe-inline' 'self'"
     },
     "cli": {
       "args": [
         {
           "name": "filename",
+          "takesValue": true
+        },
+        {
+          "name": "parent-window",
+          "takesValue": true
+        },
+        {
+          "name": "extension",
+          "index": 1,
           "takesValue": true
         }
       ]

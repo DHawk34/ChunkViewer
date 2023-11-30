@@ -28,7 +28,7 @@ export function App() {
 
   useEffect(() => {
     setupDragAndDrop()
-    loadImageFromArgs()
+    loadImageOnStartUp()
 
     return () => {
       if (unlistenDnd.current)
@@ -48,20 +48,29 @@ export function App() {
       const imgPath = getImageFromPayloads(payloads)
 
       if (!imgPath) return
-      loadImage(imgPath)
+      loadImageFromPath(imgPath)
       logImageLoaded(imgPath)
     })
 
     unlistenDnd.current = unlisten
   }
 
-  function loadImageFromArgs() {
+  function loadImageOnStartUp() {
     getMatches().then(async ({ args }) => {
+      var imgFromBrowser = JSON.parse(await tauri.invoke('return_inp'));
+      console.log(imgFromBrowser)
+
+      if (imgFromBrowser) {
+        loadImage(imgFromBrowser["imgUrl"])
+        logImageLoaded(imgFromBrowser["imgUrl"])
+        return;
+      }
+
       const fileName = args[cli_image_filename_arg_name].value
 
       if (fileName && typeof (fileName) === 'string' && fileName !== '') {
         await tauri.invoke('extend_scope', { path: fileName })
-        loadImage(fileName)
+        loadImageFromPath(fileName)
         logImageLoaded(fileName)
       }
     })
@@ -77,10 +86,13 @@ export function App() {
     }
   }
 
-  function loadImage(imgPath: string) {
+  function loadImageFromPath(imgPath: string) {
     varStore.openedImageName = removeExtFromFileName(getFileNameFromPath(imgPath))
     const url = tauri.convertFileSrc(imgPath)
+    loadImage(url)
+  }
 
+  function loadImage(url: string) {
     chunkHandler.readChunks(url, true)
       .then(({ chunks, message }) => {
         if (message && message !== '')
