@@ -49,8 +49,7 @@
     "cli": {
       "args": [
         {
-          "name": "fileName",
-          "index": 1,
+          "name": "filename",
           "takesValue": true
         }
       ]

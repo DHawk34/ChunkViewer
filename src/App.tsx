@@ -15,6 +15,8 @@ import { useLogger } from "./scripts/hooks/useLoggerHook";
 import { varStore } from "./scripts/variableStore";
 import "./App.css";
 
+const cli_image_filename_arg_name = 'filename'
+
 export function App() {
   const [chunkArray, setChunkArray] = useState<ChunkData[]>([])
   const [imageUrl, setImageUrl] = useState<string>(dragImg)
@@ -55,7 +57,7 @@ export function App() {
 
   function loadImageFromArgs() {
     getMatches().then(async ({ args }) => {
-      const fileName = args['fileName'].value
+      const fileName = args[cli_image_filename_arg_name].value
 
       if (fileName && typeof (fileName) === 'string' && fileName !== '') {
         await tauri.invoke('extend_scope', { path: fileName })
