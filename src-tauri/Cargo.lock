@@ -1955,7 +1955,7 @@ dependencies = [
 
 [[package]]
 name = "png_chunk_viewer"
-version = "0.8.5"
+version = "0.8.8"
 dependencies = [
  "fstream",
  "serde",

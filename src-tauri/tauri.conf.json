@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "png_chunk_viewer",
-    "version": "0.8.5"
+    "version": "0.8.8"
   },
   "tauri": {
     "allowlist": {
