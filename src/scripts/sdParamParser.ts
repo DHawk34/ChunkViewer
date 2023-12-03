@@ -23,9 +23,7 @@ export function parseParameters(parameters: string, parseValueInQuotation?: bool
 
         if (blockEndIndex !== -1) { // if it's not the first iteration
             const inQuotations = isValueInQuotationsMarks(parameters, blockStartIndex, blockEndIndex)
-            const value = inQuotations
-                ? parameters.substring(blockStartIndex + 1, blockEndIndex - 1) // trim quotation marks
-                : parameters.substring(blockStartIndex, blockEndIndex)
+            const value = trimQuotationMarks_substring(parameters, blockStartIndex, blockEndIndex, inQuotations)
 
             result.push({ key: blockName, value: parseValueInQuotation && inQuotations ? parseValue(value, ', ') : value })
         }
@@ -56,10 +54,25 @@ function findNextBlock(text: string, startIndex: number): { prevBlockEndIndex: n
         ? 0
         : (text[prevBlockEndIndex] === ',') ? (prevBlockEndIndex + 2) : (prevBlockEndIndex + 1)
 
-    const blockName = text.substring(blockNameIndex, delimIndex)
+    const blockName = trimQuotationMarks_substring(text, blockNameIndex, delimIndex)
     const blockStartIndex = delimIndex + 2
 
     return { prevBlockEndIndex, blockName, blockStartIndex }
+}
+
+/** Substrings value and removes quotation marks if they're present. */
+function trimQuotationMarks_substring(value: string, start: number = 0, end: number = value.length, force?: boolean): string {
+    const inQuotations = force || isValueInQuotationsMarks(value, start, end)
+
+    if (inQuotations) {
+        return value.substring(start + 1, end - 1)
+    }
+
+    if (start === 0 && end === value.length) {
+        return value
+    }
+
+    return value.substring(start, end)
 }
 
 /**
