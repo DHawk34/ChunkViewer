@@ -1,18 +1,17 @@
-const POSITIVE_PROMT_TEXT = 'Positive prompt: '
+const POSITIVE_PROMT_TEXT = 'Positive prompt'
+const STEPS_TEXT = 'Steps: '
+const SAMPLER_TEXT = 'Sampler: '
 
-export type Parameters = {
-    [key: string]: string
+export type Param = {
+    key: string
+    value: string
 }
 
-export function parseParameters(parameters: string, parseValueInQuotation?: boolean): Parameters {
-    const result: Parameters = {}
+export function parseParameters(parameters: string, parseValueInQuotation?: boolean): Param[] {
+    const result: Param[] = []
 
     if (parameters.length === 0) {
         return result
-    }
-
-    if (!parameters.startsWith(POSITIVE_PROMT_TEXT)) {
-        parameters = POSITIVE_PROMT_TEXT + parameters
     }
 
     let blockStartIndex = 0
@@ -28,7 +27,7 @@ export function parseParameters(parameters: string, parseValueInQuotation?: bool
                 ? parameters.substring(blockStartIndex + 1, blockEndIndex - 1) // trim quotation marks
                 : parameters.substring(blockStartIndex, blockEndIndex)
 
-            result[blockName] = parseValueInQuotation && inQuotations ? parseValue(value, ', ') : value
+            result.push({ key: blockName, value: parseValueInQuotation && inQuotations ? parseValue(value, ', ') : value })
         }
 
         // if we didn't find next block --> end function
@@ -37,6 +36,10 @@ export function parseParameters(parameters: string, parseValueInQuotation?: bool
         blockName = info.blockName
         blockStartIndex = info.blockStartIndex
         i = blockStartIndex - 1
+    }
+
+    if (result.length > 0 && result[0].key === '' && parameters.includes(STEPS_TEXT) && parameters.includes(SAMPLER_TEXT)) {
+        result[0].key = POSITIVE_PROMT_TEXT
     }
 
     return result

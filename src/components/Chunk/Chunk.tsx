@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { appWindow } from "@tauri-apps/api/window";
 import chunkHandler, { ChunkData } from '../../scripts/chunks/chunkHandler';
-import { parseParameters } from '../../scripts/sdParamParser';
+import { Param, parseParameters } from '../../scripts/sdParamParser';
 import { Draggable } from 'react-beautiful-dnd';
-import { objectToArray } from '../../scripts/utils';
 import { UnlistenFn } from "@tauri-apps/api/event";
 import './Chunk.css'
 
@@ -19,7 +18,7 @@ type Props = {
 export function Chunk(props: Props) {
     const [showParameters, setShowParameters] = useState(false)
     const [curInput, setCurInput] = useState<HTMLElement | undefined>()
-    const [parsedParams, setParsedParams] = useState<{ key: string, value: string }[] | undefined>(undefined)
+    const [parsedParams, setParsedParams] = useState<Param[] | undefined>(undefined)
     const unlistenResize = useRef<UnlistenFn>()
 
     useEffect(() => {
@@ -107,18 +106,18 @@ export function Chunk(props: Props) {
         }
     }
 
-    function getParsedParams() {
+    function getParsedParams(): Param[] {
         if (parsedParams) {
             return parsedParams
         }
 
-        const params = objectToArray<string>(parseParameters(props.chunk.value, true))
+        const params = parseParameters(props.chunk.value, true)
         setParsedParams(params)
 
         return params
     }
 
-    const parameters = showParameters ? getParsedParams().map((param: { key: string, value: string }, index: number) => {
+    const parameters = showParameters ? getParsedParams().map((param: Param, index: number) => {
         return <tr key={index}>
             <td className='param_name'>{param.key}</td>
             <td className='param_text'>{param.value}</td>

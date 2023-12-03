@@ -1,5 +1,5 @@
 import { txtSaveFilePickerOptions, save } from "../save.utils";
-import { Parameters, parseParameters } from "../sdParamParser";
+import { Param, parseParameters } from "../sdParamParser";
 import { varStore } from "../variableStore";
 import { ChunkData } from "./chunkHandler";
 
@@ -35,19 +35,21 @@ export async function exportParameters(chunks: ChunkData[]): Promise<void> {
     })
 
     // parse all chunks
-    const params = chunks.map(chunk =>
+    const paramsList = chunks.map(chunk =>
         parseParameters(chunk.value)
     )
 
     // create a string
     let chunkValue = ''
 
-    for (let param of params) {
-        const value = chunkValueToReadableString(param)
+    for (let params of paramsList) {
+        const value = chunkValueToReadableString(params)
 
         if (value !== '')
             chunkValue += value + '\n\n'
     }
+
+    console.log(chunkValue)
 
     return exportChunk({
         name: 'parameters',
@@ -67,16 +69,15 @@ function getChunksContent(chunks: ChunkData[]) {
     return content.slice(0, -1)
 }
 
-function chunkValueToReadableString(chunkValue: Parameters): string {
-    if (chunkValue instanceof Object) {
-        const keys = Object.keys(chunkValue)
-        const values = Object.values(chunkValue)
+function chunkValueToReadableString(chunkValue: Param[]): string {
+    if (chunkValue instanceof Array) {
         let result: string = ''
 
-        for (let i = 0; i < keys.length; i++) {
-            result += values[i] === ''
-                ? keys[i] + ':\n'
-                : keys[i] + ': ' + values[i] + '\n'
+        for (let i = 0; i < chunkValue.length; i++) {
+            const key = chunkValue[i].key
+            const value = chunkValue[i].value
+
+            result += key + ': ' + value + '\n'
         }
 
         return result.slice(0, -1)
