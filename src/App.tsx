@@ -45,7 +45,7 @@ export function App() {
       const { files } = ev.dataTransfer;
 
       if (files && files.length) {
-        console.log(files);
+        //console.log(files);
         var file = getImageFromFiles(files);
 
         if (!file) {
@@ -141,7 +141,7 @@ export function App() {
         })
 
         setChunkArray(chunks)
-        console.log('fire')
+        //console.log('fire')
         setImageUrl(URL.createObjectURL(new Blob([fileData], { type: 'image/png' })))
       })
       .catch(e => logError(e?.message ?? e))
