@@ -7,7 +7,7 @@ import { ToolbarContainer } from "./components/ToolbarContainer/ToolbarContainer
 import dragImg from './components/ImageContainer/dragANDdrop.png';
 import chunkHandler, { ChunkData, ChunkTypes } from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
-import { getFileNameFromPath, removeExtFromFileName, swap } from "./scripts/utils";
+import { getFileNameFromUrlOrPath, removeExtFromFileName, swap } from "./scripts/utils";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { StatusBar } from "./components/StatusBar/StatusBar";
 import { useLogger } from "./scripts/hooks/useLoggerHook";
@@ -30,15 +30,13 @@ export function App() {
     setupDragAndDrop();
   }, [])
 
-
-
   function logImageLoaded(fileName: string) {
-    return log(`Loaded "${getFileNameFromPath(fileName)}"`)
+    return log(`Loaded "${getFileNameFromUrlOrPath(fileName)}"`)
   }
 
   function setupDragAndDrop() {
 
-    var a = document.body.ondrop = (ev) => {
+    document.body.ondrop = (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
       if (!ev.dataTransfer)
@@ -48,11 +46,19 @@ export function App() {
 
       if (files && files.length) {
         console.log(files);
-        var file = files[0];
-        varStore.openedImageName = file.name;
+        var file = getImageFromFiles(files);
+
+        if (!file) {
+          logError('Это не пнг!')
+          return;
+        }
+
+        let fileName = file.name;
+
+        varStore.openedImageName = removeExtFromFileName(getFileNameFromUrlOrPath(file.name));
         file.arrayBuffer().then(buff => {
           loadImage(new Uint8Array(buff));
-          logImageLoaded(file.name)
+          logImageLoaded(fileName)
         })
       }
     };
@@ -60,6 +66,14 @@ export function App() {
     document.body.ondragover = (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
+    }
+  }
+
+  function getImageFromFiles(files: FileList) {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      if (file.name.endsWith('.png'))
+        return file
     }
   }
 
@@ -77,7 +91,6 @@ export function App() {
 
         if (imgFromBrowser) {
           let imgUrl: string = imgFromBrowser["imgUrl"];
-
           if (imgUrl.startsWith('file:///')) {
             imgUrl = imgUrl.substring(8);
             await loadFromLocal(imgUrl);
@@ -106,7 +119,7 @@ export function App() {
   }
 
   function loadImageFromLocalPath(imgPath: string) {
-    varStore.openedImageName = removeExtFromFileName(getFileNameFromPath(imgPath))
+    varStore.openedImageName = removeExtFromFileName(getFileNameFromUrlOrPath(imgPath))
     const url = tauri.convertFileSrc(imgPath)
 
     axios.get(url, { responseType: 'arraybuffer' }).then(response => {

@@ -23,3 +23,28 @@ export function getFileNameFromPath(filePath: string): string {
 export function removeExtFromFileName(fileName: string): string {
     return fileName.replace(/\.[^/.]+$/, "")
 }
+
+export function getFileNameFromUrlOrPath(input: string): string {
+    if (isUrl(input)) {
+        return getFileNameFromURL(input)
+    }
+    else{
+        return getFileNameFromPath(input)
+    }
+}
+
+export function getFileNameFromURL(inp: string) {
+    return (inp.match(/^\w+:(\/+([^\/#?\s]+)){2,}(#|\?|$)/) || [])[2] || ''
+}
+
+export function isUrl(input: string): boolean {
+    let url;
+
+    try {
+        url = new URL(input);
+    } catch (_) {
+        return false;
+    }
+
+    return url.protocol === "http:" || url.protocol === "https:";
+}
