@@ -97,6 +97,8 @@ export function App() {
             return;
           }
 
+          varStore.openedImageName = removeExtFromFileName(getFileNameFromUrlOrPath(imgUrl))
+
           axios.get(imgUrl, { responseType: 'arraybuffer' }).then(response => {
             loadImage(new Uint8Array(response.data))
           })
