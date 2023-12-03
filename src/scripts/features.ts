@@ -2,6 +2,7 @@ import { dialog, tauri } from "@tauri-apps/api"
 import chunkHandler, { ChunkData } from "./chunks/chunkHandler"
 import { ChunkTypes, SaveOptions } from "./chunks/chunkSaver"
 import { Logger } from "./hooks/useLoggerHook"
+import axios from "axios"
 
 export function exportAllChunks(chunkArray: ChunkData[], logger: Logger) {
     if (chunkArray.length === 0) return
@@ -41,14 +42,16 @@ export function replaceChunks(setChunkArray: React.Dispatch<React.SetStateAction
         if (typeof (fileName) === 'string') {
             const url = tauri.convertFileSrc(fileName)
 
-            chunkHandler.readChunks(url, false)
-                .then(({ chunks, message }) => {
-                    if (message && message !== '')
-                        logger.log(message)
+            axios.get(url, { responseType: 'arraybuffer' }).then(response => {
+                chunkHandler.readChunks((new Uint8Array(response.data)), false)
+                    .then(({ chunks, message }) => {
+                        if (message && message !== '')
+                            logger.log(message)
 
-                    setChunkArray(chunks)
-                })
-                .catch(e => logger.logError(e?.message ?? e))
+                        setChunkArray(chunks)
+                    })
+                    .catch(e => logger.logError(e?.message ?? e))
+            })
         }
     }).catch(e => logger.logError(e))
 }

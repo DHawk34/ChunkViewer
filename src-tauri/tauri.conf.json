@@ -45,7 +45,7 @@
       "targets": "all"
     },
     "security": {
-      "csp": "default-src 'self' *; connect-src 'self' https://asset.localhost *; img-src 'self' asset: https://asset.localhost *; style-src 'unsafe-inline' 'self'"
+      "csp": "default-src 'self'; connect-src 'self' https://asset.localhost *; img-src 'self' * blob: asset: https://asset.localhost https://tauri.localhost; style-src 'unsafe-inline' 'self'"
     },
     "cli": {
       "args": [
@@ -69,6 +69,7 @@
     },
     "windows": [
       {
+        "fileDropEnabled": false,
         "fullscreen": false,
         "resizable": true,
         "title": "PNGChunkViewer",

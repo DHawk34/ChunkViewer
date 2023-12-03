@@ -7,13 +7,13 @@ import { ToolbarContainer } from "./components/ToolbarContainer/ToolbarContainer
 import dragImg from './components/ImageContainer/dragANDdrop.png';
 import chunkHandler, { ChunkData, ChunkTypes } from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
-import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import { getFileNameFromPath, removeExtFromFileName, swap } from "./scripts/utils";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { StatusBar } from "./components/StatusBar/StatusBar";
 import { useLogger } from "./scripts/hooks/useLoggerHook";
 import { varStore } from "./scripts/variableStore";
 import "./App.css";
+import axios from "axios";
 
 const cli_image_filename_arg_name = 'filename'
 const cli_parent_window_arg_name = 'parent-window'
@@ -25,16 +25,9 @@ export function App() {
   const logger = useLogger()
   const { logs, log, logError } = logger
 
-  const unlistenDnd = useRef<UnlistenFn>()
-
   useEffect(() => {
-    setupDragAndDrop()
     loadImageOnStartUp()
-
-    return () => {
-      if (unlistenDnd.current)
-        unlistenDnd.current()
-    }
+    setupDragAndDrop();
   }, [])
 
 
@@ -43,21 +36,34 @@ export function App() {
     return log(`Loaded "${getFileNameFromPath(fileName)}"`)
   }
 
-  async function setupDragAndDrop() {
-    const unlisten = await listen('tauri://file-drop', event => {
-      const payloads = event.payload as string[]
-      const imgPath = getImageFromPayloads(payloads)
+  function setupDragAndDrop() {
 
-      if (!imgPath) return
-      loadImageFromPath(imgPath)
-      logImageLoaded(imgPath)
-    })
+    var a = document.body.ondrop = (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (!ev.dataTransfer)
+        return;
 
-    unlistenDnd.current = unlisten
+      const { files } = ev.dataTransfer;
+
+      if (files && files.length) {
+        console.log(files);
+        var file = files[0];
+        varStore.openedImageName = file.name;
+        file.arrayBuffer().then(buff => {
+          loadImage(new Uint8Array(buff));
+          logImageLoaded(file.name)
+        })
+      }
+    };
+
+    document.body.ondragover = (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+    }
   }
 
   function loadImageOnStartUp() {
-    // tauri.invoke('test')
     getMatches().then(async ({ args }) => {
       const fileName = args[cli_image_filename_arg_name].value
 
@@ -70,39 +76,46 @@ export function App() {
         console.log(imgFromBrowser)
 
         if (imgFromBrowser) {
-          loadImage(imgFromBrowser["imgUrl"])
-          logImageLoaded(imgFromBrowser["imgUrl"])
+          let imgUrl: string = imgFromBrowser["imgUrl"];
+
+          if (imgUrl.startsWith('file:///')) {
+            imgUrl = imgUrl.substring(8);
+            await loadFromLocal(imgUrl);
+            return;
+          }
+
+          axios.get(imgUrl, { responseType: 'arraybuffer' }).then(response => {
+            loadImage(new Uint8Array(response.data))
+          })
+          logImageLoaded(imgUrl)
         }
 
         return
       }
 
       if (typeof (fileName) === 'string' && fileName !== '') {
-        await tauri.invoke('extend_scope', { path: fileName })
-        loadImageFromPath(fileName)
-        logImageLoaded(fileName)
+        await loadFromLocal(fileName);
       }
     })
   }
 
-
-
-  function getImageFromPayloads(payloads: string[]) {
-    for (let i = 0; i < payloads.length; i++) {
-      const payload = payloads[i]
-      if (payload.endsWith('.png'))
-        return payload
-    }
+  async function loadFromLocal(fileName: string) {
+    await tauri.invoke('extend_scope', { path: fileName });
+    loadImageFromLocalPath(fileName);
+    logImageLoaded(fileName);
   }
 
-  function loadImageFromPath(imgPath: string) {
+  function loadImageFromLocalPath(imgPath: string) {
     varStore.openedImageName = removeExtFromFileName(getFileNameFromPath(imgPath))
     const url = tauri.convertFileSrc(imgPath)
-    loadImage(url)
+
+    axios.get(url, { responseType: 'arraybuffer' }).then(response => {
+      loadImage(new Uint8Array(response.data))
+    })
   }
 
-  function loadImage(url: string) {
-    chunkHandler.readChunks(url, true)
+  function loadImage(fileData: Uint8Array) {
+    chunkHandler.readChunks(fileData, true)
       .then(({ chunks, message }) => {
         if (message && message !== '')
           log(message)
@@ -113,7 +126,8 @@ export function App() {
         })
 
         setChunkArray(chunks)
-        setImageUrl(url)
+        console.log('fire')
+        setImageUrl(URL.createObjectURL(new Blob([fileData], { type: 'image/png' })))
       })
       .catch(e => logError(e?.message ?? e))
   }
