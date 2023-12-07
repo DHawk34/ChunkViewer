@@ -92,8 +92,9 @@ export function App() {
         if (imgFromBrowser) {
           let imgUrl: string = imgFromBrowser["imgUrl"];
           if (imgUrl.startsWith('file:///')) {
-            imgUrl = imgUrl.substring(8);
-            await loadFromLocal(imgUrl);
+            imgUrl = imgUrl.substring(8)
+            imgUrl = decodeURIComponent(imgUrl)
+            await loadFromLocal(imgUrl)
             return;
           }
 
