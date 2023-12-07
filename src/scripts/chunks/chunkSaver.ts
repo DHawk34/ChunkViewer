@@ -4,11 +4,18 @@ import { getCrc } from "./crcCoder";
 
 const textEncoder = new TextEncoder()
 
-export type ChunkTypes = 'tEXt' | 'iTXt' | 'zTXt'
+export enum ChunkTypes {
+    tEXt = 'tEXt',
+    iTXt = 'iTXt',
+    zTXt = 'zTXt',
+}
+
 export type SaveOptions = {
     chunkType: ChunkTypes
     allowUnsafeChunkNames: boolean
 }
+
+
 
 export function saveChunksToImageBytes(chunks: ChunkData[], imageBytes: Uint8Array, options: SaveOptions)
     : { succeeded: boolean, imageBytes?: Uint8Array, errorMessage?: string } {

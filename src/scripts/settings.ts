@@ -10,7 +10,7 @@ type SettingsSchema = {
 export const settingsManager = new SettingsManager<SettingsSchema>(
     { // defaults
         allowUnsafeChunkNames: false,
-        chunkType: 'tEXt'
+        chunkType: ChunkTypes.tEXt
     },
     { // options
         prettify: true
