@@ -4,9 +4,8 @@ import chunkHandler, { ChunkData } from '../../scripts/chunks/chunkHandler';
 import { Param, parseParameters } from '../../scripts/sdParamParser';
 import { Draggable } from 'react-beautiful-dnd';
 import { UnlistenFn } from "@tauri-apps/api/event";
+import { maxChunkNameSize } from "../../scripts/chunks/chunkSaver";
 import './Chunk.css'
-
-const maxChunkNameSize: number = 79
 
 type Props = {
     index: number

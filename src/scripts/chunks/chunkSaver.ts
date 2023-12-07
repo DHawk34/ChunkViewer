@@ -2,6 +2,7 @@ import { isPng, concatUInt8Arrays, bytes2UInt32BigEndian, uint32BigEndianToBytes
 import { ChunkData } from './chunkHandler';
 import { getCrc } from "./crcCoder";
 
+export const maxChunkNameSize: number = 79
 const textEncoder = new TextEncoder()
 
 export enum ChunkTypes {
@@ -64,7 +65,14 @@ function chunks2Bytes(chunks: ChunkData[], options: SaveOptions) {
     let chunkNameIsComplex
 
     for (let i = 0; i < chunks.length; i++) {
-        if (chunks[i].name.length !== 4) {
+        if (chunks[i].name.length < 1) {
+            chunks[i].name = '?'
+        }
+        else if (chunks[i].name.length > maxChunkNameSize) {
+            chunks[i].name = chunks[i].name.substring(0, maxChunkNameSize)
+        }
+
+        if (!chunkNameIsUnsafe(chunks[i].name)) {
             switch (options.chunkType) {
                 case 'iTXt':
                     console.log('iTXt') // TODO: compress
@@ -98,4 +106,8 @@ function chunks2Bytes(chunks: ChunkData[], options: SaveOptions) {
     }
 
     return imageChunks
+}
+
+export function chunkNameIsUnsafe(chunkName: string): boolean {
+    return chunkName.length === 4
 }
