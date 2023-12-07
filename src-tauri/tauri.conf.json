@@ -57,7 +57,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.reney.dev",
+      "identifier": "com.reney.chunkviewer",
       "targets": "all"
     },
     "security": {
