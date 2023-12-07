@@ -62,7 +62,6 @@ use tauri::Manager;
 
 #[tauri::command]
 fn write_file(filename: &str, data: Vec<u8>) -> Result<bool, String> {
-
     match fstream::write(filename, "Hello world!", true) {
         Some(b) => println!("Number of bytes written to the file: {}", b),
 
@@ -87,6 +86,10 @@ fn write_file(filename: &str, data: Vec<u8>) -> Result<bool, String> {
     // };
 
     return Ok(true);
+}
+#[tauri::command]
+fn panic_fn() {
+    panic!("panic panic panic panic panic panic panic panic")
 }
 
 #[tauri::command]
@@ -132,7 +135,8 @@ fn main() {
             greet,
             extend_scope,
             return_inp,
-            write_file
+            write_file,
+            panic_fn
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
