@@ -3,13 +3,14 @@ import { FeaturesContainer, FeaturesProps } from '../FeaturesContainer/FeaturesC
 import { SettingsContainer } from "../SettingsContainer/SettingsContainer";
 import { getVersion } from '@tauri-apps/api/app';
 import './ToolbarContainer.css'
+import { settingsManager } from "../../scripts/settings";
 
 const appVersion = await getVersion()
 
 export function ToolbarContainer(props: FeaturesProps) {
     return (
         <div id='toolbar_container'>
-            <Tabs>
+            <Tabs onSelect={saveSettings}>
                 <TabList>
                     <Tab>Features</Tab>
                     <Tab>Options</Tab>
@@ -30,4 +31,9 @@ export function ToolbarContainer(props: FeaturesProps) {
             <p id='version_label'>v {appVersion}</p>
         </div>
     )
+}
+
+function saveSettings(index: number, last: number) {
+    if (index === last) return
+    settingsManager.syncCache()
 }
