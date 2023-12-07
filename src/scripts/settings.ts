@@ -17,12 +17,6 @@ export const settingsManager = new SettingsManager<SettingsSchema>(
     }
 )
 
-export function reloadSettingsFromStorage() {
-    console.time('reload settings from storage')
-    settingsManager.initialize()
-    console.timeEnd('reload settings from storage')
-}
-
 
 
 console.time('settings init')
