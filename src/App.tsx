@@ -1,11 +1,11 @@
 import React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { tauri } from "@tauri-apps/api";
 import { ImageContainer } from "./components/ImageContainer/ImageContainer";
 import { ChunkContainer } from "./components/ChunkContainer/ChunkContainer";
 import { ToolbarContainer } from "./components/ToolbarContainer/ToolbarContainer";
 import dragImg from './components/ImageContainer/dragANDdrop.png';
-import chunkHandler, { ChunkData, ChunkTypes } from "./scripts/chunks/chunkHandler";
+import chunkHandler, { ChunkData } from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
 import { getFileNameFromUrlOrPath, removeExtFromFileName, swap } from "./scripts/utils";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
@@ -27,7 +27,7 @@ export function App() {
 
   useEffect(() => {
     loadImageOnStartUp()
-    setupDragAndDrop();
+    setupDragAndDrop()
   }, [])
 
   function logImageLoaded(fileName: string) {

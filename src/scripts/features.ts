@@ -1,8 +1,9 @@
+import axios from "axios"
 import { dialog, tauri } from "@tauri-apps/api"
 import chunkHandler, { ChunkData } from "./chunks/chunkHandler"
-import { ChunkTypes, SaveOptions } from "./chunks/chunkSaver"
+import { SaveOptions } from "./chunks/chunkSaver"
 import { Logger } from "./hooks/useLoggerHook"
-import axios from "axios"
+import { settingsManager } from "./settings"
 
 export function exportAllChunks(chunkArray: ChunkData[], logger: Logger) {
     if (chunkArray.length === 0) return
@@ -13,9 +14,9 @@ export function exportAllChunks(chunkArray: ChunkData[], logger: Logger) {
 }
 
 export function saveImage(chunkArray: ChunkData[], logger: Logger) {
-    // TODO: retrieve ChunkTypes & allowUnsafeChunkNames from settings
-
-    const saveOptions: SaveOptions = { chunkType: ChunkTypes.tEXt, allowUnsafeChunkNames: false }
+    const chunkType = settingsManager.getCache('chunkType')
+    const allowUnsafeChunkNames = settingsManager.getCache('allowUnsafeChunkNames')
+    const saveOptions: SaveOptions = { chunkType, allowUnsafeChunkNames }
 
     chunkHandler.saveImageWithNewChunks(chunkArray, saveOptions)
         .then(() => logger.log('Image saved'))

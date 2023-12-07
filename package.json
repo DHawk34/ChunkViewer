@@ -15,7 +15,8 @@
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
-    "react-tabs": "^6.0.0"
+    "react-tabs": "^6.0.0",
+    "tauri-settings": "^0.3.4"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.6",

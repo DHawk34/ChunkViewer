@@ -4,18 +4,11 @@ import { getCrc } from "./crcCoder";
 
 const textEncoder = new TextEncoder()
 
+export type ChunkTypes = 'tEXt' | 'iTXt' | 'zTXt'
 export type SaveOptions = {
-    chunkType: string
+    chunkType: ChunkTypes
     allowUnsafeChunkNames: boolean
 }
-
-export const ChunkTypes = {
-    tEXt: 'tEXt',
-    iTXt: 'iTXt',
-    zTXt: 'zTXt',
-}
-
-
 
 export function saveChunksToImageBytes(chunks: ChunkData[], imageBytes: Uint8Array, options: SaveOptions)
     : { succeeded: boolean, imageBytes?: Uint8Array, errorMessage?: string } {
@@ -66,11 +59,11 @@ function chunks2Bytes(chunks: ChunkData[], options: SaveOptions) {
     for (let i = 0; i < chunks.length; i++) {
         if (chunks[i].name.length !== 4) {
             switch (options.chunkType) {
-                case ChunkTypes.iTXt:
+                case 'iTXt':
                     console.log('iTXt') // TODO: compress
                     break
 
-                case ChunkTypes.zTXt:
+                case 'zTXt':
                     console.log('zTXt') // TODO: compress
                     break
 

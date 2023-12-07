@@ -1,6 +1,6 @@
 import { ChunkReadResult, readChunksInOneGo } from './chunkReader'
 import { exportChunk, exportChunks, exportParameters } from './chunkExporter'
-import { ChunkTypes, SaveOptions, saveChunksToImageBytes } from './chunkSaver'
+import { SaveOptions, saveChunksToImageBytes } from './chunkSaver'
 import { pngSaveFilePickerOptions, save } from '../save.utils';
 import { varStore } from '../variableStore';
 
@@ -10,11 +10,11 @@ export type ChunkData = {
 }
 
 export default {
-    readChunks, exportChunk, exportChunks, exportParameters, saveImageWithNewChunks, ChunkTypes
+    readChunks, exportChunk, exportChunks, exportParameters, saveImageWithNewChunks
 }
 
 export {
-    exportChunk, exportChunks, exportParameters, ChunkTypes
+    exportChunk, exportChunks, exportParameters
 }
 
 

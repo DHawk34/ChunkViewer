@@ -30,6 +30,22 @@
           "*",
           "https://asset.localhost"
         ]
+      },
+      "fs": {
+        "createDir": true,
+        "readDir": true,
+        "readFile": true,
+        "writeFile": true,
+        "scope": [
+          "$APPCONFIG",
+          "$APPCONFIG/*"
+        ]
+      },
+      "path": {
+        "all": true
+      },
+      "window": {
+        "close": true
       }
     },
     "bundle": {
