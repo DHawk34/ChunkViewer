@@ -162,3 +162,7 @@ td {
   min-height: 30px;
   white-space: pre-wrap;
 }
+
+.chunk_name.yellow {
+  color: yellow;
+}
