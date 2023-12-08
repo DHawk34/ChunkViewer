@@ -14,13 +14,23 @@ export type ChunkReadResult = {
     message: string
 }
 
+export interface ChunkReadResultExtended extends ChunkReadResult {
+    startIndex: number
+    endIndex: number
+}
 
 
-export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
-    const result: ChunkReadResult = {
+
+/**
+ * Reads png chunks that are located after IHDR chunk and before first IDAT chunk.
+ */
+export function readInfoChunks(bytes: Uint8Array): ChunkReadResultExtended {
+    const result: ChunkReadResultExtended = {
         chunks: [],
         error: false,
-        message: ''
+        message: '',
+        startIndex: -1,
+        endIndex: -1,
     }
 
     let requiredLength: number = 16
@@ -31,30 +41,49 @@ export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
         return result
     }
 
-    let pos: number = 8
-    let length: number = 0
-    let blockName: string = ''
-
-
-
-    // PNG check
+    // PNG check (8 first bytes)
     if (!isPng(bytes)) {
         result.message = 'Это не пнг! Не могу обработать.'
         result.error = true
         return result
     }
 
-    while (bytes.length > requiredLength) {
-        // Размер чанка с параметрами
-        length = bytes2UInt32BigEndian(bytes, pos)
-        requiredLength += length
-        pos += 4
+    let pos: number = 8
+    let length: number = 0
+    let blockName: string = ''
 
-        // Проверяем наличие чанка с параметрами (tEXt)
+    // IHDR length
+    length = bytes2UInt32BigEndian(bytes, pos)
+    pos += 4
+
+    // check if it's really IHDR
+    blockName = bytes2String(bytes, pos, 4)
+    pos += 4
+
+    if (blockName !== 'IHDR') {
+        result.message = 'Не найден чанк IHDR, хотя файл был признан пнгшкой!'
+        result.error = true
+        return result
+    }
+
+    pos += length + 4           // +4 -- CRC (окончание чанка)
+    requiredLength = pos + 8    // Чтобы хватило на чтение длины чанка и его имени
+    result.startIndex = pos
+
+
+
+    while (bytes.length > requiredLength) {
+        // Длина чанка
+        length = bytes2UInt32BigEndian(bytes, pos)
+        pos += 4
+        requiredLength += length
+
+        // Имя чанка
         blockName = bytes2String(bytes, pos, 4)
         pos += 4
 
         if (blockName === 'IDAT') { // Кончились все хедеры
+            result.endIndex = pos - 8
             return result
         }
 
@@ -63,10 +92,10 @@ export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
         }
 
         if (blockName === 'tEXt' || blockName === 'iTXt' || blockName === 'zTXt') {
-            if (processTxtChunk())
+            if (!processTxtChunk())
                 return result
         }
-        else if (blockName !== 'IHDR') {
+        else {
             result.chunks.push({ name: blockName, value: bytes2String(bytes, pos, length), crcIsBad: checkCrcIsBad() })
         }
 
@@ -80,7 +109,7 @@ export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
 
 
 
-    function processTxtChunk(): any | undefined {
+    function processTxtChunk(): boolean {
         const chunkType = blockName
 
         // Имя блока указано после (на конце \0)
@@ -88,7 +117,7 @@ export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
         if (endNameIndex === -1) {
             result.message += 'Не найден нулевой байт после имени чанка!'
             result.error = true
-            return result
+            return false
         }
         blockName = bytes2String(bytes, pos, endNameIndex - pos)
 
@@ -98,6 +127,7 @@ export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
         pos += blockName.length + 1
 
         result.chunks.push({ name: blockName, value: decompressChunk(chunkType), crcIsBad: crcIsBad })
+        return true
     }
 
     function checkCrcIsBad(): boolean {
@@ -127,8 +157,9 @@ export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
             length -= translated.length + 1
 
             result.message += `Чанк iTXt (${isCompressed ? 'compressed' : 'uncompressed'}${language == '' ? '' : ', language: ' + language}${translated == '' ? '' : ', translated: ' + translated}) | `
-
+            
             if (isCompressed) {
+                // TODO: decompress image
                 result.message += 'Закодированный чанк iTXt. Эта картинка нужна для тестов! | '
             }
         }
@@ -139,6 +170,7 @@ export function readChunksInOneGo(bytes: Uint8Array): ChunkReadResult {
             pos++
             length--
 
+            // TODO: decompress image
             result.message += 'Чанк zTXt (compressed). Эта картинка нужна для тестов! | '
         }
 

@@ -1,5 +1,6 @@
 import { isPng, concatUInt8Arrays, bytes2UInt32BigEndian, uint32BigEndianToBytes, getSubArrayIndex, IHDR_BYTES, IDAT_BYTES } from './binary.utils'
 import { ChunkData } from './chunkHandler';
+import { readInfoChunks } from './chunkReader';
 import { getCrc } from "./crcCoder";
 
 export const maxChunkNameSize: number = 79
@@ -16,11 +17,15 @@ export type SaveOptions = {
     allowUnsafeChunkNames: boolean
 }
 
+export type SaveResult = {
+    succeeded: boolean
+    imageBytes?: Uint8Array
+    errorMessage?: string
+}
 
 
-export function saveChunksToImageBytes(chunks: ChunkData[], imageBytes: Uint8Array, options: SaveOptions)
-    : { succeeded: boolean, imageBytes?: Uint8Array, errorMessage?: string } {
 
+export function saveChunksToImageBytes(chunks: ChunkData[], imageBytes: Uint8Array, options: SaveOptions): SaveResult {
     if (!isPng(imageBytes)) {
         return {
             succeeded: false,
@@ -28,29 +33,23 @@ export function saveChunksToImageBytes(chunks: ChunkData[], imageBytes: Uint8Arr
         }
     }
 
-    let IHDR_length_index = getSubArrayIndex(imageBytes, IHDR_BYTES) - 4
-    if (IHDR_length_index < 0) {
+    const readResult = readInfoChunks(imageBytes)
+    if (readResult.error) {
         return {
             succeeded: false,
-            errorMessage: 'Не найден чанк IHDR, хотя файл был признан пнгшкой!'
+            errorMessage: 'Не могу записать чанки в эту картинку. ' + readResult.message
         }
     }
 
-    let IHDR_length = bytes2UInt32BigEndian(imageBytes, IHDR_length_index)
-    let offset = IHDR_length_index + 8 + IHDR_length + 4 // startIndex
-    let endIndex = getSubArrayIndex(imageBytes, IDAT_BYTES) - 4
+    const startIndex = readResult.startIndex
+    const endIndex = readResult.endIndex
 
-    if (endIndex < 0) {
-        return {
-            succeeded: false,
-            errorMessage: 'Не найден чанк IDAT, хотя файл был признан пнгшкой и был найден чанк IHDR!'
-        }
-    }
+
 
     // Разделяем картинку на 3 части: header, chunks, data. Старые чанки вырезаем
-    let imageHeader = imageBytes.slice(0, offset)
-    let imageChunks = chunks2Bytes(chunks, options)
-    let imageData = imageBytes.slice(endIndex)
+    const imageHeader = imageBytes.slice(0, startIndex)
+    const imageChunks = chunks2Bytes(chunks, options)
+    const imageData = imageBytes.slice(endIndex)
 
     imageBytes = concatUInt8Arrays(imageHeader, imageChunks, imageData)
 

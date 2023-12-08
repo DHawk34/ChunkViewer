@@ -1,4 +1,4 @@
-import { ChunkReadResult, readChunksInOneGo } from './chunkReader'
+import { ChunkReadResult, readInfoChunks } from './chunkReader'
 import { exportChunk, exportChunks, exportParameters } from './chunkExporter'
 import { SaveOptions, saveChunksToImageBytes } from './chunkSaver'
 import { pngSaveFilePickerOptions, save } from '../save.utils';
@@ -27,7 +27,7 @@ export async function readChunks(data: Uint8Array, rememberImageBytes?: boolean)
     const img = data
     if (rememberImageBytes) image = img
 
-    const readResult = readChunksInOneGo(img)
+    const readResult = readInfoChunks(img)
 
     if (readResult.error)
         return Promise.reject(readResult)
