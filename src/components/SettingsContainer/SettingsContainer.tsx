@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { ChunkTypes } from "../../scripts/chunks/chunkSaver";
-import { settingsManager } from "../../scripts/settings";
+import { settingsManager } from "../../scripts/settings/settings";
 import './SettingsContainer.css'
 
 export function SettingsContainer() {

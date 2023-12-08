@@ -3,7 +3,7 @@ import { FeaturesContainer, FeaturesProps } from '../FeaturesContainer/FeaturesC
 import { SettingsContainer } from "../SettingsContainer/SettingsContainer";
 import { getVersion } from '@tauri-apps/api/app';
 import './ToolbarContainer.css'
-import { settingsManager } from "../../scripts/settings";
+import { settingsManager } from "../../scripts/settings/settings";
 
 const appVersion = await getVersion()
 

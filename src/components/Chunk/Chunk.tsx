@@ -5,7 +5,7 @@ import { Param, parseParameters } from '../../scripts/sdParamParser';
 import { Draggable } from 'react-beautiful-dnd';
 import { UnlistenFn } from "@tauri-apps/api/event";
 import { chunkNameIsUnsafe, maxChunkNameSize } from "../../scripts/chunks/chunkSaver";
-import { settingsManager } from "../../scripts/settings";
+import { settingsManager } from "../../scripts/settings/settings";
 import './Chunk.css'
 
 type Props = {

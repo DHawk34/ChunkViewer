@@ -1,13 +1,13 @@
 import { appWindow } from "@tauri-apps/api/window"
-import { SettingsManager } from "tauri-settings"
-import { ChunkTypes } from "./chunks/chunkSaver"
+import { MySettingsManager } from "./MySettingsManager"
+import { ChunkTypes } from "../chunks/chunkSaver"
 
 type SettingsSchema = {
     allowUnsafeChunkNames: boolean
     chunkType: ChunkTypes
 }
 
-export const settingsManager = new SettingsManager<SettingsSchema>(
+export const settingsManager = new MySettingsManager<SettingsSchema>(
     { // defaults
         allowUnsafeChunkNames: false,
         chunkType: ChunkTypes.tEXt
@@ -20,9 +20,8 @@ export const settingsManager = new SettingsManager<SettingsSchema>(
 
 
 console.time('settings init')
-settingsManager.initialize().then(() => {
-    console.timeEnd('settings init')
-})
+await settingsManager.initialize()
+console.timeEnd('settings init')
 
 appWindow.onCloseRequested(() => {
     console.log('saving settings cache to storage...')

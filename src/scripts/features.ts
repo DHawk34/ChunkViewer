@@ -3,7 +3,7 @@ import { dialog, tauri } from "@tauri-apps/api"
 import chunkHandler, { ChunkData } from "./chunks/chunkHandler"
 import { SaveOptions } from "./chunks/chunkSaver"
 import { Logger } from "./hooks/useLoggerHook"
-import { settingsManager } from "./settings"
+import { settingsManager } from "./settings/settings"
 
 export function exportAllChunks(chunkArray: ChunkData[], logger: Logger) {
     if (chunkArray.length === 0) return
