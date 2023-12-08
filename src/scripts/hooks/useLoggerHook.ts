@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getTime } from "../utils";
-import { Event, EventDispatcher } from "../event";
+import { Action, EventDispatcher } from "../event";
 
 export type LogMessage = {
     message: string
@@ -14,8 +14,8 @@ export type Logger = {
     logError: (message: any) => void
 
     // events
-    messageWasLoggedEvent: Event<string>
-    errorWasLoggedEvent: Event<string>
+    messageWasLoggedEvent: Action<string>
+    errorWasLoggedEvent: Action<string>
 }
 
 // create event dispatchers

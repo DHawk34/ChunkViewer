@@ -1,11 +1,11 @@
 export type EventHandler<T> = (event: T) => void
 
-export interface Event<T> {
+export interface Action<T> {
     register(handler: EventHandler<T>): void
     unregister(handler: EventHandler<T>): void
 }
 
-export class EventDispatcher<T> implements Event<T> {
+export class EventDispatcher<T> implements Action<T> {
     private handlers: EventHandler<T>[] = []
 
     public register(handler: EventHandler<T>): void {
