@@ -1,6 +1,6 @@
 [package]
 name = "png_chunk_viewer"
-version = "0.9.0"
+version = "0.9.1"
 description = "A Tauri App"
 authors = ["Neo", "CompleX"]
 license = ""
