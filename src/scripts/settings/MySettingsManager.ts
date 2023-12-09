@@ -11,8 +11,8 @@ export class MySettingsManager<Schema extends {} = any> extends SettingsManager<
     /** @internal */
     private events: EventList<Path<Schema>, PathValue<Schema, Path<Schema>>>
 
-    public getValueUpdatedEvent<K extends Path<Schema>>(key: K): Action<PathValue<Schema, Path<Schema>>> {
-        return this.events[key]
+    public getValueUpdatedEvent<K extends Path<Schema>>(key: K): Action<PathValue<Schema, K>> {
+        return this.events[key] as Action<PathValue<Schema, K>>
     }
 
     constructor(defaultSettings: Schema, options?: ConfigOptions) {
@@ -28,8 +28,6 @@ export class MySettingsManager<Schema extends {} = any> extends SettingsManager<
     }
 
     override async set<K extends Path<Schema>, V extends PathValue<Schema, K>>(key: K, value: V) {
-        console.log('set')
-
         const result = await super.set(key, value)
         this.events[key].dispatch(value)
 
@@ -37,8 +35,6 @@ export class MySettingsManager<Schema extends {} = any> extends SettingsManager<
     }
 
     override setCache<K extends Path<Schema>, V extends PathValue<Schema, K>>(key: K, value: V) {
-        console.log('set cache')
-
         const result = super.setCache(key, value)
         this.events[key].dispatch(value)
 
@@ -46,7 +42,7 @@ export class MySettingsManager<Schema extends {} = any> extends SettingsManager<
     }
 
     override async initialize(): Promise<Schema> {
-        console.log('initialize')
+        console.log('settings: initialize...')
 
         const result = await super.initialize()
 
@@ -59,7 +55,7 @@ export class MySettingsManager<Schema extends {} = any> extends SettingsManager<
     }
 
     override syncCache(): Promise<Schema> {
-        console.log('sync cache')
+        console.log('settings: sync cache...')
 
         return super.syncCache()
     }
