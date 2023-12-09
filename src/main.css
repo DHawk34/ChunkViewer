@@ -1,7 +1,9 @@
 :root {
   --background: #313338;
-  --background-dark: #26282c;
+  --background-dark: #282a2e;
   --foreground: #1e1f22;
+  --button-color: #191919;
+  --button-color-hover: #0c0c0c;
   --orange: orange;
 }
 
