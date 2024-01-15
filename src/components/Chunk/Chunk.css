@@ -69,7 +69,9 @@
 
 .editable_textarea {
   max-width: 100%;
-  min-width: 100%;
+  min-width: 99%;
+  
+  /* font-size: 1.1em; */
   resize: none;
 }
 

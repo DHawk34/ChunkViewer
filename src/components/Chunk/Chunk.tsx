@@ -7,6 +7,7 @@ import { UnlistenFn } from "@tauri-apps/api/event";
 import { chunkNameIsUnsafe, maxChunkNameSize } from "../../scripts/chunks/chunkSaver";
 import { settingsManager } from "../../scripts/settings/settings";
 import './Chunk.css'
+import autosize from 'autosize';
 
 type Props = {
     index: number
@@ -23,7 +24,6 @@ export function Chunk(props: Props) {
     const chunkName = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        sub2Event()
 
         return () => {
             if (unlistenResize.current) unlistenResize.current()
@@ -58,16 +58,6 @@ export function Chunk(props: Props) {
         setParsedParams(undefined)
     }, [props.chunk.value])
 
-    async function sub2Event() {
-        const unlisten = await appWindow.listen('tauri://resize', () => {
-            if (curInput) {
-                autoGrow(curInput)
-            }
-        })
-
-        unlistenResize.current = unlisten
-    }
-
     function onAllowUnsafeSettingChanged(value: boolean) {
         if (!chunkName.current) return
         chunkName.current.className = value ? 'chunk_name yellow' : 'chunk_name'
@@ -76,7 +66,6 @@ export function Chunk(props: Props) {
     function spawnInput(element: HTMLElement, index: number) {
         if (element.querySelector('.editable_textarea'))
             return
-
         const val: string = element.textContent as string;
         const input = document.createElement('textarea')
         setCurInput(input)
@@ -84,10 +73,6 @@ export function Chunk(props: Props) {
 
         if (element.className.includes('chunk_name')) {
             input.setAttribute('maxlength', maxChunkNameSize.toString())
-        }
-
-        input.oninput = () => {
-            autoGrow(input)
         }
 
         input.value = val;
@@ -105,20 +90,18 @@ export function Chunk(props: Props) {
             }
             setCurInput(undefined)
         }
+
         element.innerHTML = ''
         element.appendChild(input)
         input.focus()
+        autosize(input);
+        
+        element.parentElement?.scrollIntoView({block: "start"});
 
-        input.style.height = input.scrollHeight + 'px'
     }
 
     function deleteChunk() {
         props.OnDelete(props.index)
-    }
-
-    function autoGrow(element: HTMLElement) {
-        element.style.height = 'auto'
-        element.style.height = element.scrollHeight + 'px'
     }
 
     function changeView() {
