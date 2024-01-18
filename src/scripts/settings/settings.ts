@@ -24,6 +24,5 @@ await settingsManager.initialize()
 console.timeEnd('settings init')
 
 appWindow.onCloseRequested(() => {
-    console.log('saving settings cache to storage...')
     settingsManager.syncCache()
 })
