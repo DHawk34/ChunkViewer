@@ -5,7 +5,13 @@
   vertical-align: top;
 }
 
-#version_label{
+.tabs {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#version_label {
   position: absolute;
   right: 5px;
   bottom: 15px;
@@ -19,7 +25,7 @@
 }
 
 .react-tabs__tab-list {
-  margin: 0 auto 10px;
+  margin: 0 0 10px;
   display: flex;
   justify-content: space-around;
   padding-left: 0;
@@ -50,4 +56,7 @@
 .react-tabs__tab-panel--selected {
   display: block;
   text-align: center;
+
+  height: 100%;
+  overflow-y: auto;
 }
