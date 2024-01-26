@@ -32,7 +32,7 @@ export function exportParams(chunkArray: ChunkData[], logger: Logger) {
         .catch(e => logger.logError(e))
 }
 
-export function replaceChunks(setChunkArray: React.Dispatch<React.SetStateAction<ChunkData[]>>, logger: Logger) {
+export function replaceChunksWithFileDialog(setChunkArray: React.Dispatch<React.SetStateAction<ChunkData[]>>, logger: Logger) {
     dialog.open({
         multiple: false,
         filters: [{
@@ -44,15 +44,19 @@ export function replaceChunks(setChunkArray: React.Dispatch<React.SetStateAction
             const url = tauri.convertFileSrc(fileName)
 
             axios.get(url, { responseType: 'arraybuffer' }).then(response => {
-                chunkHandler.readChunks((new Uint8Array(response.data)), false)
-                    .then(({ chunks, message }) => {
-                        if (message && message !== '')
-                            logger.log(message)
-
-                        setChunkArray(chunks)
-                    })
-                    .catch(e => logger.logError(e?.message ?? e))
+                replaceChunks(new Uint8Array(response.data), setChunkArray, logger)
             })
         }
     }).catch(e => logger.logError(e))
+}
+
+export function replaceChunks(data: Uint8Array, setChunkArray: React.Dispatch<React.SetStateAction<ChunkData[]>>, logger: Logger) {
+    chunkHandler.readChunks(data, false)
+        .then(({ chunks, message }) => {
+            if (message && message !== '')
+                logger.log(message)
+
+            setChunkArray(chunks)
+        })
+        .catch(e => logger.logError(e?.message ?? e))
 }
