@@ -14,6 +14,7 @@ import { useLogger } from "./scripts/hooks/useLoggerHook";
 import { varStore } from "./scripts/variableStore";
 import "./App.css";
 import axios from "axios";
+import { useDragEnterCounter } from "./scripts/hooks/useDragEnterCounterHook";
 
 const cli_image_filename_arg_name = 'filename'
 const cli_parent_window_arg_name = 'parent-window'
@@ -25,6 +26,9 @@ export function App() {
   const logger = useLogger()
   const { logs, log, logError } = logger
 
+  const enterCounter = useDragEnterCounter()
+  const { enterCount, incrementDragEnterCount, decrementDragEnterCount, setDragEnterCount } = enterCounter
+
   useEffect(() => {
     loadImageOnStartUp()
     setupDragAndDrop()
@@ -35,6 +39,14 @@ export function App() {
   }
 
   function setupDragAndDrop() {
+
+    document.body.ondragenter = (ev) => {
+      incrementDragEnterCount();
+    }
+
+    document.body.ondragleave = (ev) => {
+      decrementDragEnterCount();
+    }
 
     document.body.ondrop = (ev) => {
       ev.preventDefault();
@@ -61,6 +73,8 @@ export function App() {
           logImageLoaded(fileName)
         })
       }
+
+      setDragEnterCount(0)
     };
 
     document.body.ondragover = (ev) => {
@@ -181,6 +195,7 @@ export function App() {
         chunkArray={chunkArray}
         setChunkArray={setChunkArray}
         logger={logger}
+        dragEnterCounter = {enterCounter}
       />
 
       <StatusBar logs={logs} />

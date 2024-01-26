@@ -12,7 +12,7 @@
     margin-bottom: 5px;
 
     position: relative;
-    z-index: 1;
+    /* z-index: 1; */
 }
 
 #features_container button:hover {
@@ -21,6 +21,9 @@
 }
 
 
+#features_container .drag_start{
+    outline: dashed white;
+}
 
 #features_container .groovedBlock {
     overflow: hidden;

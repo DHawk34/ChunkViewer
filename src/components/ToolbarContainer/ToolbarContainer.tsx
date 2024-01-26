@@ -21,6 +21,7 @@ export function ToolbarContainer(props: FeaturesProps) {
                         chunkArray={props.chunkArray}
                         setChunkArray={props.setChunkArray}
                         logger={props.logger}
+                        dragEnterCounter={props.dragEnterCounter}
                     />
                 </TabPanel>
 
