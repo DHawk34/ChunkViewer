@@ -1,35 +1,40 @@
+@import url(FeaturesContainerAddExtensionDialog.css);
+
 #features_container {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
-#features_container button {
+#features_container>button,
+#features_container .groovedBlock>button {
     width: 90%;
     padding: 10px 20px;
     background-color: var(--button-color-dark);
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 
     position: relative;
-    /* z-index: 1; */
 }
 
-#features_container button:hover {
+#features_container>button:hover,
+#features_container .groovedBlock>button:hover {
     width: 90%;
     background: var(--button-color-dark-hover);
 }
 
 
-#features_container .drag_start{
+#features_container .drag_start {
     outline: dashed white;
 }
 
+/* Don't use padding here! Open animation breaks if padding is used. */
 #features_container .groovedBlock {
     overflow: hidden;
-    margin: 10px 5%;
+    width: 90%;
     border-radius: 0 0 6px 6px;
+    margin: 0 auto;
     margin-top: -15px;
+    margin-bottom: 15px;
 
     box-shadow: 0 0 5px black inset;
     /* box-shadow: 0 0 2px orange inset; */
@@ -37,13 +42,8 @@
     transition: height 0.3s;
 }
 
-#features_container .groovedBlock button {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-#features_container .groovedBlock button:first-of-type {
-    margin-top: 20px;
+#features_container .groovedBlock>button:first-of-type {
+    margin-top: 15px;
 }
 
 #features_container .pressed,
@@ -54,4 +54,57 @@
     border-end-end-radius: 0;
     border-end-start-radius: 0;
     transition: border-radius 0.3s;
+}
+
+
+
+#features_container .groovedBlock hr {
+    background-color: whitesmoke;
+    width: 90%;
+}
+
+#features_container .plusMinusButtons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 90%;
+    margin: 10px auto;
+
+    column-gap: 10px;
+    row-gap: 10px;
+}
+
+#features_container .plusMinusButtons button {
+    flex: 1 0;
+    margin: 0;
+}
+
+
+
+/* Add button */
+#features_container .plusMinusButtons>button:first-of-type {
+    background-color: var(--button-green);
+}
+
+#features_container .plusMinusButtons>button:first-of-type:hover {
+    background-color: var(--button-green-hover);
+}
+
+#features_container .plusMinusButtons>button:first-of-type:active {
+    background-color: var(--button-green-active);
+}
+
+
+
+/* Remove button */
+#features_container .plusMinusButtons>button:last-of-type {
+    background-color: var(--button-red);
+}
+
+#features_container .plusMinusButtons>button:last-of-type:hover {
+    background-color: var(--button-red-hover);
+}
+
+#features_container .plusMinusButtons>button:last-of-type:active {
+    background-color: var(--button-red-active);
 }

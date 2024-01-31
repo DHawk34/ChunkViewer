@@ -1,0 +1,110 @@
+#features_container dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#features_container dialog[open] {
+    display: flex;
+    flex-direction: column;
+    text-align: start;
+
+    color: inherit;
+    border-radius: 6px;
+    background-color: var(--background);
+    border: 1px solid var(--foreground);
+    box-shadow: 0 0 20px var(--foreground);
+
+    width: 70%;
+    height: 75%;
+    max-width: 960px;
+    max-height: 540px;
+    padding-bottom: 0;
+}
+
+#features_container dialog[open] h2 {
+    text-align: center;
+}
+
+#features_container dialog[open]>* {
+    flex-shrink: 0;
+}
+
+/* Name textbox */
+#chunkInfoExtentionButtonName {
+    width: 250px;
+    max-width: 95%;
+
+    border: none;
+    border-radius: 6px;
+
+    padding: 5px;
+    margin-right: 15px;
+    margin-bottom: 10px;
+}
+
+#chunkInfoExtentionButtonName_label {
+    margin-right: 15px;
+}
+
+
+
+/* Columns */
+#features_container dialog .columns {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 25px;
+
+    /* height */
+    flex: 1 0;
+    min-height: 150px;
+}
+
+#features_container dialog .columns>div {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+
+    height: 100%;
+}
+
+
+
+
+
+#features_container dialog .fieldset {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+
+    border-top: 1px solid whitesmoke;
+    /* border-bottom: 1px solid whitesmoke; */
+}
+
+
+
+@media screen and (max-width: 850px) {
+    #features_container dialog .columns {
+        grid-template-columns: 1fr;
+    }
+
+    #features_container dialog .columns>div {
+        overflow: visible;
+    }
+}
+
+
+
+
+
+
+
+#features_container dialog label {
+    margin-top: 15px;
+}
+
+#features_container dialog textarea {
+    resize: none;
+
+    /* Borders fix */
+    margin-left: 1px;
+    margin-right: 1px;
+}
