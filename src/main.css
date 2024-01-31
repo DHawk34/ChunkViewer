@@ -1,14 +1,4 @@
-:root {
-  --background: #313338;
-  --background-dark: #282a2e;
-  --foreground: #1e1f22;
-  --button-color-light: #232427;
-  --button-color-light-hover: #1e1f22;
-  --button-color-dark: #191919;
-  --button-color-dark-hover: #121212;
-  --button-color-dark-pressed: #0f0f0f;
-  --orange: orange;
-}
+@import url(colors.css);
 
 html {
   font-family: 'Segoe UI', Inter, Avenir, Helvetica, Arial, sans-serif;

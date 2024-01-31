@@ -1,0 +1,24 @@
+:root {
+    --background: #313338;
+    --background-dark: #282a2e;
+    --foreground: #1e1f22;
+
+    --button-color-light: #232427;
+    --button-color-light-hover: #1e1f22;
+    
+    --button-color-dark: #191919;
+    --button-color-dark-hover: #121212;
+    --button-color-dark-pressed: #0f0f0f;
+
+    --button-green: rgb(0, 140, 0);
+    --button-green-hover: rgb(0, 120, 0);
+    --button-green-active: rgb(0, 115, 0);
+
+    --button-red: rgb(170, 0, 0);
+    --button-red-hover: rgb(150, 0, 0);
+    --button-red-active: rgb(145, 0, 0);
+
+    --light-blue: rgb(1, 147, 207);
+    --medium-blue: rgb(1, 126, 207);
+    --orange: orange;
+}
