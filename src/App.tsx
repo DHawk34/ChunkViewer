@@ -7,8 +7,7 @@ import { ToolbarContainer } from "./components/ToolbarContainer/ToolbarContainer
 import dragImg from './components/ImageContainer/dragANDdrop.png';
 import chunkHandler, { ChunkData } from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
-import { getFileNameFromUrlOrPath, removeExtFromFileName, swap } from "./scripts/utils";
-import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import { getFileNameFromUrlOrPath, removeExtFromFileName } from "./scripts/utils";
 import { StatusBar } from "./components/StatusBar/StatusBar";
 import { useLogger } from "./scripts/hooks/useLoggerHook";
 import { varStore } from "./scripts/variableStore";
@@ -164,38 +163,19 @@ export function App() {
 
 
 
-  function dropChunk(result: DropResult) {
-    if (!result.destination)
-      return
-
-    if (result.source.index === result.destination.index)
-      return
-
-    const sourceIndex = result.source.index
-    const destinationIndex = result.destination.index
-    const newArr = [...chunkArray]
-
-    swap(newArr, sourceIndex, destinationIndex)
-    setChunkArray(newArr)
-  }
-
-
-
   return (
     <div id='container'>
       <ImageContainer imageUrl={imageUrl} />
 
-      <DragDropContext onDragEnd={dropChunk} >
-        <ChunkContainer
-          chunkArray={chunkArray}
-          OnChunksUpdated={setChunkArray} />
-      </DragDropContext>
+      <ChunkContainer
+        chunkArray={chunkArray}
+        setChunkArray={setChunkArray} />
 
       <ToolbarContainer
         chunkArray={chunkArray}
         setChunkArray={setChunkArray}
         logger={logger}
-        dragEnterCounter = {enterCounter}
+        dragEnterCounter={enterCounter}
       />
 
       <StatusBar logs={logs} />
