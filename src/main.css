@@ -1,5 +1,10 @@
 @import url(colors.css);
 
+:root {
+  --max-chunk-width: 550px;
+  --max-toolbar-width: 350px;
+}
+
 html {
   font-family: 'Segoe UI', Inter, Avenir, Helvetica, Arial, sans-serif;
   overflow: hidden;
@@ -14,11 +19,11 @@ body {
 }
 
 /* Scroll bars */
-*::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 8px;
 }
 
-*::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background-color: var(--foreground);
 }
@@ -69,6 +74,7 @@ select:hover {
 /* Check box */
 input[type="checkbox"] {
   margin-right: 12px;
+  margin-left: 0;
   accent-color: var(--orange);
 }
 
@@ -92,7 +98,7 @@ input[type="checkbox"] {
   margin-top: 10px;
   padding: 5px 8px;
   border-radius: 6px;
- 
+  
   /* Position the tooltip text */
   position: absolute;
   z-index: 1;
@@ -106,6 +112,12 @@ input[type="checkbox"] {
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
   visibility: visible;
+}
+
+
+
+.drag_start {
+  outline: dashed whitesmoke;
 }
 
 

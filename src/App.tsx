@@ -48,8 +48,10 @@ export function App() {
     }
 
     document.body.ondrop = (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
+      ev.preventDefault()
+      ev.stopPropagation()
+      setDragEnterCount(0)
+
       if (!ev.dataTransfer)
         return;
 
@@ -72,8 +74,6 @@ export function App() {
           logImageLoaded(fileName)
         })
       }
-
-      setDragEnterCount(0)
     };
 
     document.body.ondragover = (ev) => {

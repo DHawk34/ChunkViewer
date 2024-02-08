@@ -28,7 +28,9 @@ export function ImageContainer(props: { imageUrl: string }) {
 
     return (
         <div id='image_container'>
-            <img id='preview' src={props.imageUrl} />
+            <div className='drop_object'>
+                <img id='preview' src={props.imageUrl} />
+            </div>
             <p>{`${imageSize.width} x ${imageSize.height}`}</p>
         </div>
     )
