@@ -90,7 +90,9 @@
         "resizable": true,
         "title": "PNGChunkViewer",
         "width": 1000,
-        "height": 600
+        "height": 600,
+        "minWidth": 900,
+        "minHeight": 300
       }
     ]
   }
