@@ -2,8 +2,7 @@
     display: inline-block;
     box-sizing: border-box;
     vertical-align: top;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding: 20px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -18,5 +17,7 @@
 #add_chunk_button {
     font-size: x-large;
     border: 1px solid black;
-    width: 90%;
+    width: 100%;
+
+    max-width: var(--max-chunk-width);
 }
