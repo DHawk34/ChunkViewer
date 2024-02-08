@@ -1,5 +1,3 @@
-@import url(FeaturesContainerAddExtensionDialog.css);
-
 #features_container {
     margin-top: 10px;
     margin-bottom: 10px;
@@ -23,9 +21,6 @@
 }
 
 
-#features_container .drag_start {
-    outline: dashed white;
-}
 
 /* Don't use padding here! Open animation breaks if padding is used. */
 #features_container .groovedBlock {

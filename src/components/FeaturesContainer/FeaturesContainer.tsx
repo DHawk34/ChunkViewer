@@ -1,13 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import { exportAllChunks, exportParams, replaceChunks, replaceChunksWithFileDialog, saveImage } from '../../scripts/features'
 import { ChunkData } from '../../scripts/chunks/chunkHandler'
 import { Logger } from '../../scripts/hooks/useLoggerHook'
 import { height_0auto_startTransition, height_0auto_endTransition } from '../../scripts/frontend.utils'
 import './FeaturesContainer.css'
 import { DragEnterCounter, useDragEnterCounter } from '../../scripts/hooks/useDragEnterCounterHook'
-import { ChunkContainer } from '../ChunkContainer/ChunkContainer'
-import { DragDropContext } from 'react-beautiful-dnd'
-import autosize from 'autosize'
+import { ChunkInfoExtensionDialog } from './ChunkInfoExtensionDialog'
 
 export interface FeaturesProps {
     chunkArray: ChunkData[]
@@ -19,20 +17,12 @@ export interface FeaturesProps {
 export function FeaturesContainer(props: FeaturesProps) {
     const ref_chunkButtonsBlock = useRef<HTMLDivElement>(null)
     const ref_addExtensionDialog = useRef<HTMLDialogElement>(null)
-    const ref_textarea = useRef<HTMLTextAreaElement>(null)
-
-    const [chunksToAdd, setChunksToAdd] = useState<ChunkData[]>([])
 
     const { chunkArray, setChunkArray, logger, dragEnterCounter } = props
 
     const { logs, log, logError } = logger
 
     const { enterCount, incrementDragEnterCount, decrementDragEnterCount, setDragEnterCount } = dragEnterCounter
-
-    useEffect(() => {
-        if (!ref_textarea.current) return
-        autosize(ref_textarea.current)
-    }, [])
 
     const btn_exportImage = () => saveImage(chunkArray, logger)
     const btn_exportParameters = () => exportParams(chunkArray, logger)
@@ -88,10 +78,6 @@ export function FeaturesContainer(props: FeaturesProps) {
 
 
 
-
-
-
-
     // TODO: Chunk info extensions: кнопки добавить/редактировать/удалить extension
     return (
         <div id='features_container'>
@@ -117,43 +103,7 @@ export function FeaturesContainer(props: FeaturesProps) {
             </div>
 
             <button onClick={openAddExtensionDialog}>TEST</button>
-
-            <dialog ref={ref_addExtensionDialog}>
-                <h2>Add chunk info extension</h2>
-
-                <div>
-                    <label id='chunkInfoExtentionButtonName_label' htmlFor='chunkInfoExtentionButtonName'>Extension name</label>
-                    <input id='chunkInfoExtentionButtonName' type='text'></input>
-                </div>
-
-                <div className='columns'>
-                    <div>
-                        <p>Chunks to remove</p>
-
-                        <div className='fieldset'>
-                            <label>
-                                <input type='checkbox'></input>
-                                Remove all chunks
-                            </label>
-
-                            <p>Chunk names (one per line)</p>
-                            <textarea ref={ref_textarea}></textarea>
-                        </div>
-                    </div>
-
-                    <div>
-                        <p>Chunk to paste</p>
-
-                        <div className='fieldset'>
-                            <ChunkContainer
-                                chunkArray={chunksToAdd}
-                                setChunkArray={setChunksToAdd}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-            </dialog>
+            <ChunkInfoExtensionDialog ref={ref_addExtensionDialog} />
         </div >
     )
 }
