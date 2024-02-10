@@ -77,14 +77,14 @@ export const ChunkInfoExtensionDialog = forwardRef<HTMLDialogElement>((_, ref) =
                 />
             </div>
 
-            <button onClick={close} className='close_button'>
-                <CloseBold fill="whitesmoke" />
-            </button>
-
             <div className="buttons">
                 <button onClick={confirm_close} className="confirm_button">Confirm</button>
                 <button onClick={close} className="cancel_button">Cancel</button>
             </div>
+
+            <button onClick={close} className='close_button'>
+                <CloseBold fill="whitesmoke" />
+            </button>
 
         </dialog>
     )
