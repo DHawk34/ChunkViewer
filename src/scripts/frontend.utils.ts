@@ -35,7 +35,7 @@ export function height_0auto_endTransition(e: React.TransitionEvent<HTMLElement>
     return false
 }
 
-export function getScrollParent(node: HTMLElement | null) {
+export function getScrollParent(node: HTMLElement | null): HTMLElement | null {
     if (!node) return null
 
     const overflowY = window.getComputedStyle(node).overflowY

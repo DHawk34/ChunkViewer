@@ -5,7 +5,7 @@ import { Draggable } from 'react-beautiful-dnd';
 import { UnlistenFn } from "@tauri-apps/api/event";
 import { chunkNameIsUnsafe, maxChunkNameSize } from "../../scripts/chunks/chunkSaver";
 import { settingsManager } from "../../scripts/settings/settings";
-import { ScrollStateSaver } from "../../scripts/scrollStateSaver";
+import { ScrollStateSaver } from "../../scripts/ScrollStateSaver";
 import autosize from 'autosize';
 import './Chunk.css'
 
