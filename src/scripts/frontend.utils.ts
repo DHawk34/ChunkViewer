@@ -34,3 +34,15 @@ export function height_0auto_endTransition(e: React.TransitionEvent<HTMLElement>
 
     return false
 }
+
+export function getScrollParent(node: HTMLElement | null) {
+    if (!node) return null
+
+    const overflowY = window.getComputedStyle(node).overflowY
+    const isScrollable = !(overflowY.includes('visible') || overflowY.includes('hidden'))
+
+    if (isScrollable && node.scrollHeight > node.clientHeight)
+        return node
+    else
+        return getScrollParent(node.parentElement)
+}

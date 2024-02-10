@@ -78,6 +78,19 @@ input[type="checkbox"] {
   accent-color: var(--orange);
 }
 
+/* Text inputs */
+input[type="text"] {
+  font-family: monospace;
+}
+
+textarea {
+  display: block;
+  resize: none;
+  border: none;
+  font-family: monospace;
+  font-size: 1em;
+}
+
 
 
 /* Tooltip */
