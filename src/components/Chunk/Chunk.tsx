@@ -62,47 +62,47 @@ export function Chunk(props: Props) {
         chunkName.current.className = value ? 'chunk_name yellow' : 'chunk_name'
     }
 
-    function spawnInput(element: HTMLElement, index: number) {
-        if (element.querySelector('.editable_textarea')) return
+    // function spawnInput(element: HTMLElement, index: number) {
+    //     if (element.querySelector('.editable_textarea')) return
 
-        const input = document.createElement('textarea')
-        input.setAttribute('class', 'editable_textarea')
+    //     const input = document.createElement('textarea')
+    //     input.setAttribute('class', 'editable_textarea')
 
-        if (element.className.includes('chunk_name')) {
-            input.setAttribute('maxlength', maxChunkNameSize.toString())
-        }
+    //     if (element.className.includes('chunk_name')) {
+    //         input.setAttribute('maxlength', maxChunkNameSize.toString())
+    //     }
 
-        const scrollSaver = new ScrollStateSaver(element)
+    //     const scrollSaver = new ScrollStateSaver(element)
 
-        input.value = element.textContent as string
-        input.onblur = () => {
+    //     input.value = element.textContent as string
+    //     input.onblur = () => {
 
-            scrollSaver.captureScrollState()
+    //         scrollSaver.captureScrollState()
 
-            if (element.className.includes('chunk_name')) {
-                let val = input.value.substring(0, maxChunkNameSize).trim()
-                if (val.length === 0) val = '?'
+    //         if (element.className.includes('chunk_name')) {
+    //             let val = input.value.substring(0, maxChunkNameSize).trim()
+    //             if (val.length === 0) val = '?'
 
-                props.chunk.name = element.textContent = val
-                props.OnUpdate(index, props.chunk)
-            }
-            else {
-                props.chunk.value = element.textContent = input.value
-                props.OnUpdate(index, props.chunk)
-            }
+    //             props.chunk.name = element.textContent = val
+    //             props.OnUpdate(index, props.chunk)
+    //         }
+    //         else {
+    //             props.chunk.value = element.textContent = input.value
+    //             props.OnUpdate(index, props.chunk)
+    //         }
 
-            scrollSaver.restoreState()
-        }
+    //         scrollSaver.restoreState()
+    //     }
 
-        scrollSaver.captureScrollState()
+    //     scrollSaver.captureScrollState()
 
-        element.textContent = ''
-        element.appendChild(input)
-        input.focus()
-        autosize(input) // DON'T put this above input.focus() or else scroll breaks
+    //     element.textContent = ''
+    //     element.appendChild(input)
+    //     input.focus()
+    //     autosize(input) // DON'T put this above input.focus() or else scroll breaks
 
-        scrollSaver.restoreState()
-    }
+    //     scrollSaver.restoreState()
+    // }
 
 
 
