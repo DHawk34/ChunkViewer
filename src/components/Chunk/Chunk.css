@@ -143,13 +143,15 @@ td {
 }
 
 .chunk_text {
-  padding-left: 5px;
-  padding-right: 5px;
+  padding: 0;
+  /* padding-left: 5px;
+  padding-right: 5px; */
   margin-left: 10px;
   margin-right: 10px; 
   min-height: 30px;
-  white-space: pre-line;
+  white-space: break-spaces;
   font-family: monospace;
+  overflow: hidden;
   font-size: 1.1em;
 }
 
@@ -172,7 +174,6 @@ td {
   box-sizing: border-box;
   display: inline-block;
   flex-grow: 1;
-  padding-right: 5px;
   margin-right: 12px;
   min-width: 40%;
   min-height: 1em;
