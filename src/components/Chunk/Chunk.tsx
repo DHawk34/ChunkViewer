@@ -150,7 +150,15 @@ export function Chunk(props: Props) {
                     {...provided.draggableProps} ref={provided.innerRef}>
                     <div className='chunk_header'>
                         <div  {...provided.dragHandleProps} id='chunk_dragger' onMouseDown={() => document.querySelector<HTMLTextAreaElement>('.editable_textarea')?.blur()}><svg width={16} height={35} fill='white' viewBox="64 -11.5 128 256"><rect width="128" height="256" fill="none" /><circle cx="92" cy="60" r="12" /><circle cx="164" cy="60" r="12" /><circle cx="92" cy="128" r="12" /><circle cx="164" cy="128" r="12" /><circle cx="92" cy="196" r="12" /><circle cx="164" cy="196" r="12" /></svg></div>
-                        <div ref={chunkName} className='chunk_name' onDoubleClick={(e) => spawnInput(e.currentTarget, props.index)}>
+                        <div ref={chunkName} className='chunk_name' onDoubleClick={(e) => {
+                            e.currentTarget.contentEditable = 'plaintext-only'
+                            e.currentTarget.focus()
+                        }
+                        } onBlur={(e) => {
+                            e.currentTarget.contentEditable = 'false'
+                            props.chunk.name = e.currentTarget.textContent ?? ''
+                            props.OnUpdate(props.index, props.chunk)
+                        }}>
                             {props.chunk.name}
                         </div>
                         {
@@ -172,8 +180,17 @@ export function Chunk(props: Props) {
                                 </tbody>
                             </table>
                             :
-                            <p className='chunk_text' onDoubleClick={(e) => spawnInput(e.currentTarget, props.index)}>
-                                {props.chunk.value.toString()}
+                            <p className='chunk_text' onDoubleClick={(e) => {
+                                e.currentTarget.contentEditable = 'plaintext-only'
+                                // e.currentTarget.setAttribute('class', 'editable_textarea')
+                                e.currentTarget.focus()
+                            }
+                            } onBlur={(e) => {
+                                e.currentTarget.contentEditable = 'false'
+                                props.chunk.value = e.currentTarget.textContent ?? ''
+                                props.OnUpdate(props.index, props.chunk)
+                            }}>
+                                {props.chunk.value}
                             </p>
                     }
                 </div>

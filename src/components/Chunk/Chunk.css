@@ -67,11 +67,6 @@
   background-color: #aa0000;
 }
 
-.chunk_text {
-  font-family: monospace;
-  font-size: 1.1em;
-}
-
 .editable_textarea {
   width: 100%;
   padding: 0;
@@ -144,7 +139,25 @@ td {
   padding-left: 10px;
   padding-right: 10px;
   word-wrap: break-word;
+
 }
+
+.chunk_text {
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-left: 10px;
+  margin-right: 10px; 
+  min-height: 30px;
+  white-space: pre-line;
+  font-family: monospace;
+  font-size: 1.1em;
+}
+
+*[contenteditable="plaintext-only"] {
+  background-color: white;
+  color: black;
+}
+
 
 .chunk_header {
   display: flex;
@@ -159,15 +172,11 @@ td {
   box-sizing: border-box;
   display: inline-block;
   flex-grow: 1;
+  padding-right: 5px;
   margin-right: 12px;
   min-width: 40%;
   min-height: 1em;
   font-size: 1.1em;
-}
-
-.chunk_text {
-  min-height: 30px;
-  white-space: pre-wrap;
 }
 
 .chunk_name.yellow {
