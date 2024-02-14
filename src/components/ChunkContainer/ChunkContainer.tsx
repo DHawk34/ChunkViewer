@@ -16,7 +16,7 @@ export function ChunkContainer(props: Props) {
         props.setChunkArray(source)
     }
 
-    function updateChunk(index: number, newValue: ChunkData) {
+    function updateChunk(newValue: ChunkData, index: number) {
         const list = [...props.chunkArray]
         list[index] = newValue
         props.setChunkArray(list)
@@ -43,10 +43,18 @@ export function ChunkContainer(props: Props) {
         props.setChunkArray(newArr)
     }
 
+    function getUpdateFunc(chunkIndex: number) {
+        return (newValue: ChunkData) => updateChunk(newValue, chunkIndex)
+    }
+
+    function getDeleteFunc(chunkIndex: number) {
+        return () => deleteChunk(chunkIndex)
+    }
+
 
 
     const chunkElements = props.chunkArray.map((chunk: ChunkData, index: number) =>
-        <Chunk index={index} chunk={chunk} OnDelete={deleteChunk} OnUpdate={updateChunk} key={index} />
+        <Chunk index={index} chunk={chunk} OnDelete={getDeleteFunc(index)} OnUpdate={getUpdateFunc(index)} key={index} />
     )
 
     return (

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import chunkHandler, { ChunkData } from '../../scripts/chunks/chunkHandler';
 import { Param, parseParameters } from '../../scripts/sdParamParser';
 import { Draggable } from 'react-beautiful-dnd';
@@ -12,8 +12,8 @@ import './Chunk.css'
 type Props = {
     index: number
     chunk: ChunkData
-    OnUpdate: (index: number, newValue: ChunkData) => void
-    OnDelete: (index: number) => void
+    OnUpdate: (newValue: ChunkData) => void
+    OnDelete: () => void
 }
 
 export function Chunk(props: Props) {
@@ -62,52 +62,52 @@ export function Chunk(props: Props) {
         chunkName.current.className = value ? 'chunk_name yellow' : 'chunk_name'
     }
 
-    // function spawnInput(element: HTMLElement, index: number) {
-    //     if (element.querySelector('.editable_textarea')) return
+    function spawnInput(element: HTMLElement) {
+        if (element.querySelector('.editable_textarea')) return
 
-    //     const input = document.createElement('textarea')
-    //     input.setAttribute('class', 'editable_textarea')
+        const input = document.createElement('textarea')
+        input.setAttribute('class', 'editable_textarea')
 
-    //     if (element.className.includes('chunk_name')) {
-    //         input.setAttribute('maxlength', maxChunkNameSize.toString())
-    //     }
+        if (element.className.includes('chunk_name')) {
+            input.setAttribute('maxlength', maxChunkNameSize.toString())
+        }
 
-    //     const scrollSaver = new ScrollStateSaver(element)
+        const scrollSaver = new ScrollStateSaver(element)
 
-    //     input.value = element.textContent as string
-    //     input.onblur = () => {
+        input.value = element.textContent as string
+        input.onblur = () => {
 
-    //         scrollSaver.captureScrollState()
+            scrollSaver.captureScrollState()
 
-    //         if (element.className.includes('chunk_name')) {
-    //             let val = input.value.substring(0, maxChunkNameSize).trim()
-    //             if (val.length === 0) val = '?'
+            if (element.className.includes('chunk_name')) {
+                let val = input.value.substring(0, maxChunkNameSize).trim()
+                if (val.length === 0) val = '?'
 
-    //             props.chunk.name = element.textContent = val
-    //             props.OnUpdate(index, props.chunk)
-    //         }
-    //         else {
-    //             props.chunk.value = element.textContent = input.value
-    //             props.OnUpdate(index, props.chunk)
-    //         }
+                props.chunk.name = element.textContent = val
+                props.OnUpdate(props.chunk)
+            }
+            else {
+                props.chunk.value = element.textContent = input.value
+                props.OnUpdate(props.chunk)
+            }
 
-    //         scrollSaver.restoreState()
-    //     }
+            scrollSaver.restoreState()
+        }
 
-    //     scrollSaver.captureScrollState()
+        scrollSaver.captureScrollState()
 
-    //     element.textContent = ''
-    //     element.appendChild(input)
-    //     input.focus()
-    //     autosize(input) // DON'T put this above input.focus() or else scroll breaks
+        element.textContent = ''
+        element.appendChild(input)
+        input.focus()
+        autosize(input) // DON'T put this above input.focus() or else scroll breaks
 
-    //     scrollSaver.restoreState()
-    // }
+        scrollSaver.restoreState()
+    }
 
 
 
     function deleteChunk() {
-        props.OnDelete(props.index)
+        props.OnDelete()
     }
 
     function changeView() {
@@ -136,6 +136,27 @@ export function Chunk(props: Props) {
         return params
     }
 
+
+
+    function chunkName_onBlur(e: React.FocusEvent<HTMLElement>) {
+        e.currentTarget.contentEditable = 'false'
+
+        // Don't let chunkName be empty 
+        let val = e.currentTarget.textContent?.substring(0, maxChunkNameSize).trim() ?? ''
+        if (val.length === 0) val = '?'
+
+        props.chunk.name = e.currentTarget.textContent = val
+        props.OnUpdate(props.chunk)
+    }
+
+    function chunkValue_onBlur(e: React.FocusEvent<HTMLElement>) {
+        e.currentTarget.contentEditable = 'false'
+        props.chunk.value = e.currentTarget.textContent ?? ''
+        props.OnUpdate(props.chunk)
+    }
+
+
+
     const parameters = showParameters ? getParsedParams().map((param: Param, index: number) => {
         return <tr key={index}>
             <td className='param_name'>{param.key}</td>
@@ -149,16 +170,13 @@ export function Chunk(props: Props) {
                 <div className='chunk' key={props.index}
                     {...provided.draggableProps} ref={provided.innerRef}>
                     <div className='chunk_header'>
-                        <div  {...provided.dragHandleProps} id='chunk_dragger' onMouseDown={() => document.querySelector<HTMLTextAreaElement>('.editable_textarea')?.blur()}><svg width={16} height={35} fill='white' viewBox="64 -11.5 128 256"><rect width="128" height="256" fill="none" /><circle cx="92" cy="60" r="12" /><circle cx="164" cy="60" r="12" /><circle cx="92" cy="128" r="12" /><circle cx="164" cy="128" r="12" /><circle cx="92" cy="196" r="12" /><circle cx="164" cy="196" r="12" /></svg></div>
-                        <div ref={chunkName} className='chunk_name' onDoubleClick={(e) => {
-                            e.currentTarget.contentEditable = 'plaintext-only'
-                            e.currentTarget.focus()
+                        <div  {...provided.dragHandleProps} id='chunk_dragger' onMouseDown={() => {
+                            document.querySelector<HTMLTextAreaElement>('.editable_textarea')?.blur()
+                            document.querySelector<HTMLElement>('[contenteditable="plaintext-only"]')?.blur()
                         }
-                        } onBlur={(e) => {
-                            e.currentTarget.contentEditable = 'false'
-                            props.chunk.name = e.currentTarget.textContent ?? ''
-                            props.OnUpdate(props.index, props.chunk)
-                        }}>
+                        }><svg width={16} height={35} fill='white' viewBox="64 -11.5 128 256"><rect width="128" height="256" fill="none" /><circle cx="92" cy="60" r="12" /><circle cx="164" cy="60" r="12" /><circle cx="92" cy="128" r="12" /><circle cx="164" cy="128" r="12" /><circle cx="92" cy="196" r="12" /><circle cx="164" cy="196" r="12" /></svg></div>
+
+                        <div ref={chunkName} className='chunk_name' onDoubleClick={e => spawnInput(e.currentTarget)} onBlur={chunkName_onBlur}>
                             {props.chunk.name}
                         </div>
                         {
@@ -180,16 +198,7 @@ export function Chunk(props: Props) {
                                 </tbody>
                             </table>
                             :
-                            <p className='chunk_text' onDoubleClick={(e) => {
-                                e.currentTarget.contentEditable = 'plaintext-only'
-                                // e.currentTarget.setAttribute('class', 'editable_textarea')
-                                e.currentTarget.focus()
-                            }
-                            } onBlur={(e) => {
-                                e.currentTarget.contentEditable = 'false'
-                                props.chunk.value = e.currentTarget.textContent ?? ''
-                                props.OnUpdate(props.index, props.chunk)
-                            }}>
+                            <p className='chunk_text' onDoubleClick={enterEditMode} onBlur={chunkValue_onBlur}>
                                 {props.chunk.value}
                             </p>
                     }
@@ -197,4 +206,14 @@ export function Chunk(props: Props) {
             )}
         </Draggable>
     )
+}
+
+
+
+function enterEditMode(e: React.MouseEvent<HTMLElement>) {
+    e.currentTarget.contentEditable = 'plaintext-only'
+    e.currentTarget.focus()
+
+    const selection = window.getSelection()
+    selection?.getRangeAt(0).collapse()
 }
