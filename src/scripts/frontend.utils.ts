@@ -46,3 +46,11 @@ export function getScrollParent(node: HTMLElement | null): HTMLElement | null {
     else
         return getScrollParent(node.parentElement)
 }
+
+export function getSelectionLength(window: Window): number {
+    const selectedRange = window.getSelection()?.getRangeAt(0)
+    const startSelection = selectedRange?.startOffset ?? 0
+    const endSelection = selectedRange?.endOffset ?? 0
+    
+    return endSelection - startSelection
+}

@@ -2,7 +2,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { FeaturesContainer, FeaturesProps } from '../FeaturesContainer/FeaturesContainer';
 import { SettingsContainer } from "../SettingsContainer/SettingsContainer";
 import { getVersion } from '@tauri-apps/api/app';
-import { settingsManager } from "../../scripts/settings/settings";
+import { settingsManager } from "@/scripts/settings/settings";
 import './ToolbarContainer.css'
 
 const appVersion = await getVersion()
