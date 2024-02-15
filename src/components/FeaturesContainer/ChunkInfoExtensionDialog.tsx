@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from "react"
 import { ChunkContainer } from "../ChunkContainer/ChunkContainer"
 import { ChunkData } from "../../scripts/chunks/chunkHandler"
-import { CloseBold } from "../../svg/close-bold"
+import CloseBold from '../../assets/close_bold.svg?react'
 import autosize from "autosize"
 import './ChunkInfoExtensionDialog.css'
 
@@ -83,7 +83,7 @@ export const ChunkInfoExtensionDialog = forwardRef<HTMLDialogElement>((_, ref) =
             </div>
 
             <button onClick={close} className='close_button'>
-                <CloseBold fill="whitesmoke" />
+                <CloseBold color="whitesmoke" />
             </button>
 
         </dialog>
