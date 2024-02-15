@@ -150,8 +150,8 @@ td {
   margin-right: 10px; 
   min-height: 30px;
   white-space: break-spaces;
-  font-family: monospace;
   overflow: hidden;
+  font-family: monospace;
   font-size: 1.1em;
 }
 
@@ -178,6 +178,7 @@ td {
   min-width: 40%;
   min-height: 1em;
   font-size: 1.1em;
+  white-space: break-spaces;
 }
 
 .chunk_name.yellow {
