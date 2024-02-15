@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from "react"
 import { ChunkContainer } from "../ChunkContainer/ChunkContainer"
-import { ChunkData } from "../../scripts/chunks/chunkHandler"
-import CloseBold from '../../assets/close_bold.svg?react'
+import { ChunkData } from "@/scripts/chunks/chunkHandler"
+import CloseBold from '@/assets/close_bold.svg?react'
 import autosize from "autosize"
 import './ChunkInfoExtensionDialog.css'
 

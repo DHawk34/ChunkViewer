@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import chunkHandler, { ChunkData } from '../../scripts/chunks/chunkHandler';
-import { Param, parseParameters } from '../../scripts/sdParamParser';
+import chunkHandler, { ChunkData } from '@/scripts/chunks/chunkHandler';
+import { Param, parseParameters } from '@/scripts/sdParamParser';
 import { Draggable } from 'react-beautiful-dnd';
 import { UnlistenFn } from "@tauri-apps/api/event";
-import { chunkNameIsUnsafe, maxChunkNameSize } from "../../scripts/chunks/chunkSaver";
-import { settingsManager } from "../../scripts/settings/settings";
-import { ScrollStateSaver } from "../../scripts/ScrollStateSaver";
-import ExportIcon from '../../assets/export.svg?react'
-import TrashIcon from '../../assets/trash.svg?react'
-import DragIcon from '../../assets/drag.svg?react'
-import RefreshIcon from '../../assets/refresh.svg?react'
+import { chunkNameIsUnsafe, maxChunkNameSize } from "@/scripts/chunks/chunkSaver";
+import { settingsManager } from "@/scripts/settings/settings";
+import { ScrollStateSaver } from "@/scripts/ScrollStateSaver";
+import ExportIcon from '@/assets/export.svg?react'
+import TrashIcon from '@/assets/trash.svg?react'
+import DragIcon from '@/assets/drag.svg?react'
+import RefreshIcon from '@/assets/refresh.svg?react'
 import autosize from 'autosize';
 import './Chunk.css'
 

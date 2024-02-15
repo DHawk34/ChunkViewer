@@ -1,9 +1,9 @@
 import './ChunkContainer.css'
 import { Chunk } from '../Chunk/Chunk';
 import { StrictModeDroppable } from '../StrictModeDroppable';
-import { ChunkData } from '../../scripts/chunks/chunkHandler';
+import { ChunkData } from '@/scripts/chunks/chunkHandler';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { swap } from '../../scripts/utils';
+import { swap } from '@/scripts/utils';
 
 type Props = {
     chunkArray: ChunkData[]

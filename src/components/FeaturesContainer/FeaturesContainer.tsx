@@ -1,10 +1,10 @@
 import { useRef } from 'react'
-import { exportAllChunks, exportParams, replaceChunks, replaceChunksWithFileDialog, saveImage } from '../../scripts/features'
-import { ChunkData } from '../../scripts/chunks/chunkHandler'
-import { Logger } from '../../scripts/hooks/useLoggerHook'
-import { height_0auto_startTransition, height_0auto_endTransition } from '../../scripts/frontend.utils'
+import { exportAllChunks, exportParams, replaceChunks, replaceChunksWithFileDialog, saveImage } from '@/scripts/features'
+import { ChunkData } from '@/scripts/chunks/chunkHandler'
+import { Logger } from '@/scripts/hooks/useLoggerHook'
+import { height_0auto_startTransition, height_0auto_endTransition } from '@/scripts/frontend.utils'
 import './FeaturesContainer.css'
-import { DragEnterCounter, useDragEnterCounter } from '../../scripts/hooks/useDragEnterCounterHook'
+import { DragEnterCounter, useDragEnterCounter } from '@/scripts/hooks/useDragEnterCounterHook'
 import { ChunkInfoExtensionDialog } from './ChunkInfoExtensionDialog'
 
 export interface FeaturesProps {

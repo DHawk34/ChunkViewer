@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { LogMessage, useLogger } from "../../scripts/hooks/useLoggerHook";
-import WarningIcon from '../../assets/warning.svg?react'
-import ArrowUpIcon from '../../assets/arrowUp_bold.svg?react'
-import ArrowDownIcon from '../../assets/arrowDown_bold.svg?react'
+import { LogMessage, useLogger } from "@/scripts/hooks/useLoggerHook";
+import WarningIcon from '@/assets/warning.svg?react'
+import ArrowUpIcon from '@/assets/arrowUp_bold.svg?react'
+import ArrowDownIcon from '@/assets/arrowDown_bold.svg?react'
 import './StatusBar.css'
 
 export function StatusBar(props: { logs: LogMessage[] }) {
