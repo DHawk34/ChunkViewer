@@ -5,12 +5,11 @@ import { Draggable } from 'react-beautiful-dnd';
 import { UnlistenFn } from "@tauri-apps/api/event";
 import { chunkNameIsUnsafe, maxChunkNameSize } from "@/scripts/chunks/chunkSaver";
 import { settingsManager } from "@/scripts/settings/settings";
-import { ScrollStateSaver } from "@/scripts/ScrollStateSaver";
+import { getSelectionLength } from "@/scripts/frontend.utils";
 import ExportIcon from '@/assets/export.svg?react'
 import TrashIcon from '@/assets/trash.svg?react'
 import DragIcon from '@/assets/drag.svg?react'
 import RefreshIcon from '@/assets/refresh.svg?react'
-import autosize from 'autosize';
 import './Chunk.css'
 
 type Props = {
@@ -66,48 +65,6 @@ export function Chunk(props: Props) {
         chunkName.current.className = value ? 'chunk_name yellow' : 'chunk_name'
     }
 
-    function spawnInput(element: HTMLElement) {
-        if (element.querySelector('.editable_textarea')) return
-
-        const input = document.createElement('textarea')
-        input.setAttribute('class', 'editable_textarea')
-
-        if (element.className.includes('chunk_name')) {
-            input.setAttribute('maxlength', maxChunkNameSize.toString())
-        }
-
-        const scrollSaver = new ScrollStateSaver(element)
-
-        input.value = element.textContent as string
-        input.onblur = () => {
-
-            scrollSaver.captureScrollState()
-
-            if (element.className.includes('chunk_name')) {
-                let val = input.value.substring(0, maxChunkNameSize).trim()
-                if (val.length === 0) val = '?'
-
-                props.chunk.name = element.textContent = val
-                props.OnUpdate(props.chunk)
-            }
-            else {
-                props.chunk.value = element.textContent = input.value
-                props.OnUpdate(props.chunk)
-            }
-
-            scrollSaver.restoreState()
-        }
-
-        scrollSaver.captureScrollState()
-
-        element.textContent = ''
-        element.appendChild(input)
-        input.focus()
-        autosize(input) // DON'T put this above input.focus() or else scroll breaks
-
-        scrollSaver.restoreState()
-    }
-
 
 
     function deleteChunk() {
@@ -145,7 +102,12 @@ export function Chunk(props: Props) {
     function chunkName_onBlur(e: React.FocusEvent<HTMLElement>) {
         e.currentTarget.contentEditable = 'false'
 
-        // Don't let chunkName be empty 
+        // trim text just in case
+        if (e.currentTarget.textContent && e.currentTarget.textContent.length > maxChunkNameSize) {
+            e.currentTarget.textContent = e.currentTarget.textContent.substring(0, maxChunkNameSize)
+        }
+
+        // don't let chunkName be empty 
         let val = e.currentTarget.textContent?.substring(0, maxChunkNameSize).trim() ?? ''
         if (val.length === 0) val = '?'
 
@@ -157,6 +119,34 @@ export function Chunk(props: Props) {
         e.currentTarget.contentEditable = 'false'
         props.chunk.value = e.currentTarget.textContent ?? ''
         props.OnUpdate(props.chunk)
+    }
+
+    function limitChunkNameMaxLength_onKeyDown(e: React.KeyboardEvent<HTMLElement>) {
+        if (e.ctrlKey || e.key === 'Backspace' || e.key === 'Delete' || e.key.includes('Arrow')) {
+            return
+        }
+
+        const selectionLength = getSelectionLength(window)
+        if (selectionLength > 0) return // we can enter only 1 symbol at a time, so it's ok
+
+        const contentLength = e.currentTarget.textContent?.length ?? 0
+        if (contentLength >= maxChunkNameSize) {
+            e.preventDefault()
+        }
+    }
+
+    function limitChunkNameMaxLength_onPaste(e: React.ClipboardEvent<HTMLElement>) {
+        e.preventDefault()
+
+        const currentTextLength = e.currentTarget.textContent?.length ?? 0
+        const selectionLength = getSelectionLength(window)
+
+        const text = e.clipboardData
+            .getData('text')
+            .substring(0, maxChunkNameSize - currentTextLength + selectionLength)
+
+        // paste trimmed value
+        document.execCommand('insertText', false, text)
     }
 
 
@@ -180,7 +170,7 @@ export function Chunk(props: Props) {
                         }
                         }><DragIcon width="16" height="35" /></div>
 
-                        <div ref={chunkName} className='chunk_name' onDoubleClick={e => spawnInput(e.currentTarget)} onBlur={chunkName_onBlur}>
+                        <div ref={chunkName} className='chunk_name' onDoubleClick={enterEditMode} onBlur={chunkName_onBlur} onKeyDown={limitChunkNameMaxLength_onKeyDown} onPaste={limitChunkNameMaxLength_onPaste}>
                             {props.chunk.name}
                         </div>
                         {
