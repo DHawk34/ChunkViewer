@@ -92,14 +92,11 @@
     min-height: 60px;
     max-width: 300px;
 
-    /* Borders fix */
-    margin-left: 1px;
-    margin-right: 1px;
-
+    color: inherit;
     background-color: var(--foreground);
+    
     border: none;
     border-radius: 6px;
-    color: inherit;
     padding: 4px 8px;
 }
 
@@ -129,13 +126,17 @@
     padding-right: 24px;
 }
 
+
+
 /* Confirm button */
 #features_container dialog .confirm_button {
     background-color: var(--button-green);
 }
+
 #features_container dialog .confirm_button:hover {
     background-color: var(--button-green-hover);
 }
+
 #features_container dialog .confirm_button:active {
     background-color: var(--button-green-active);
 }
@@ -146,9 +147,11 @@
 #features_container dialog .cancel_button {
     background-color: var(--button-red);
 }
+
 #features_container dialog .cancel_button:hover {
     background-color: var(--button-red-hover);
 }
+
 #features_container dialog .cancel_button:active {
     background-color: var(--button-red-active);
 }

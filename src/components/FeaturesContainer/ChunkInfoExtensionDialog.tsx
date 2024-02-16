@@ -47,10 +47,25 @@ export const ChunkInfoExtensionDialog = forwardRef<HTMLDialogElement>((_, ref) =
             ref_textarea.current.value = ''
     }
 
+    function dialog_onClick(e: React.MouseEvent<HTMLDialogElement>) {
+        const dialog = e.currentTarget
+        const rect = dialog.getBoundingClientRect()
+        const isInDialog = (
+            rect.top <= e.clientY &&
+            e.clientY <= rect.top + rect.height &&
+            rect.left <= e.clientX &&
+            e.clientX <= rect.left + rect.width
+        )
+
+        if (!isInDialog) {
+            dialog.close()
+        }
+    }
+
 
 
     return (
-        <dialog ref={ref}>
+        <dialog onClick={dialog_onClick} ref={ref}>
             <h2>Add chunk info extension</h2>
 
             <div>
