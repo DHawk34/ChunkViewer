@@ -1,3 +1,5 @@
+import { DropResult } from "react-beautiful-dnd"
+
 export function swap<T>(arr: T[], index1: number, index2: number) {
     const [oneElement] = arr.splice(index1, 1)
     arr.splice(index2, 0, oneElement)
@@ -35,4 +37,21 @@ export function isUrl(input: string): boolean {
     }
 
     return url.protocol === "http:" || url.protocol === "https:";
+}
+
+export function getDropEndFunc<T>(data: T[], setData: (data: T[]) => void) {
+    return (result: DropResult) => {
+        if (!result.destination)
+            return
+
+        if (result.source.index === result.destination.index)
+            return
+
+        const sourceIndex = result.source.index
+        const destinationIndex = result.destination.index
+        const newArr = [...data]
+
+        swap(newArr, sourceIndex, destinationIndex)
+        setData(newArr)
+    }
 }

@@ -2,8 +2,8 @@ import './ChunkContainer.css'
 import { Chunk } from '../Chunk/Chunk';
 import { StrictModeDroppable } from '../StrictModeDroppable';
 import { ChunkData } from '@/scripts/chunks/chunkHandler';
-import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { swap } from '@/scripts/utils';
+import { DragDropContext } from 'react-beautiful-dnd';
+import { getDropEndFunc } from '@/scripts/utils';
 
 type Props = {
     chunkArray: ChunkData[]
@@ -12,8 +12,8 @@ type Props = {
 
 export function ChunkContainer(props: Props) {
     function addChunk() {
-        const source = [...props.chunkArray, { name: 'New Chunk', value: '' }]
-        props.setChunkArray(source)
+        const list = [...props.chunkArray, { name: 'New Chunk', value: '' }]
+        props.setChunkArray(list)
     }
 
     function updateChunk(newValue: ChunkData, index: number) {
@@ -23,24 +23,8 @@ export function ChunkContainer(props: Props) {
     }
 
     function deleteChunk(index: number) {
-        const list = [...props.chunkArray]
-        list.splice(index, 1)
+        const list = props.chunkArray.toSpliced(index, 1)
         props.setChunkArray(list)
-    }
-
-    function dropChunk(result: DropResult) {
-        if (!result.destination)
-            return
-
-        if (result.source.index === result.destination.index)
-            return
-
-        const sourceIndex = result.source.index
-        const destinationIndex = result.destination.index
-        const newArr = [...props.chunkArray]
-
-        swap(newArr, sourceIndex, destinationIndex)
-        props.setChunkArray(newArr)
     }
 
     function getUpdateFunc(chunkIndex: number) {
@@ -58,11 +42,11 @@ export function ChunkContainer(props: Props) {
     )
 
     return (
-        <DragDropContext onDragEnd={dropChunk}>
+        <DragDropContext onDragEnd={getDropEndFunc(props.chunkArray, props.setChunkArray)}>
             <div id='chunk_container'>
                 <StrictModeDroppable droppableId='chunks'>
                     {(provided) => (
-                        <div id='drag_container'
+                        <div
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
