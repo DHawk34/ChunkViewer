@@ -164,7 +164,7 @@ export function Chunk(props: Props) {
                 <div className='chunk' key={props.index}
                     {...provided.draggableProps} ref={provided.innerRef}>
                     <div className='chunk_header'>
-                        <div  {...provided.dragHandleProps} id='chunk_dragger' onMouseDown={() => {
+                        <div  {...provided.dragHandleProps} className='dragger' onMouseDown={() => {
                             document.querySelector<HTMLTextAreaElement>('.editable_textarea')?.blur()
                             document.querySelector<HTMLElement>('[contenteditable="plaintext-only"]')?.blur()
                         }

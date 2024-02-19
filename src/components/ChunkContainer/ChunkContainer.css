@@ -7,13 +7,6 @@
     overflow-x: hidden;
 }
 
-#drag_container {
-    flex-direction: column;
-    display: flex;
-    align-items: center;
-    width: 100%;
-}
-
 #add_chunk_button {
     font-size: x-large;
     border: 1px solid black;

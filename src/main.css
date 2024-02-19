@@ -133,6 +133,15 @@ textarea {
   outline: dashed whitesmoke;
 }
 
+.dragger {
+  margin-left: 5px;
+  margin-right: 15px;
+}
+
+.dragger:hover {
+  cursor: grab;
+}
+
 
 
 
