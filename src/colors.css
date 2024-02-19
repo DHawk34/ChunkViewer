@@ -28,7 +28,8 @@
 
     --light-blue: rgb(1, 147, 207);
     --medium-blue: rgb(1, 126, 207);
-    --orange: orange;
+    --orange: rgb(255, 188, 43);
+    --orange-active: hsl(41, 90%, 45%);
 }
 
 /* orange */

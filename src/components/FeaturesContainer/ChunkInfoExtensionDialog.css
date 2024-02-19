@@ -62,7 +62,7 @@
     margin-bottom: 0;
 
     border-radius: 16px 16px 0 0;
-    border-top: 1px solid var(--orange);
+    border-top: 1px solid orange;
     box-shadow: 4px 4px 4px var(--foreground);
 
     margin-top: 12px;
