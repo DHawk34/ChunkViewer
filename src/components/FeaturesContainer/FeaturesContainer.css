@@ -58,6 +58,26 @@
     width: 90%;
 }
 
+#features_container button.editExtensionsButton {
+    box-shadow: 0 0 2px orange;
+}
+
+#features_container button .editIcon {
+    float: right;
+    aspect-ratio: 1;
+    height: calc(1em + 5px);
+    
+    color: orange;
+    stroke-width: 1.15;
+}
+
+
+
+
+
+
+
+/* 
 #features_container .plusMinusButtons {
     display: flex;
     flex-direction: row;
@@ -76,7 +96,6 @@
 
 
 
-/* Add button */
 #features_container .plusMinusButtons>button:first-of-type {
     background-color: var(--button-green);
 }
@@ -91,7 +110,6 @@
 
 
 
-/* Remove button */
 #features_container .plusMinusButtons>button:last-of-type {
     background-color: var(--button-red);
 }
@@ -102,4 +120,4 @@
 
 #features_container .plusMinusButtons>button:last-of-type:active {
     background-color: var(--button-red-active);
-}
+} */

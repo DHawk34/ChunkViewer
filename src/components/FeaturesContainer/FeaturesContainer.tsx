@@ -3,9 +3,11 @@ import { exportAllChunks, exportParams, replaceChunks, replaceChunksWithFileDial
 import { ChunkData } from '@/scripts/chunks/chunkHandler'
 import { Logger } from '@/scripts/hooks/useLoggerHook'
 import { height_0auto_startTransition, height_0auto_endTransition } from '@/scripts/frontend.utils'
-import './FeaturesContainer.css'
 import { DragEnterCounter, useDragEnterCounter } from '@/scripts/hooks/useDragEnterCounterHook'
 import { ChunkInfoExtensionDialog } from './ChunkInfoExtensionDialog'
+import { ChunkExtensionsList } from './ChunkExtensionsList'
+import EditIcon from '@/assets/edit.svg?react'
+import './FeaturesContainer.css'
 
 export interface FeaturesProps {
     chunkArray: ChunkData[]
@@ -17,6 +19,7 @@ export interface FeaturesProps {
 export function FeaturesContainer(props: FeaturesProps) {
     const ref_chunkButtonsBlock = useRef<HTMLDivElement>(null)
     const ref_addExtensionDialog = useRef<HTMLDialogElement>(null)
+    const ref_editExtensionsListDialog = useRef<HTMLDialogElement>(null)
 
     const { chunkArray, setChunkArray, logger, dragEnterCounter } = props
 
@@ -76,6 +79,10 @@ export function FeaturesContainer(props: FeaturesProps) {
         ref_addExtensionDialog.current?.showModal()
     }
 
+    function openExtensionsListDialog() {
+        ref_editExtensionsListDialog.current?.showModal()
+    }
+
 
 
     // TODO: Chunk info extensions: кнопки добавить/редактировать/удалить extension
@@ -96,14 +103,21 @@ export function FeaturesContainer(props: FeaturesProps) {
                 <button>Remove parameters chunk</button>
 
                 <hr />
-                <div className='plusMinusButtons'>
+                <button className='editExtensionsButton'>
+                    Edit extensions
+                    <EditIcon className='editIcon' />
+                </button>
+                {/* <div className='plusMinusButtons'>
                     <button>Add</button>
                     <button>Remove</button>
-                </div>
+                </div> */}
             </div>
 
-            <button onClick={openAddExtensionDialog}>TEST</button>
+            <button onClick={openAddExtensionDialog}>TEST 1</button>
             <ChunkInfoExtensionDialog ref={ref_addExtensionDialog} />
+
+            <button onClick={openExtensionsListDialog}>TEST 2</button>
+            <ChunkExtensionsList ref={ref_editExtensionsListDialog} />
         </div >
     )
 }
