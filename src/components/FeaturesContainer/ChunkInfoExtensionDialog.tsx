@@ -1,11 +1,13 @@
 import { forwardRef, useEffect, useRef, useState } from "react"
 import { ChunkContainer } from "../ChunkContainer/ChunkContainer"
 import { ChunkData } from "@/scripts/chunks/chunkHandler"
-import CloseBold from '@/assets/close_bold.svg?react'
+import { useCloseDialog_clickHandler } from "@/scripts/frontend.utils"
+import CloseBoldIcon from '@/assets/close_bold.svg?react'
 import autosize from "autosize"
 import './ChunkInfoExtensionDialog.css'
 
 export const ChunkInfoExtensionDialog = forwardRef<HTMLDialogElement>((_, ref) => {
+    const { mouseDown, mouseUp } = useCloseDialog_clickHandler()
     const [chunksToAdd, setChunksToAdd] = useState<ChunkData[]>([])
     const [removeAllChunks, setRemoveAllChunks] = useState(false)
     const ref_textarea = useRef<HTMLTextAreaElement>(null)
@@ -21,7 +23,7 @@ export const ChunkInfoExtensionDialog = forwardRef<HTMLDialogElement>((_, ref) =
         // TODO: save_extension
     }
 
-    function close() {
+    function close_dialog() {
         const dialog = ref as React.RefObject<HTMLDialogElement>
         dialog?.current?.close()
     }
@@ -29,7 +31,7 @@ export const ChunkInfoExtensionDialog = forwardRef<HTMLDialogElement>((_, ref) =
     function confirm_close() {
         save_extension()
 
-        close()
+        close_dialog()
         clear_state()
     }
 
@@ -47,25 +49,10 @@ export const ChunkInfoExtensionDialog = forwardRef<HTMLDialogElement>((_, ref) =
             ref_textarea.current.value = ''
     }
 
-    function dialog_onClick(e: React.MouseEvent<HTMLDialogElement>) {
-        const dialog = e.currentTarget
-        const rect = dialog.getBoundingClientRect()
-        const isInDialog = (
-            rect.top <= e.clientY &&
-            e.clientY <= rect.top + rect.height &&
-            rect.left <= e.clientX &&
-            e.clientX <= rect.left + rect.width
-        )
-
-        if (!isInDialog) {
-            dialog.close()
-        }
-    }
-
 
 
     return (
-        <dialog onClick={dialog_onClick} ref={ref}>
+        <dialog onMouseDown={mouseDown} onMouseUp={mouseUp} ref={ref}>
             <h2>Add chunk info extension</h2>
 
             <div>
@@ -94,11 +81,11 @@ export const ChunkInfoExtensionDialog = forwardRef<HTMLDialogElement>((_, ref) =
 
             <div className="buttons">
                 <button onClick={confirm_close} className="confirm_button">Confirm</button>
-                <button onClick={close} className="cancel_button">Cancel</button>
+                <button onClick={close_dialog} className="cancel_button">Cancel</button>
             </div>
 
-            <button onClick={close} className='close_button'>
-                <CloseBold color="whitesmoke" />
+            <button onClick={close_dialog} className='close_button'>
+                <CloseBoldIcon color="whitesmoke" />
             </button>
 
         </dialog>
