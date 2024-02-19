@@ -2,7 +2,7 @@
   display: inline-block;
   padding: 5px;
   background-color: transparent;
-  color: royalblue;
+  color: var(--button-blue);
   margin-left: 4px;
   margin-right: 4px;
   height: 35px;
@@ -11,21 +11,21 @@
 
 .change_view_chunk_button:hover {
   padding: 5px;
-  color: #dedede;
-  background-color: royalblue;
+  color: var(--white-button-hover);
+  background-color: var(--button-blue);
 }
 
 .change_view_chunk_button:active {
   padding: 5px;
-  color: #dedede;
-  background-color: #2a4eba
+  color: var(--white-button-hover);
+  background-color: var(--button-blue-active);
 }
 
 .export_chunk_button {
   display: inline-block;
   padding: 5px;
   background-color: transparent;
-  color: green;
+  color: var(--button-green);
   margin-left: 4px;
   margin-right: 4px;
   height: 35px;
@@ -34,21 +34,21 @@
 
 .export_chunk_button:hover {
   padding: 5px;
-  color: #dedede;
-  background-color: green;
+  color: var(--white-button-hover);
+  background-color: var(--button-green);
 }
 
 .export_chunk_button:active {
   padding: 5px;
-  color: #dedede;
-  background-color: #006a00
+  color: var(--white-button-hover);
+  background-color: var(--button-green-active);
 }
 
 .delete_chunk_button {
   display: inline-block;
   padding: 5px;
   background-color: transparent;
-  color: #da0000;
+  color: var(--button-red);
   margin-left: 4px;
   margin-right: 4px;
   height: 35px;
@@ -57,14 +57,14 @@
 
 .delete_chunk_button:hover {
   padding: 5px;
-  color: #dedede;
-  background-color: #da0000;
+  color: var(--white-button-hover);
+  background-color: var(--button-red);
 }
 
 .delete_chunk_button:active {
   padding: 5px;
-  color: #dedede;
-  background-color: #aa0000;
+  color: var(--white-button-hover);
+  background-color: var(--button-red-active);
 }
 
 .editable_textarea {
@@ -83,12 +83,8 @@
 }
 
 tr:nth-child(even) {
-  background-color: #26282c
+  background-color: var(--background-darker);
 }
-
-/* td:first-of-type{
-  padding-left: 10px;
-} */
 
 #parameters_table {
   table-layout: fixed;
@@ -102,25 +98,11 @@ tr:nth-child(even) {
   width: min(110px, 11vw);
 }
 
-/* .param_value_col{
-  width: 100%;
-}  */
-
-/* .param_name,
-.param_text{
-  word-wrap: break-word;
-} */
-
 td {
   padding-left: 10px;
   padding-top: 10px;
   padding-bottom: 10px;
-  /* max-width: 100%; */
 }
-
-/* td {
-  border: 1px solid;
-} */
 
 .chunk {
   display: block;
@@ -139,7 +121,6 @@ td {
   padding-left: 10px;
   padding-right: 10px;
   word-wrap: break-word;
-
 }
 
 .chunk_text {
@@ -147,7 +128,7 @@ td {
   padding-left: 2px;
   padding-right: 2px;
   margin-left: 10px;
-  margin-right: 10px; 
+  margin-right: 10px;
   min-height: 30px;
   white-space: break-spaces;
   overflow: hidden;

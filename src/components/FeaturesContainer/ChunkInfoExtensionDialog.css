@@ -145,13 +145,13 @@
 
 /* Cancel button */
 #features_container dialog .cancel_button {
-    background-color: var(--button-red);
+    background-color: var(--button-red-dark);
 }
 
 #features_container dialog .cancel_button:hover {
-    background-color: var(--button-red-hover);
+    background-color: var(--button-red-dark-hover);
 }
 
 #features_container dialog .cancel_button:active {
-    background-color: var(--button-red-active);
+    background-color: var(--button-red-dark-active);
 }
