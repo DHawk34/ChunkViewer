@@ -1,7 +1,26 @@
+#features_container dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
 dialog[open]#chunkExtensionsListDialog {
     height: 85%;
     max-height: 700px;
     width: 450px;
+}
+
+dialog[open]#chunkExtensionsListDialog h2 {
+    margin-bottom: 8px;
+}
+
+dialog[open]#chunkExtensionsListDialog hr {
+    margin: 0;
+    margin-bottom: 12px;
+    width: 60%;
+    align-self: center;
+}
+
+dialog[open]#chunkExtensionsListDialog .placeholder {
+    text-align: center;
 }
 
 dialog[open]#chunkExtensionsListDialog .extensionNames {
@@ -9,7 +28,7 @@ dialog[open]#chunkExtensionsListDialog .extensionNames {
     flex-direction: column;
     /* flex-grow: 1; */
 
-    padding: 4px 8px;
+    padding: 0;
     width: auto;
 }
 
@@ -32,16 +51,31 @@ dialog[open]#chunkExtensionsListDialog .extension_name {
     border: 1px solid black;
 }
 
+dialog[open]#chunkExtensionsListDialog p {
+    width: 100%;
+    margin: 2px 0;
+    padding: 2px 4px;
+}
+
+dialog[open]#chunkExtensionsListDialog [contenteditable="plaintext-only"] {
+    background-color: white;
+    color: black;
+}
+
 
 
 dialog[open]#chunkExtensionsListDialog .add_button {
-    margin-left: 8px;
     margin-top: 8px;
+    margin-left: auto;
+    margin-right: 0;
+    width: 90px;
+    font-family: Tahoma, Verdana, sans-serif;
 
-    padding-left: 2em;
-    padding-right: 2em;
+    /* padding-left: 2em;
+    padding-right: 2em; */
 
     background-color: var(--button-green);
+    border: 1px solid black;
 }
 
 dialog[open]#chunkExtensionsListDialog .add_button:hover {

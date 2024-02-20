@@ -114,10 +114,10 @@ export function FeaturesContainer(props: FeaturesProps) {
             </div>
 
             <button onClick={openAddExtensionDialog}>TEST 1</button>
-            <ChunkInfoExtensionDialog ref={ref_addExtensionDialog} />
-
             <button onClick={openExtensionsListDialog}>TEST 2</button>
-            <ChunkExtensionsList ref={ref_editExtensionsListDialog} />
+
+            <ChunkExtensionsList ref={ref_editExtensionsListDialog} ref_addExtensionDialog={ref_addExtensionDialog} />
+            <ChunkInfoExtensionDialog ref={ref_addExtensionDialog} />
         </div >
     )
 }

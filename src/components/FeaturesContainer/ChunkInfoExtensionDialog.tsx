@@ -52,7 +52,7 @@ export const ChunkInfoExtensionDialog = forwardRef<HTMLDialogElement>((_, ref) =
 
 
     return (
-        <dialog onMouseDown={mouseDown} onMouseUp={mouseUp} ref={ref}>
+        <dialog className='chunkExtensionDialog' onMouseDown={mouseDown} onMouseUp={mouseUp} ref={ref}>
             <h2>Add chunk info extension</h2>
 
             <div>

@@ -2,14 +2,18 @@ import { forwardRef, useState } from 'react'
 import { DragDropContext, Draggable } from 'react-beautiful-dnd'
 import { StrictModeDroppable } from '../StrictModeDroppable'
 import { getDropEndFunc } from '@/scripts/utils'
-import { useCloseDialog_clickHandler } from '@/scripts/frontend.utils'
+import { enableContentEditable, useCloseDialog_clickHandler } from '@/scripts/frontend.utils'
 import CloseBoldIcon from '@/assets/close_bold.svg?react'
 import EditIcon from '@/assets/edit.svg?react'
 import TrashIcon from '@/assets/trash.svg?react'
 import DragIcon from '@/assets/drag.svg?react'
 import './ChunkExtensionsList.css'
 
-export const ChunkExtensionsList = forwardRef<HTMLDialogElement>((_, ref) => {
+interface Props {
+    ref_addExtensionDialog: React.RefObject<HTMLDialogElement>
+}
+
+export const ChunkExtensionsList = forwardRef<HTMLDialogElement, Props>((props, ref) => {
     const { mouseDown, mouseUp } = useCloseDialog_clickHandler()
     const [extensions, setExtensions] = useState(['hello ajhasdasdsdllasjkhdlkasjhdkjahslkjdhlaksjhdlkajshd askjhgdklasdasdjash lkdhalksj hdkljhsa lkdhlka shkljd ks', 'world', 'test'])
 
@@ -20,11 +24,18 @@ export const ChunkExtensionsList = forwardRef<HTMLDialogElement>((_, ref) => {
 
     function editExtension(index: number) {
         // TODO: edit extension
+        props.ref_addExtensionDialog.current?.showModal()
     }
 
     function deleteExtension(index: number) {
         const arr = extensions.toSpliced(index, 1)
         setExtensions(arr)
+    }
+
+    function extensionName_onBlur(e: React.FocusEvent<HTMLElement>, index: number) {
+        e.currentTarget.contentEditable = 'false'
+        extensions[index] = e.currentTarget.textContent ?? ''
+        setExtensions([...extensions])
     }
 
     function close_dialog() {
@@ -42,12 +53,15 @@ export const ChunkExtensionsList = forwardRef<HTMLDialogElement>((_, ref) => {
                         <DragIcon width="16" height="35" />
                     </div>
 
-                    {index} {x}
+                    <p onDoubleClick={enableContentEditable} onBlur={e => extensionName_onBlur(e, index)}>
+                        {x}
+                    </p>
+
                     <button className='edit_button'><EditIcon width={25} height={25} onClick={() => editExtension(index)} /></button>
                     <button className='delete_button'><TrashIcon width={25} height={25} onClick={() => deleteExtension(index)} /></button>
-                </div>
+                </div >
             }
-        </Draggable>
+        </Draggable >
     })
 
     return (
@@ -55,6 +69,7 @@ export const ChunkExtensionsList = forwardRef<HTMLDialogElement>((_, ref) => {
             <dialog id='chunkExtensionsListDialog' onMouseDown={mouseDown} onMouseUp={mouseUp} ref={ref}>
 
                 <h2>Chunk extensions</h2>
+                <hr/>
 
                 <StrictModeDroppable droppableId='extensionNames'>
                     {(provided) =>
@@ -62,13 +77,17 @@ export const ChunkExtensionsList = forwardRef<HTMLDialogElement>((_, ref) => {
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
-                            {extensionNames}
+                            {
+                                extensionNames.length > 0
+                                    ? extensionNames
+                                    : <p className='placeholder'>There's nothing here yet.</p>
+                            }
                             {provided.placeholder}
                         </div>
                     }
                 </StrictModeDroppable>
 
-                <button onClick={addExtension} className='add_button'>Add</button>
+                <button onClick={addExtension} className='add_button'>+</button>
 
                 <button onClick={close_dialog} className='close_button'>
                     <CloseBoldIcon color="whitesmoke" />
