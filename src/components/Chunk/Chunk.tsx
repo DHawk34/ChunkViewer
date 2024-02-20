@@ -5,7 +5,7 @@ import { Draggable } from 'react-beautiful-dnd';
 import { UnlistenFn } from "@tauri-apps/api/event";
 import { chunkNameIsUnsafe, maxChunkNameSize } from "@/scripts/chunks/chunkSaver";
 import { settingsManager } from "@/scripts/settings/settings";
-import { getSelectionLength } from "@/scripts/frontend.utils";
+import { enableContentEditable, getSelectionLength } from "@/scripts/frontend.utils";
 import ExportIcon from '@/assets/export.svg?react'
 import TrashIcon from '@/assets/trash.svg?react'
 import DragIcon from '@/assets/drag.svg?react'
@@ -170,7 +170,7 @@ export function Chunk(props: Props) {
                         }
                         }><DragIcon width="16" height="35" /></div>
 
-                        <div ref={chunkName} className='chunk_name' onDoubleClick={enterEditMode} onBlur={chunkName_onBlur} onKeyDown={limitChunkNameMaxLength_onKeyDown} onPaste={limitChunkNameMaxLength_onPaste}>
+                        <div ref={chunkName} className='chunk_name' onDoubleClick={enableContentEditable} onBlur={chunkName_onBlur} onKeyDown={limitChunkNameMaxLength_onKeyDown} onPaste={limitChunkNameMaxLength_onPaste}>
                             {props.chunk.name}
                         </div>
                         {
@@ -193,7 +193,7 @@ export function Chunk(props: Props) {
                                 </tbody>
                             </table>
                             :
-                            <p className='chunk_text' onDoubleClick={enterEditMode} onBlur={chunkValue_onBlur}>
+                            <p className='chunk_text' onDoubleClick={enableContentEditable} onBlur={chunkValue_onBlur}>
                                 {props.chunk.value}
                             </p>
                     }
@@ -201,14 +201,4 @@ export function Chunk(props: Props) {
             )}
         </Draggable>
     )
-}
-
-
-
-function enterEditMode(e: React.MouseEvent<HTMLElement>) {
-    e.currentTarget.contentEditable = 'plaintext-only'
-    e.currentTarget.focus()
-
-    const selection = window.getSelection()
-    selection?.getRangeAt(0).collapse()
 }

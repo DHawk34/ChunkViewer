@@ -59,6 +59,16 @@ export function getSelectionLength(window: Window): number {
 
 
 
+export function enableContentEditable(e: React.MouseEvent<HTMLElement>, mode: string = 'plaintext-only') {
+    e.currentTarget.contentEditable = mode
+    e.currentTarget.focus()
+
+    const selection = window.getSelection()
+    selection?.getRangeAt(0).collapse()
+}
+
+
+
 /**
  * @param action function that is called on mouseUp event. Takes as input start click position (captured on mouseDown)
  * @returns mouseDown & mouseUp events that have to be transfered to desired object
