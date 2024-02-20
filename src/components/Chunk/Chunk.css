@@ -129,7 +129,7 @@ td {
   font-size: 1.1em;
 }
 
-*[contenteditable="plaintext-only"] {
+.chunk [contenteditable="plaintext-only"] {
   background-color: white;
   color: black;
 }
