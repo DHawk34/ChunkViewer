@@ -60,6 +60,7 @@ export function Chunk(props: Props) {
     // on chunk.value changed
     useEffect(() => {
         setParsedParams(undefined)
+        setParsedBlocks(undefined)
     }, [props.chunk.value])
 
     function onAllowUnsafeSettingChanged(value: boolean) {
