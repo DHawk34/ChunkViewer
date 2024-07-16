@@ -5,10 +5,10 @@ export type ComfyBlock = {
 }
 
 export function parsePrompt(prompt: string): ComfyBlock[] {
-    const result: ComfyBlock[] = []
-
+    // console.log(['174', 1]?.constructor === Object)
+    const usedBlocks = new Set<string>()
     if (prompt.length === 0) {
-        return result
+        return []
     }
 
     let jsonObj = JSON.parse(prompt)
@@ -16,7 +16,7 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
 
     console.log(jsonObj)
 
-    let blocks = Object.keys(myObj).map(function (key) {
+    const blocks = Object.keys(myObj).map(function (key) {
         let obj: ComfyBlock = { id: key, name: myObj[key].class_type, value: {} };
         delete myObj[key].class_type
 
@@ -25,15 +25,18 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
     });
 
     blocks.forEach(block => {
-        mergeBlocks(myObj, block)
+        mergeBlocks(myObj, block, usedBlocks)
     });
 
-    console.log(blocks)
+    const result = blocks.filter(x => !usedBlocks.has(x.id))
+
+    console.log(myObj)
+    console.log(result)
 
     return result
 }
 
-function mergeBlocks(jsonObj: any, block: { [key: string]: any; }) {
+function mergeBlocks(jsonObj: any, block: { [key: string]: any; }, usedBlocks: Set<string>) {
     Object.entries(block).forEach(function ([key, value]) {
 
         //Распаковка inputs
@@ -44,31 +47,31 @@ function mergeBlocks(jsonObj: any, block: { [key: string]: any; }) {
 
             delete block[key]
 
-            mergeBlocks(jsonObj, block)
+            mergeBlocks(jsonObj, block, usedBlocks)
             return
         }
 
         //Вставка блока вместо ссылки
         if (Array.isArray(value) && value.length === 2) {
             if (typeof value[0] === 'string' && typeof value[1] === 'number') {
+                usedBlocks.add(value[0])
                 block[key] = jsonObj[value[0]]
-                mergeBlocks(jsonObj, block[key])
+                mergeBlocks(jsonObj, block[key], usedBlocks)
             }
         }
 
         //Продолжение проверки
-        if (typeof value === 'object') {
+        if (value?.constructor === Object) {
             let valueKeys = Object.keys(value)
 
             //Упрощение дерева
-            if (valueKeys.length === 1 && typeof value[valueKeys[0]] !== 'object') {
+            if (valueKeys.length === 1 && value[valueKeys[0]]?.constructor !== Object) {
                 block[`${key}/${valueKeys[0]}`] = value[valueKeys[0]]
                 delete block[key]
             }
 
-            mergeBlocks(jsonObj, value)
+            mergeBlocks(jsonObj, value, usedBlocks)
         }
 
-        // mergeBlocks(jsonObj, block)
     });
 }
