@@ -1,0 +1,114 @@
+[
+    {
+        "id": "16",
+        "name": "PreviewImage",
+        "value": {
+            "images": {
+                "samples": {
+                    "seed": 781818338891090,
+                    "steps": 16,
+                    "cfg": 7,
+                    "sampler_name": "dpmpp_2m",
+                    "scheduler": "karras",
+                    "denoise": 0.4,
+                    "positive": {
+                        "text": "1girl, bangs, bare shoulders, ear piercing, earrings, eyebrows visible through hair, hairband, jacket, jewelry, off shoulder, open mouth, piercing, simple background, smile, solo, teeth, upper body, score_9, score_8_up, score_7_up, 4k, source_anime, masterpiece, highest quality, anime style",
+                        "clip": {
+                            "stop_at_clip_layer": -2,
+                            "clip/ckpt_name": "ComfyMangoV2.5_00001_.safetensors"
+                        }
+                    },
+                    "negative": {
+                        "text": "score_6, score_5, 3d, (censored:1.1), source_cartoon, source_furry, source_pony, photorealistic, realistic, sketch, painting",
+                        "clip": {
+                            "stop_at_clip_layer": -2,
+                            "clip/ckpt_name": "ComfyMangoV2.5_00001_.safetensors"
+                        }
+                    },
+                    "latent_image": {
+                        "pixels": {
+                            "upscale_method": "bilinear",
+                            "width": 1632,
+                            "height": 2448,
+                            "crop": "disabled",
+                            "image": {
+                                "image": {
+                                    "samples": {
+                                        "seed": 324599695340006,
+                                        "steps": 28,
+                                        "cfg": 7,
+                                        "sampler_name": "dpmpp_2m",
+                                        "scheduler": "karras",
+                                        "denoise": 1,
+                                        "positive": {
+                                            "text": "1girl, bangs, bare shoulders, ear piercing, earrings, eyebrows visible through hair, hairband, jacket, jewelry, off shoulder, open mouth, piercing, simple background, smile, solo, teeth, upper body, score_9, score_8_up, score_7_up, 4k, source_anime, masterpiece, highest quality, anime style",
+                                            "clip": {
+                                                "stop_at_clip_layer": -2,
+                                                "clip/ckpt_name": "ComfyMangoV2.5_00001_.safetensors"
+                                            }
+                                        },
+                                        "negative": {
+                                            "text": "score_6, score_5, 3d, (censored:1.1), source_cartoon, source_furry, source_pony, photorealistic, realistic, sketch, painting",
+                                            "clip": {
+                                                "stop_at_clip_layer": -2,
+                                                "clip/ckpt_name": "ComfyMangoV2.5_00001_.safetensors"
+                                            }
+                                        },
+                                        "latent_image": {
+                                            "width": 816,
+                                            "height": 1224,
+                                            "batch_size": 1
+                                        },
+                                        "model/ckpt_name": "ComfyMangoV2.5_00001_.safetensors"
+                                    },
+                                    "vae/ckpt_name": "ComfyMangoV2.5_00001_.safetensors"
+                                },
+                                "upscale_model/model_name": "4x-UltraSharp.pth"
+                            }
+                        },
+                        "vae/ckpt_name": "ComfyMangoV2.5_00001_.safetensors"
+                    },
+                    "model/ckpt_name": "ComfyMangoV2.5_00001_.safetensors"
+                },
+                "vae/ckpt_name": "ComfyMangoV2.5_00001_.safetensors"
+            }
+        }
+    },
+    {
+        "id": "19",
+        "name": "PreviewImage",
+        "value": {
+            "images": {
+                "samples": {
+                    "seed": 324599695340006,
+                    "steps": 28,
+                    "cfg": 7,
+                    "sampler_name": "dpmpp_2m",
+                    "scheduler": "karras",
+                    "denoise": 1,
+                    "positive": {
+                        "text": "1girl, bangs, bare shoulders, ear piercing, earrings, eyebrows visible through hair, hairband, jacket, jewelry, off shoulder, open mouth, piercing, simple background, smile, solo, teeth, upper body, score_9, score_8_up, score_7_up, 4k, source_anime, masterpiece, highest quality, anime style",
+                        "clip": {
+                            "stop_at_clip_layer": -2,
+                            "clip/ckpt_name": "ComfyMangoV2.5_00001_.safetensors"
+                        }
+                    },
+                    "negative": {
+                        "text": "score_6, score_5, 3d, (censored:1.1), source_cartoon, source_furry, source_pony, photorealistic, realistic, sketch, painting",
+                        "clip": {
+                            "stop_at_clip_layer": -2,
+                            "clip/ckpt_name": "ComfyMangoV2.5_00001_.safetensors"
+                        }
+                    },
+                    "latent_image": {
+                        "width": 816,
+                        "height": 1224,
+                        "batch_size": 1
+                    },
+                    "model/ckpt_name": "ComfyMangoV2.5_00001_.safetensors"
+                },
+                "vae/ckpt_name": "ComfyMangoV2.5_00001_.safetensors"
+            }
+        }
+    }
+]

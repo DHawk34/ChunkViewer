@@ -5,33 +5,34 @@ export type ComfyBlock = {
 }
 
 export function parsePrompt(prompt: string): ComfyBlock[] {
-    // console.log(['174', 1]?.constructor === Object)
+    if (prompt.length === 0) return []
+
     const usedBlocks = new Set<string>()
-    if (prompt.length === 0) {
+
+    try {
+        var json = JSON.parse(prompt)
+    } catch (error) {
         return []
     }
 
-    let jsonObj = JSON.parse(prompt)
-    let myObj = structuredClone(jsonObj)
+    // console.log(structuredClone(json))
 
-    console.log(jsonObj)
+    const blocks = Object.keys(json).map(function (key) {
+        const block: ComfyBlock = { id: key, name: json[key].class_type, value: {} };
+        delete json[key].class_type
 
-    const blocks = Object.keys(myObj).map(function (key) {
-        let obj: ComfyBlock = { id: key, name: myObj[key].class_type, value: {} };
-        delete myObj[key].class_type
-
-        obj.value = myObj[key]
-        return obj;
-    });
+        block.value = json[key]
+        return block;
+    })
 
     blocks.forEach(block => {
-        mergeBlocks(myObj, block, usedBlocks)
-    });
+        mergeBlocks(json, block, usedBlocks)
+    })
 
     const result = blocks.filter(x => !usedBlocks.has(x.id))
 
-    console.log(myObj)
-    console.log(result)
+    // console.log(json)
+    // console.log(result)
 
     return result
 }
@@ -39,7 +40,7 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
 function mergeBlocks(jsonObj: any, block: { [key: string]: any; }, usedBlocks: Set<string>) {
     Object.entries(block).forEach(function ([key, value]) {
 
-        //Распаковка inputs
+        // Распаковка inputs
         if (key === 'inputs') {
             Object.entries(value as { [key: string]: any; }).forEach(function ([Vkey, Vvalue]) {
                 block[Vkey] = Vvalue
@@ -51,7 +52,7 @@ function mergeBlocks(jsonObj: any, block: { [key: string]: any; }, usedBlocks: S
             return
         }
 
-        //Вставка блока вместо ссылки
+        // Вставка блока вместо ссылки
         if (Array.isArray(value) && value.length === 2) {
             if (typeof value[0] === 'string' && typeof value[1] === 'number') {
                 usedBlocks.add(value[0])
@@ -60,11 +61,11 @@ function mergeBlocks(jsonObj: any, block: { [key: string]: any; }, usedBlocks: S
             }
         }
 
-        //Продолжение проверки
+        // Продолжение проверки
         if (value?.constructor === Object) {
             let valueKeys = Object.keys(value)
 
-            //Упрощение дерева
+            // Упрощение дерева
             if (valueKeys.length === 1 && value[valueKeys[0]]?.constructor !== Object) {
                 block[`${key}/${valueKeys[0]}`] = value[valueKeys[0]]
                 delete block[key]
@@ -72,6 +73,5 @@ function mergeBlocks(jsonObj: any, block: { [key: string]: any; }, usedBlocks: S
 
             mergeBlocks(jsonObj, value, usedBlocks)
         }
-
-    });
+    })
 }
