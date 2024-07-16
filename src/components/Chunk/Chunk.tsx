@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import chunkHandler, { ChunkData } from '@/scripts/chunks/chunkHandler';
-import { Param, parseParameters } from '@/scripts/sdParamParser';
+import { Param, parseParameters } from '@/scripts/parsers/sdWebUIParamParser';
 import { Draggable } from 'react-beautiful-dnd';
 import { UnlistenFn } from "@tauri-apps/api/event";
 import { chunkNameIsUnsafe, maxChunkNameSize } from "@/scripts/chunks/chunkSaver";
@@ -11,6 +11,7 @@ import TrashIcon from '@/assets/trash.svg?react'
 import DragIcon from '@/assets/drag.svg?react'
 import RefreshIcon from '@/assets/refresh.svg?react'
 import './Chunk.css'
+import { ComfyBlock, parsePrompt } from "@/scripts/parsers/sdComfyPromptParser";
 
 type Props = {
     index: number
@@ -20,8 +21,9 @@ type Props = {
 }
 
 export function Chunk(props: Props) {
-    const [showParameters, setShowParameters] = useState(false)
+    const [showAnotherView, setShowParameters] = useState(false)
     const [parsedParams, setParsedParams] = useState<Param[] | undefined>(undefined)
+    const [parsedBlocks, setParsedBlocks] = useState<ComfyBlock[] | undefined>(undefined)
     const unlistenResize = useRef<UnlistenFn>()
     const chunkName = useRef<HTMLDivElement>(null)
 
@@ -72,11 +74,11 @@ export function Chunk(props: Props) {
     }
 
     function changeView() {
-        setShowParameters(!showParameters)
+        setShowParameters(!showAnotherView)
     }
 
     function exportChunk() {
-        if (showParameters) {
+        if (showAnotherView) {
             chunkHandler.exportParameters([props.chunk])
                 .catch(e => console.log(e))
         }
@@ -95,6 +97,18 @@ export function Chunk(props: Props) {
         setParsedParams(params)
 
         return params
+    }
+
+    function getParsedPrompts(): ComfyBlock[] {
+        if (parsedBlocks) {
+            parsePrompt(props.chunk.value)
+            return parsedBlocks
+        }
+
+        const blocks = parsePrompt(props.chunk.value)
+        setParsedBlocks(blocks)
+
+        return blocks
     }
 
 
@@ -151,10 +165,29 @@ export function Chunk(props: Props) {
 
 
 
-    const parameters = showParameters ? getParsedParams().map((param: Param, index: number) => {
+    const parameters = showAnotherView && props.chunk.name === 'parameters' ? getParsedParams().map((param: Param, index: number) => {
         return <tr key={index}>
             <td className='param_name'>{param.key}</td>
             <td className='param_text'>{param.value}</td>
+        </tr>
+    }) : undefined
+
+    const paramsTable = (
+    <table id='parameters_table'>
+        <colgroup>
+            <col className='param_name_col' />
+            <col className='param_value_col' />
+        </colgroup>
+        <tbody>
+            {parameters}
+        </tbody>
+    </table>
+    )
+
+    const prompts = showAnotherView && props.chunk.name === 'prompt' ? getParsedPrompts().map((block: ComfyBlock, index: number) => {
+        return <tr key={index}>
+            <td className='param_name'>{block.name}</td>
+            <td className='param_text'>{block.name}</td>
         </tr>
     }) : undefined
 
@@ -177,21 +210,19 @@ export function Chunk(props: Props) {
                             props.chunk.name === 'parameters' &&
                             <button className='change_view_chunk_button' onClick={changeView}><RefreshIcon width="25" height="25" /></button>
                         }
+                        {
+                            props.chunk.name === 'prompt' &&
+                            <button className='change_view_chunk_button' onClick={changeView}><RefreshIcon width="25" height="25" /></button>
+                        }
 
                         <button className='export_chunk_button' onClick={exportChunk}><ExportIcon width="25" height="25" /></button>
                         <button className='delete_chunk_button' onClick={deleteChunk}><TrashIcon width="25" height="25" /></button>
                     </div>
                     {
-                        showParameters && props.chunk.name === 'parameters' ?
-                            <table id='parameters_table'>
-                                <colgroup>
-                                    <col className='param_name_col' />
-                                    <col className='param_value_col' />
-                                </colgroup>
-                                <tbody>
-                                    {parameters}
-                                </tbody>
-                            </table>
+                        showAnotherView && props.chunk.name === 'parameters' ?
+                            paramsTable
+                            : showAnotherView && props.chunk.name === 'prompt' ?
+                            prompts
                             :
                             <p className='chunk_text' onDoubleClick={enableContentEditable} onBlur={chunkValue_onBlur}>
                                 {props.chunk.value}

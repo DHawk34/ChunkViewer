@@ -1,5 +1,5 @@
 import { txtSaveFilePickerOptions, save } from "../save.utils";
-import { Param, parseParameters } from "../sdParamParser";
+import { Param, parseParameters } from "../parsers/sdWebUIParamParser";
 import { varStore } from "../variableStore";
 import { ChunkData } from "./chunkHandler";
 
