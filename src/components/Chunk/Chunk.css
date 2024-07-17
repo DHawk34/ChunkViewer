@@ -89,11 +89,14 @@ tr:nth-child(even) {
   width: min(110px, 11vw);
 }
 
-td {
-  padding-left: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+#parameters_table td{
+  padding: 10px;
 }
+
+
+/* td {
+  padding: 10px;
+} */
 
 .chunk {
   display: block;
@@ -111,8 +114,6 @@ td {
 }
 
 .chunk>* {
-  padding-left: 10px;
-  padding-right: 10px;
   word-wrap: break-word;
 }
 
@@ -138,8 +139,9 @@ td {
 .chunk_header {
   display: flex;
   align-items: center;
+  margin: 0;
   /* height: 100%; */
-  padding: 25px 10px;
+  padding: 15px 10px;
   border-radius: 8px 8px 0 0;
   background-color: var(--foreground);
 }

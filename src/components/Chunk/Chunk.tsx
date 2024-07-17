@@ -10,8 +10,11 @@ import ExportIcon from '@/assets/export.svg?react'
 import TrashIcon from '@/assets/trash.svg?react'
 import DragIcon from '@/assets/drag.svg?react'
 import RefreshIcon from '@/assets/refresh.svg?react'
+
 import './Chunk.css'
 import { ComfyBlock, parsePrompt } from "@/scripts/parsers/sdComfyPromptParser";
+import { Expandable } from "../Expandable/Expandable";
+import { isObject } from "@/scripts/utils";
 
 type Props = {
     index: number
@@ -174,23 +177,67 @@ export function Chunk(props: Props) {
     }) : undefined
 
     const paramsTable = (
-    <table id='parameters_table'>
-        <colgroup>
-            <col className='param_name_col' />
-            <col className='param_value_col' />
-        </colgroup>
-        <tbody>
-            {parameters}
-        </tbody>
-    </table>
+        <table id='parameters_table'>
+            <colgroup>
+                <col className='param_name_col' />
+                <col className='param_value_col' />
+            </colgroup>
+            <tbody>
+                {parameters}
+            </tbody>
+        </table>
     )
 
-    const prompts = showAnotherView && props.chunk.name === 'prompt' ? getParsedPrompts().map((block: ComfyBlock, index: number) => {
-        return <tr key={index}>
-            <td className='param_name'>{block.name}</td>
-            <td className='param_text'>{block.name}</td>
-        </tr>
+    const prompts = showAnotherView && props.chunk.name === 'prompt' ? getParsedPrompts().map((block: ComfyBlock) => {
+        return createExpandable(block)
     }) : undefined
+
+    function createExpandable(block: ComfyBlock) {
+        return (<Expandable header={`${block.id}. ${block.name}`} opened key={block.id}>{getExpandableContent(block.value, 3)}</Expandable>)
+    }
+
+    function getExpandableContent(block: { [key: string]: any }, openLevel: number = 0, curLevel: number = 0) {
+        curLevel++
+        const keys = Object.keys(block)
+        const table: { name: string, value: any }[] = []
+        let lastRes: JSX.Element[] = []
+
+        keys.forEach(key => {
+
+            const value = block[key]
+            // console.log(value)
+
+            if (!isObject(value))
+                table.push({ name: key, value: value })
+            else {
+                lastRes.push(<Expandable header={key} opened={openLevel >= curLevel}>{getExpandableContent(value, openLevel, curLevel)}</Expandable>)
+                // console.log(lastRes)
+            }
+
+        })
+
+        const promptsValues = table.map((row, index: number) => {
+            return <tr key={index}>
+                <td className='param_name'>{row.name}</td>
+                <td className='param_text'>{row.value}</td>
+            </tr>
+        })
+
+        return (
+            <>
+                <table id='parameters_table'>
+                    <colgroup>
+                        <col className='param_name_col' />
+                        <col className='param_value_col' />
+                    </colgroup>
+                    <tbody>
+                        {promptsValues}
+                    </tbody>
+                </table>
+                {lastRes}
+            </>
+        )
+    }
 
     return (
         <Draggable draggableId={props.index.toString()} key={props.index} index={props.index}>
@@ -204,9 +251,9 @@ export function Chunk(props: Props) {
                         }
                         }><DragIcon width="16" height="35" /></div>
 
-                        <div ref={chunkName} className='chunk_name' onDoubleClick={enableContentEditable} onBlur={chunkName_onBlur} onKeyDown={limitChunkNameMaxLength_onKeyDown} onPaste={limitChunkNameMaxLength_onPaste}>
+                        <p ref={chunkName} className='chunk_name' onDoubleClick={enableContentEditable} onBlur={chunkName_onBlur} onKeyDown={limitChunkNameMaxLength_onKeyDown} onPaste={limitChunkNameMaxLength_onPaste}>
                             {props.chunk.name}
-                        </div>
+                        </p>
                         {
                             props.chunk.name === 'parameters' &&
                             <button className='change_view_chunk_button' onClick={changeView}><RefreshIcon width="25" height="25" /></button>
@@ -223,11 +270,11 @@ export function Chunk(props: Props) {
                         showAnotherView && props.chunk.name === 'parameters' ?
                             paramsTable
                             : showAnotherView && props.chunk.name === 'prompt' ?
-                            prompts
-                            :
-                            <p className='chunk_text' onDoubleClick={enableContentEditable} onBlur={chunkValue_onBlur}>
-                                {props.chunk.value}
-                            </p>
+                                prompts
+                                :
+                                <p className='chunk_text' onDoubleClick={enableContentEditable} onBlur={chunkValue_onBlur}>
+                                    {props.chunk.value}
+                                </p>
                     }
                 </div>
             )}
