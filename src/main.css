@@ -142,6 +142,9 @@ textarea {
   cursor: grab;
 }
 
+.hide{
+  display: none;
+}
 
 
 
