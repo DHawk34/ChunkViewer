@@ -21,7 +21,7 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
         return []
     }
 
-    console.log(structuredClone(json))
+    // console.log(structuredClone(json))
 
     const blocks = Object.keys(json).map(key => {
         const block: ComfyBlock = {
@@ -32,11 +32,6 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
         delete json[key].class_type
 
         simplifyBlocks2(block.value)
-        // mergeBlocks_3(json, block.value, usedBlocks)
-        // simplifyPropertyTree(block.value)
-        // console.log(block)
-
-        // mergeBlocks_2(json, block.value, usedBlocks)
         return block
     })
 
@@ -44,17 +39,15 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
         mergeBlocks_3(json, block.value, usedBlocks)
     });
 
-    // console.log(blocks)
-    // console.log(usedBlocks)
     const result = blocks.filter(x => !usedBlocks.has(x.id) && Object.keys(x.value).length > 0)
-    
+
     result.forEach(block => {
         simplifyPropertyTree(block.value)
     })
 
 
     // console.log(json)
-    console.log(result)
+    // console.log(result)
 
     return result
 }
