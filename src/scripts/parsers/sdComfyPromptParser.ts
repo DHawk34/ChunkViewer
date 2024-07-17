@@ -21,7 +21,7 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
         return []
     }
 
-    // console.log(structuredClone(json))
+    console.log(structuredClone(json))
 
     const blocks = Object.keys(json).map(key => {
         const block: ComfyBlock = {
@@ -31,21 +31,30 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
         }
         delete json[key].class_type
 
-        simplifyBlocks(block.value)
-        simplifyPropertyTree(block.value)
-        console.log(block)
+        simplifyBlocks2(block.value)
+        // mergeBlocks_3(json, block.value, usedBlocks)
+        // simplifyPropertyTree(block.value)
+        // console.log(block)
 
         // mergeBlocks_2(json, block.value, usedBlocks)
         return block
     })
 
+    blocks.forEach(block => {
+        mergeBlocks_3(json, block.value, usedBlocks)
+    });
+
     // console.log(blocks)
     // console.log(usedBlocks)
     const result = blocks.filter(x => !usedBlocks.has(x.id) && Object.keys(x.value).length > 0)
+    
+    result.forEach(block => {
+        simplifyPropertyTree(block.value)
+    })
 
 
     // console.log(json)
-    // console.log(result)
+    console.log(result)
 
     return result
 }
@@ -68,8 +77,23 @@ function simplifyBlocks(block: BlockValue) {
         }
         return
     }
+}
 
+function simplifyBlocks2(block: BlockValue) {
+    const keys = Object.keys(block)
 
+    if (keys.length === 1) {
+        const key = keys[0]
+        const value = block[key] as BlockValue
+
+        if (isObject(value)) {
+            Object.entries(value).forEach(([vKey, vValue]) => {
+                block[vKey] = vValue
+            })
+
+            delete block[key]
+        }
+    }
 }
 
 function simplifyPropertyTree(block: BlockValue) {
@@ -78,10 +102,10 @@ function simplifyPropertyTree(block: BlockValue) {
     keys.forEach(key => {
         const value = block[key]
 
-        if (isObject(value)) {
-            simplifyPropertyTree(value)
-        }
+        if (!isObject(value))
+            return
 
+        simplifyPropertyTree(value)
         const childKeys = Object.keys(value)
 
         // Упрощение дерева
@@ -125,6 +149,32 @@ function simplifyPropertyTree(block: BlockValue) {
 
 //     return false
 // }
+
+function mergeBlocks_3(json: any, block: BlockValue, usedBlocks: Set<string>) {
+    const keys = Object.keys(block)
+    keys.forEach(key => {
+        const value = block[key]
+
+        if (isObject(value)) {
+            mergeBlocks_3(json, value, usedBlocks)
+        }
+
+        // Замена всех ссылок на объекты блоков
+        if (Array.isArray(value) && value.length === 2 && typeof value[0] === 'string') {
+
+            const anotherBlockID = value[0]
+            const anotherBlock = json[anotherBlockID]
+
+            block[key] = anotherBlock
+
+            // console.log(block)
+
+            if (anotherBlock) {
+                usedBlocks.add(anotherBlockID)
+            }
+        }
+    })
+}
 
 function mergeBlocks_2(json: any, block: BlockValue, usedBlocks: Set<string>) {
     const keys = Object.keys(block)
