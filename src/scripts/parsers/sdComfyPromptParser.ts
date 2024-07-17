@@ -47,7 +47,7 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
 
 
     // console.log(json)
-    // console.log(result)
+    console.log(result)
 
     return result
 }
