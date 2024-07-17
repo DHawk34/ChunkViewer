@@ -79,21 +79,19 @@ function simplifyPropertyTree(block: BlockValue) {
         const value = block[key]
 
         if (isObject(value)) {
-            const childKeys = Object.keys(value)
+            simplifyPropertyTree(value)
+        }
 
-            // Упрощение дерева
-            if (childKeys.length === 1) {
-                const childKey = childKeys[0]
-                const childValue = value[childKey]
-                const propName = `${key}/${childKey}`
+        const childKeys = Object.keys(value)
 
-                block[propName] = childValue
-                delete block[key]
+        // Упрощение дерева
+        if (childKeys.length === 1) {
+            const childKey = childKeys[0]
+            const childValue = value[childKey]
+            const propName = `${key}/${childKey}`
 
-                simplifyPropertyTree(block)
-            }
-            else
-                simplifyPropertyTree(value)
+            block[propName] = childValue
+            delete block[key]
         }
     })
 }
