@@ -55,3 +55,7 @@ export function getDropEndFunc<T>(data: T[], setData: (data: T[]) => void) {
         setData(newArr)
     }
 }
+
+export function isObject(something: any) {
+    return something?.constructor === Object
+}
