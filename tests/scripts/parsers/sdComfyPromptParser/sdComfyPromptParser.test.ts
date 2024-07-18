@@ -62,6 +62,90 @@ test('simplify_block_start', () => {
     expect(result).toEqual(expected)
 })
 
+test('simplify_block_link', () => {
+    // arrange
+    const input = JSON.stringify({
+        "1": {
+            "inputs": {
+                "images": [
+                    "2",
+                    0
+                ]
+            },
+            "class_type": "TestBlock"
+        },
+        "2": {
+            "inputs": {
+                "first": {
+                    text: 'text'
+                },
+                "second": 100
+            },
+            "class_type": "TestBlock"
+        }
+    })
+
+    const expected = [{
+        id: '1',
+        name: 'TestBlock',
+        value: {
+            'first/text': 'text',
+            second: 100
+        }
+    }]
+
+    // act
+    const result = parsePrompt(input)
+
+    // assert
+    expect(result).toEqual(expected)
+})
+
+test('simplify_block_link_2', () => {
+    // arrange
+    const input = JSON.stringify({
+        "1": {
+            "inputs": {
+                "value_1": 100,
+                "value_2": {
+                    "images": [
+                        "2",
+                        0
+                    ]
+                }
+            },
+            "class_type": "TestBlock"
+        },
+        "2": {
+            "inputs": {
+                "first": {
+                    text: 'text'
+                },
+                "second": 100
+            },
+            "class_type": "TestBlock"
+        }
+    })
+
+    const expected = [{
+        id: '1',
+        name: 'TestBlock',
+        value: {
+            'value_1': 100,
+            'value_2': {
+                'first/text': 'text',
+                second: 100
+            },
+        }
+    }]
+
+    // act
+    const result = parsePrompt(input)
+
+    // assert
+    expect(result).toEqual(expected)
+})
+
 test('invalid_block_id_returns_undefined', () => {
     // arrange
     const input = JSON.stringify({
@@ -273,10 +357,22 @@ test('tree_simplify_with_block_ids_works_as_expected', () => {
     expect(result).toEqual(expected)
 })
 
-test('test_1_returns_expected', () => {
+test('parse_file_1_returns_expected', () => {
     // arrange
     const input = readFile('input_1.json')
     const expected = JSON.parse(readFile('output_1.json'))
+
+    // act
+    const result = parsePrompt(input)
+
+    // assert
+    expect(result).toEqual(expected)
+})
+
+test('parse_file_2_returns_expected', () => {
+    // arrange
+    const input = readFile('input_2.json')
+    const expected = JSON.parse(readFile('output_2.json'))
 
     // act
     const result = parsePrompt(input)

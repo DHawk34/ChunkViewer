@@ -40,10 +40,11 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
 
     for (const block of blocks) {
         simplifyPropertyTree(block.value)
+        // simplifyBlockStart(block.value) // Это чинит некоторые тесты, а некоторые ломает. Надо делать функу рекурсивной (?)
     }
 
     // console.log(json)
-    console.log(finalBlocks)
+    // console.log(finalBlocks)
 
     return finalBlocks
 }
