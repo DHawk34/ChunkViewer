@@ -34,6 +34,34 @@ test('empty_block_returns_empty_array', () => {
     expect(result_2).toEqual([])
 })
 
+test('simplify_block_start', () => {
+    // arrange
+    const input = JSON.stringify({
+        "2": {
+            "inputs": {
+                "value_1": 100,
+                "value_2": "text"
+            },
+            "class_type": "TestBlock"
+        }
+    })
+
+    const expected = [{
+        id: '2',
+        name: 'TestBlock',
+        value: {
+            value_1: 100,
+            value_2: 'text',
+        }
+    }]
+
+    // act
+    const result = parsePrompt(input)
+
+    // assert
+    expect(result).toEqual(expected)
+})
+
 test('invalid_block_id_returns_undefined', () => {
     // arrange
     const input = JSON.stringify({
@@ -55,6 +83,101 @@ test('invalid_block_id_returns_undefined', () => {
         value: {
             someValue: 100,
             link: undefined
+        }
+    }]
+
+    // act
+    const result = parsePrompt(input)
+
+    // assert
+    expect(result).toEqual(expected)
+})
+
+test('block_id_is_replaced_by_block_value', () => {
+    // arrange
+    const input = JSON.stringify({
+        "1": {
+            "inputs": {
+                "firstValue": 100,
+                "link": [
+                    "2",
+                    0
+                ]
+            },
+            "class_type": "TestBlock"
+        },
+        "2": {
+            "inputs": {
+                "secondValue": 100,
+                "thirdValue": 100,
+            },
+            "class_type": "TestBlock"
+        },
+    })
+
+    const expected = [{
+        id: '1',
+        name: 'TestBlock',
+        value: {
+            firstValue: 100,
+            link: {
+                secondValue: 100,
+                thirdValue: 100,
+            }
+        }
+    }]
+
+    // act
+    const result = parsePrompt(input)
+
+    // assert
+    expect(result).toEqual(expected)
+})
+
+test('block_ids_are_replace_by_value_recursive', () => {
+    // arrange
+    const input = JSON.stringify({
+        "3": {
+            "inputs": {
+                "thirdValue": 100,
+                "fourthValue": 100,
+            },
+            "class_type": "TestBlock"
+        },
+        "1": {
+            "inputs": {
+                "firstValue": 100,
+                "link_2": [
+                    "2",
+                    0
+                ]
+            },
+            "class_type": "TestBlock"
+        },
+        "2": {
+            "inputs": {
+                "secondValue": 100,
+                "link_3": [
+                    "3",
+                    0
+                ],
+            },
+            "class_type": "TestBlock"
+        },
+    })
+
+    const expected = [{
+        id: '1',
+        name: 'TestBlock',
+        value: {
+            firstValue: 100,
+            link_2: {
+                secondValue: 100,
+                link_3: {
+                    thirdValue: 100,
+                    fourthValue: 100,
+                },
+            }
         }
     }]
 
@@ -117,27 +240,29 @@ test('tree_simplify_with_block_ids_works_as_expected', () => {
         "1": {
             "inputs": {
                 "first": 100,
+                "link": [
+                    "2",
+                    0
+                ]
             },
             "class_type": "TestBlock"
         },
         "2": {
             "inputs": {
-                "second": 100,
-                "link": [
-                    "1",
-                    0
-                ]
+                "parent": {
+                    "second": 100,
+                }
             },
             "class_type": "TestBlock"
-        }
+        },
     })
 
     const expected = [{
-        id: '2',
+        id: '1',
         name: 'TestBlock',
         value: {
-            second: 100,
-            'link/first': 100
+            first: 100,
+            'link/parent/second': 100
         }
     }]
 
