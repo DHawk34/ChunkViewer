@@ -1,4 +1,4 @@
-import { isObject } from "../utils"
+import { isObject } from "@/scripts/utils"
 
 export type ComfyBlock = {
     id: string,
@@ -21,8 +21,6 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
         return []
     }
 
-    // console.log(structuredClone(json))
-
     const blocks = Object.keys(json).map(key => {
         const block: ComfyBlock = {
             id: key,
@@ -30,49 +28,27 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
             value: json[key]
         }
         delete json[key].class_type
-
-        simplifyBlocks2(block.value)
         return block
     })
 
-    blocks.forEach(block => {
-        mergeBlocks_3(json, block.value, usedBlocks)
-    });
+    for (const block of blocks) {
+        simplifyBlockStart(block.value)
+        replaceBlockIDsWithReferences(json, block.value, usedBlocks)
+    }
 
-    const result = blocks.filter(x => !usedBlocks.has(x.id) && Object.keys(x.value).length > 0)
+    const finalBlocks = blocks.filter(x => !usedBlocks.has(x.id) && Object.keys(x.value).length > 0)
 
-    result.forEach(block => {
+    for (const block of blocks) {
         simplifyPropertyTree(block.value)
-    })
-
+    }
 
     // console.log(json)
-    console.log(result)
+    console.log(finalBlocks)
 
-    return result
+    return finalBlocks
 }
 
-// Замена единственного свойства блока на все свойства ребенка
-function simplifyBlocks(block: BlockValue) {
-    const keys = Object.keys(block)
-
-    if (keys.length === 1) {
-        const key = keys[0]
-        const value = block[key] as BlockValue
-
-        if (isObject(value)) {
-            Object.entries(value).forEach(([vKey, vValue]) => {
-                block[vKey] = vValue
-            })
-
-            delete block[key]
-            simplifyBlocks(block)
-        }
-        return
-    }
-}
-
-function simplifyBlocks2(block: BlockValue) {
+function simplifyBlockStart(block: BlockValue) {
     const keys = Object.keys(block)
 
     if (keys.length === 1) {
@@ -101,7 +77,6 @@ function simplifyPropertyTree(block: BlockValue) {
         simplifyPropertyTree(value)
         const childKeys = Object.keys(value)
 
-        // Упрощение дерева
         if (childKeys.length === 1) {
             const childKey = childKeys[0]
             const childValue = value[childKey]
@@ -113,46 +88,16 @@ function simplifyPropertyTree(block: BlockValue) {
     })
 }
 
-// function simplifyPropertyTree_2(block: BlockValue) {
-//     const keys = Object.keys(block)
-
-//     if (keys.length === 1) {
-//         return true
-//     }
-
-//     keys.forEach(key => {
-//         const value = block[key]
-
-//         if (isObject(value)) {
-//             const shouldMerge = simplifyPropertyTree_2(value)
-
-//             if (shouldMerge) {
-//                 const childKey = Object.keys(value)[0]
-//                 const childValue = value[childKey]
-//                 const propName = `${key}/${childKey}`
-
-//                 block[propName] = childValue
-//                 delete block[key]
-//             }
-//         }
-//         else {
-//             return keys.length === 1
-//         }
-//     })
-
-//     return false
-// }
-
-function mergeBlocks_3(json: any, block: BlockValue, usedBlocks: Set<string>) {
+function replaceBlockIDsWithReferences(json: any, block: BlockValue, usedBlocks: Set<string>) {
     const keys = Object.keys(block)
+
     keys.forEach(key => {
         const value = block[key]
 
-        if (isObject(value)) {
-            mergeBlocks_3(json, value, usedBlocks)
-        }
+        // if (isObject(value)) {
+        //     replaceBlockIDsWithReferences(json, value, usedBlocks)
+        // }
 
-        // Замена всех ссылок на объекты блоков
         if (Array.isArray(value) && value.length === 2 && typeof value[0] === 'string') {
 
             const anotherBlockID = value[0]
@@ -160,118 +105,8 @@ function mergeBlocks_3(json: any, block: BlockValue, usedBlocks: Set<string>) {
 
             block[key] = anotherBlock
 
-            // console.log(block)
-
             if (anotherBlock) {
                 usedBlocks.add(anotherBlockID)
-            }
-        }
-    })
-}
-
-function mergeBlocks_2(json: any, block: BlockValue, usedBlocks: Set<string>) {
-    const keys = Object.keys(block)
-
-    if (keys.length === 0) {
-        return
-    }
-
-    // if (keys.length === 1) {
-    //     const key = keys[0]
-    //     const value = block[key] as BlockValue
-
-    //     if (isObject(value)) {
-    //         Object.entries(value).forEach(([vKey, vValue]) => {
-    //             block[vKey] = vValue
-    //         })
-
-    //         delete block[key]
-    //         mergeBlocks_2(json, block, usedBlocks)
-    //     }
-    //     return
-    // }
-
-    keys.forEach(key => {
-        const value = block[key]
-
-        // Замена всех ссылок на объекты блоков
-        if (Array.isArray(value) && value.length === 2 && typeof value[0] === 'string') {
-            const anotherBlockID = value[0]
-            const anotherBlock = json[anotherBlockID]
-
-            block[key] = anotherBlock
-
-            if (anotherBlock) {
-                usedBlocks.add(anotherBlockID)
-                mergeBlocks_2(json, anotherBlock, usedBlocks)
-            }
-        }
-
-        // Обработка свойств-объектов
-        if (isObject(value)) {
-            const valueKeys = Object.keys(value)
-
-            // Упрощение дерева
-            if (valueKeys.length === 1) {
-                const childKey = valueKeys[0]
-                const childValue = value[childKey]
-                const propName = `${key}/${childKey}`
-
-                block[propName] = childValue
-                delete block[key]
-
-                if (isObject(childValue)) {
-                    mergeBlocks_2(json, childValue, usedBlocks)
-                }
-            }
-            else {
-                mergeBlocks_2(json, value, usedBlocks)
-            }
-        }
-    })
-}
-
-function mergeBlocks(json: any, block: BlockValue, usedBlocks: Set<string>) {
-    Object.entries(block).forEach(([key, value]) => {
-
-        // Распаковка inputs
-        if (key === 'inputs') {
-            Object.entries(value as BlockValue).forEach(function ([Vkey, Vvalue]) {
-                block[Vkey] = Vvalue
-            })
-
-            delete block[key]
-
-            mergeBlocks(json, block, usedBlocks)
-            return
-        }
-
-        // Вставка блока вместо ссылки
-        if (Array.isArray(value) && value.length === 2) {
-            if (typeof value[0] === 'string' && typeof value[1] === 'number') {
-                usedBlocks.add(value[0])
-                block[key] = json[value[0]]
-
-                if (block[key]) {
-                    mergeBlocks(json, block[key], usedBlocks)
-                }
-            }
-        }
-
-        // Продолжение проверки
-        if (isObject(value)) {
-            const valueKeys = Object.keys(value)
-
-            // Упрощение дерева
-            if (valueKeys.length === 1 && value[valueKeys[0]]?.constructor !== Object) {
-                block[`${key}/${valueKeys[0]}`] = value[valueKeys[0]]
-                delete block[key]
-                if (isObject(value[valueKeys[0]])) {
-                    mergeBlocks(json, value[valueKeys[0]], usedBlocks)
-                }
-            }
-            else {
-                mergeBlocks(json, value, usedBlocks)
             }
         }
     })
