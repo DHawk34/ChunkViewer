@@ -1,4 +1,4 @@
-import { isObject } from "@/scripts/utils"
+import { isObject, optimizeOrder } from "@/scripts/utils"
 import CheckpointLoaderSimpleParser from "./BlockParsers/CheckpointLoaderSimpleParser"
 import VAELoaderParser from "./BlockParsers/VaeLoaderParser"
 import CLIPTextEncodeParser from "./BlockParsers/CLIPTextEncodeParser"
@@ -8,6 +8,7 @@ import DefaultParser from "./BlockParsers/DefaultParser"
 import UpscaleModelLoaderParser from "./BlockParsers/UpscaleModelLoaderParser"
 import ImageUpscaleWithModelParser from "./BlockParsers/ImageUpscaleWithModelParser"
 import UnknownBlockParser from "./BlockParsers/UnknownBlockParser"
+import SaveImageParser from "./BlockParsers/SaveImageParser"
 
 const defaultParser = new DefaultParser()
 
@@ -19,6 +20,7 @@ const parserDictionary: { [key: string]: IBlockParser } = {
     ConditioningCombine: new ConditioningCombineParser(),
     UpscaleModelLoader: new UpscaleModelLoaderParser(),
     ImageUpscaleWithModel: new ImageUpscaleWithModelParser(),
+    SaveImage: new SaveImageParser(),
     EmptyLatentImage: defaultParser,
     VAEDecode: defaultParser,
     PreviewImage: defaultParser,
@@ -41,7 +43,7 @@ type BlockValue = {
 export function parsePrompt(prompt: string): ComfyBlock[] {
     if (prompt.length === 0) return []
 
-    const usedBlocks = new Set<string>()
+    // const usedBlocks = new Set<string>()
 
     try {
         var json = JSON.parse(prompt)
@@ -59,20 +61,36 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
     })
 
     // findUsedBlocks(json, usedBlocks)
-    simplifyBlocksStart(blocks)
-
     blocks.forEach(block => {
+        simplifyBlockStart(block)
         replaceBlockIDsWithReferences(json, block.value)
+
     })
+
+    // blocks.forEach(block => {
+    //     replaceBlockIDsWithReferences(json, block.value)
+    // })
 
     const targetBlocks = blocks.filter(x => x.name === 'PreviewImage' || x.name === 'SaveImage')
 
     targetBlocks.forEach(block => {
         block.value = structuredClone(block.value)
         parseTree({ 1: block.value })
+        block.value = optimizeOrder(block.value, 'positive', 'negative', 'seed', 'model', 'sampler_name', 'scheduler', 'steps', 'cfg', 'width', 'height', 'upscale_model', 'upscale_method', 'image_before_upscale')
     });
 
-    // console.log(targetBlocks)
+    //delete empty blocks
+    targetBlocks.forEach(block => {
+        if (Object.keys(block.value).length === 0) {
+            const index = targetBlocks.indexOf(block, 0);
+            if (index > -1) {
+                targetBlocks.splice(index, 1);
+            }
+        }
+    })
+
+    console.log(targetBlocks)
+
 
     return targetBlocks
 }
@@ -104,26 +122,6 @@ function parseTree(block: BlockValue) {
                 parsed = true
             }
 
-        }
-    })
-}
-
-function simplifyBlocksStart(blocks: ComfyBlock[]) {
-
-    blocks.forEach(block => {
-        const keys = Object.keys(block.value)
-
-        if (keys.length > 0) {
-            const key = keys[0]
-            const value = block.value[key] as BlockValue
-
-            if (isObject(value)) {
-                Object.entries(value).forEach(([vKey, vValue]) => {
-                    block.value[vKey] = vValue
-                })
-
-                delete block.value[key]
-            }
         }
     })
 }
@@ -166,22 +164,22 @@ function replaceBlockIDsWithReferences(json: any, block: BlockValue) {
 // }
 
 
-// function simplifyBlockStart(block: BlockValue) {
-//     const keys = Object.keys(block)
+function simplifyBlockStart(block: BlockValue) {
+    const keys = Object.keys(block.value)
 
-//     if (keys.length === 1) {
-//         const key = keys[0]
-//         const value = block[key] as BlockValue
+    if (keys.length > 0) {
+        const key = keys[0]
+        const value = block.value[key] as BlockValue
 
-//         if (isObject(value)) {
-//             Object.entries(value).forEach(([vKey, vValue]) => {
-//                 block[vKey] = vValue
-//             })
+        if (isObject(value)) {
+            Object.entries(value).forEach(([vKey, vValue]) => {
+                block.value[vKey] = vValue
+            })
 
-//             delete block[key]
-//         }
-//     }
-// }
+            delete block.value[key]
+        }
+    }
+}
 
 // function simplifyPropertyTree(block: BlockValue) {
 //     const keys = Object.keys(block)
