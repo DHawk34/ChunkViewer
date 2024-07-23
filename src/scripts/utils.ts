@@ -27,6 +27,36 @@ export function getFileNameFromUrlOrPath(input: string): string {
         : getFileNameFromPath(input)
 }
 
+export function capitalizeFirstLetter(text: string) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+export function optimizeOrder(parameters: Dictionary<string>, ...order: string[]) {
+    const paramsOrder = order;
+
+    const sortedKeys = Object.keys(parameters).sort((a, b) => {
+        if (paramsOrder.includes(a) && paramsOrder.includes(b)) {
+            return paramsOrder.indexOf(a) - paramsOrder.indexOf(b);
+        }
+        else if (paramsOrder.includes(a)) {
+            return -1;
+        }
+        else if (paramsOrder.includes(b)) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    })
+
+    const sortedObject = sortedKeys.reduce((acc: Dictionary<string>, key) => {
+        acc[key] = parameters[key];
+        return acc;
+    }, {});
+
+    return sortedObject;
+}
+
 export function isUrl(input: string): boolean {
     let url;
 
