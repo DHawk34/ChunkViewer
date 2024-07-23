@@ -59,3 +59,7 @@ export function getDropEndFunc<T>(data: T[], setData: (data: T[]) => void) {
 export function isObject(something: any) {
     return something?.constructor === Object
 }
+
+export type Dictionary<T extends string | number | symbol> = {
+    [key in T]: any
+}
