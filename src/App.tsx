@@ -41,10 +41,14 @@ export function App() {
 
     document.body.ondragenter = (ev) => {
       incrementDragEnterCount();
+      ev.preventDefault()
+      ev.stopPropagation()
     }
 
     document.body.ondragleave = (ev) => {
       decrementDragEnterCount();
+      ev.preventDefault()
+      ev.stopPropagation()
     }
 
     document.body.ondrop = (ev) => {
