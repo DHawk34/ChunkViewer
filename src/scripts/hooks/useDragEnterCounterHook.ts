@@ -13,14 +13,14 @@ export function useDragEnterCounter(): DragEnterCounter {
     function incr() {
         setEnterCount(enterCount => {
             addClass(enterCount + 1)
-            console.log('add: ' + (enterCount + 1));
+            // console.log('add: ' + (enterCount + 1));
             return enterCount + 1
         });
     }
     function decr() {
         setEnterCount(enterCount => {
             removeClass(enterCount - 1)
-            console.log('decr: ' + (enterCount - 1));
+            // console.log('decr: ' + (enterCount - 1));
             return enterCount - 1
         });
     }
@@ -29,7 +29,7 @@ export function useDragEnterCounter(): DragEnterCounter {
         setEnterCount(enterCount => {
             addClass(num)
             removeClass(num)
-            console.log('set: ' + num);
+            // console.log('set: ' + num);
             return num
         });
     }
