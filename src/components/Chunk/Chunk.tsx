@@ -80,14 +80,7 @@ export function Chunk(props: Props) {
         props.OnDelete()
     }
 
-    function changeView(type: string) {
-        if (type === 'webui') {
-            getParsedParams()
-        }
-        else {
-
-        }
-
+    function changeView() {
         setShowParameters(!showAnotherView)
     }
 
@@ -97,7 +90,11 @@ export function Chunk(props: Props) {
                 .catch(e => console.log(e))
         }
         else {
-            chunkHandler.exportChunk(props.chunk)
+            let isJson = false
+            if (props.chunk.name === 'workflow' || props.chunk.name === 'prompt')
+                isJson = true
+
+            chunkHandler.exportChunk(props.chunk, isJson)
                 .catch(e => console.log(e))
         }
     }
@@ -178,7 +175,7 @@ export function Chunk(props: Props) {
     }
 
     const comfyBlocks = showAnotherView && props.chunk.name === 'prompt' ? getParsedPrompts()?.map(block => {
-        return <Expandable header={`${block.id}. ${block.name}`} opened key={block.id}><ParamsTableWithExpandle params={block.value} /></Expandable>
+        return <Expandable header={`${block.id}. ${block.name}`} opened key={block.id}><ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} /></Expandable>
     }) : undefined
 
     return (
@@ -198,14 +195,9 @@ export function Chunk(props: Props) {
                                 {props.chunk.name}
                             </p>
                             {
-                                props.chunk.name === 'parameters' &&
-                                <button className='change_view_chunk_button' onClick={() => changeView('webui')}><RefreshIcon width="25" height="25" /></button>
+                                (props.chunk.name === 'parameters' || props.chunk.name === 'prompt') &&
+                                <button className='change_view_chunk_button' onClick={() => changeView()}><RefreshIcon width="25" height="25" /></button>
                             }
-                            {
-                                props.chunk.name === 'prompt' &&
-                                <button className='change_view_chunk_button' onClick={() => changeView('comfyui')}><RefreshIcon width="25" height="25" /></button>
-                            }
-
                             <button className='export_chunk_button' onClick={exportChunk}><ExportIcon width="25" height="25" /></button>
                             <button className='delete_chunk_button' onClick={deleteChunk}><TrashIcon width="25" height="25" /></button>
                         </div>
