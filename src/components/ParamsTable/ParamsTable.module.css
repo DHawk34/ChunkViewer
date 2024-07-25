@@ -1,24 +1,20 @@
-tr:nth-child(even) {
-    background-color: var(--background-darker);
-}
-
 .parameters_table {
     table-layout: fixed;
     width: 100%;
     border-collapse: collapse;
     white-space: pre-wrap;
+
+    td {
+        padding: 10px;
+    }
+
+    tr:nth-child(even) {
+        background-color: var(--background-darker);
+    }
+    
 }
 
 .param_name_col {
     max-width: 110px;
     width: min(110px, 11vw);
 }
-
-#parameters_table td {
-    padding: 10px;
-}
-
-
-td {
-    padding: 10px;
-  }
