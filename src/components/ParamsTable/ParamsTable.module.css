@@ -4,7 +4,7 @@
     border-collapse: collapse;
     white-space: pre-wrap;
 
-    td {
+    :is(td) {
         padding: 10px;
     }
 
