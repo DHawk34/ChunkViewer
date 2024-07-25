@@ -1,7 +1,7 @@
 @import url(colors.css);
 
 :root {
-  --max-chunk-width: 550px;
+  --max-chunk-width: 750px;
   --max-toolbar-width: 350px;
 }
 
