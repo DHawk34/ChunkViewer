@@ -1,4 +1,4 @@
-import { isObject, optimizeOrder } from "@/scripts/utils"
+import { Dictionary, isObject, optimizeOrder } from "@/scripts/utils"
 import CheckpointLoaderSimpleParser from "./BlockParsers/CheckpointLoaderSimpleParser"
 import VAELoaderParser from "./BlockParsers/VaeLoaderParser"
 import CLIPTextEncodeParser from "./BlockParsers/CLIPTextEncodeParser"
@@ -33,11 +33,7 @@ const parserDictionary: { [key: string]: IBlockParser } = {
 export type ComfyBlock = {
     id: string,
     name: string,
-    value: BlockValue
-}
-
-type BlockValue = {
-    [key: string]: any
+    value: Dictionary<string>
 }
 
 export function parsePrompt(prompt: string): ComfyBlock[] {
@@ -76,10 +72,9 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
     targetBlocks.forEach(block => {
         block.value = structuredClone(block.value)
         parseTree({ 1: block.value })
-        block.value = optimizeOrder(block.value, 'positive', 'negative', 'seed', 'model', 'sampler_name', 'scheduler', 'steps', 'cfg', 'width', 'height', 'upscale_model', 'upscale_method', 'image_before_upscale')
     });
 
-    //delete empty blocks
+    //delete empty blocks & optimize order
     targetBlocks.forEach(block => {
         if (Object.keys(block.value).length === 0) {
             const index = targetBlocks.indexOf(block, 0);
@@ -87,15 +82,31 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
                 targetBlocks.splice(index, 1);
             }
         }
-    })
 
-    console.log(targetBlocks)
+        // deepOptimizeOrder(block.value)
+        block.value = optimizeOrder(block.value, 'positive', 'negative', 'seed', 'model', 'sampler_name', 'scheduler', 'steps', 'cfg', 'width', 'height', 'upscale_model', 'upscale_method', 'image_before_upscale')
+    })
 
 
     return targetBlocks
 }
 
-function parseTree(block: BlockValue) {
+function deepOptimizeOrder(block: Dictionary<string>) {
+    console.log(block)
+    const keys = Object.keys(block)
+
+    keys.forEach(key => {
+        const value = block[key]
+
+        if (isObject(value)) {
+            deepOptimizeOrder(value)
+        }
+    })
+
+    block = optimizeOrder(block, 'positive', 'negative', 'seed', 'model', 'sampler_name', 'scheduler', 'steps', 'cfg', 'width', 'height', 'upscale_model', 'upscale_method', 'image_before_upscale')
+}
+
+function parseTree(block: Dictionary<string>) {
     const keys = Object.keys(block)
 
     keys.forEach(key => {
@@ -126,7 +137,7 @@ function parseTree(block: BlockValue) {
     })
 }
 
-function replaceBlockIDsWithReferences(json: any, block: BlockValue) {
+function replaceBlockIDsWithReferences(json: any, block: Dictionary<string>) {
     const keys = Object.keys(block)
 
     keys.forEach(key => {
@@ -164,12 +175,12 @@ function replaceBlockIDsWithReferences(json: any, block: BlockValue) {
 // }
 
 
-function simplifyBlockStart(block: BlockValue) {
+function simplifyBlockStart(block: Dictionary<string>) {
     const keys = Object.keys(block.value)
 
     if (keys.length > 0) {
         const key = keys[0]
-        const value = block.value[key] as BlockValue
+        const value = block.value[key] as Dictionary<string>
 
         if (isObject(value)) {
             Object.entries(value).forEach(([vKey, vValue]) => {
