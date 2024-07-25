@@ -52,6 +52,20 @@ export const txtSaveFilePickerOptions = (suggestedName: string): SaveFilePickerO
     }
 }
 
+export const jsonSaveFilePickerOptions = (suggestedName: string): SaveFilePickerOptions => {
+    return {
+        suggestedName,
+        types: [
+            {
+                description: 'json file',
+                accept: {
+                    'application/json': ['.json']
+                }
+            }
+        ]
+    }
+}
+
 export const pngSaveFilePickerOptions = (suggestedName: string): SaveFilePickerOptions => {
     return {
         suggestedName,
