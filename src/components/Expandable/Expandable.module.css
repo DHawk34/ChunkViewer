@@ -1,0 +1,113 @@
+.expandable {
+    input[type='radio'] {
+        display: none;
+    }
+
+    >label {
+        display: block;
+        padding: 5px;
+        width: 100%;
+        height: 35px;
+        background-color: var(--button-color-light);
+        cursor: pointer;
+        line-height: 200%;
+    }
+
+    >label:hover {
+        background-color: var(--button-color-light-hover);
+    }
+
+    .collapsible {
+        display: block;
+        padding: 0 1em;
+        width: 100%;
+        background-color: var(--button-color-light);
+    }
+
+    >input[type='radio']+.collapsible {
+        overflow: hidden;
+        height: 0;
+        transition: height 0.6s ease;
+    }
+
+    >input[type='radio']:checked+.collapsible {
+        overflow: auto;
+        height: 200px;
+        /* needs a numeric value here to keep transition */
+    }
+}
+
+
+.expandable {
+    /* box-sizing: border-box; */
+
+    margin-left: 10px;
+    margin-right: 10px;
+    /* height: 100%; */
+
+    /* border: 1px solid black; */
+    /* border-right: 0; */
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.expandable_header {
+    display: flex;
+    align-items: center;
+    height: 35px;
+    background-color: var(--button-color-light);
+    /* border-bottom: 1px solid black; */
+    /* border-top: none; */
+}
+
+.expandable_arrow.rotated {
+    transform: rotate(-90deg);
+}
+
+.expandable_header.expanded {
+    background-color: var(--button-color-light-hover);
+    border-radius: 4px 4px 0 0;
+}
+
+.expandable_header:hover {
+    cursor: pointer;
+    background-color: var(--button-color-light-hover);
+}
+
+.expandable_name {
+    box-sizing: border-box;
+    display: inline-block;
+    flex-grow: 1;
+    margin-right: 12px;
+    min-width: 40%;
+    min-height: 1em;
+    font-size: 1.1em;
+}
+
+.expandable_content {
+    display: flex;
+
+    padding: 0;
+    /* padding-left: 2px;
+    padding-right: 2px; */
+    /* margin-left: 10px;
+    margin-right: 10px; */
+    /* background-color: var(--background); */
+    /* border: 1px solid black;
+    border-top: none;
+    border-bottom: none; */
+    height: 0;
+    overflow: hidden;
+    transition: height 0.4s ease;
+    background-color: var(--button-color-light);
+
+
+}
+
+.expandable_content.expanded {
+    /* border: 2px solid var(--button-color-light-hover); */
+    border-radius: 0 0 4px 4px;
+    /* height: 200px; */
+    transition: height 0.4s ease;
+}
