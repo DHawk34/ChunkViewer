@@ -54,9 +54,13 @@
 }
 
 .react-tabs__tab-panel--selected {
-  display: block;
+  display: flex;
+  flex-direction: column;
+
   text-align: center;
 
   height: 100%;
-  overflow-y: auto;
+  
+  overflow: auto;
+  /* padding-bottom: 30px; */
 }
