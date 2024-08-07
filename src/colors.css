@@ -4,8 +4,11 @@
     --background-darker: #26282c;
     --foreground: #1e1f22;
 
-    --button-color-light: #232427;
-    --button-color-light-hover: #1e1f22;
+    --button-color-light: #3a3c41;
+    --button-color-light-hover: #484a52;
+
+    --button-color-grey: #232427;
+    --button-color-grey-hover: #1e1f22;
 
     --button-color-dark: #191919;
     --button-color-dark-hover: #121212;
