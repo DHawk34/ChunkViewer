@@ -7,7 +7,7 @@
 #features_container .groovedBlock>button {
     width: 90%;
     padding: 10px 20px;
-    background-color: var(--button-color-dark);
+    background-color: var(--button-color-light);
     margin-top: 10px;
     margin-bottom: 10px;
 
@@ -17,7 +17,7 @@
 #features_container>button:hover,
 #features_container .groovedBlock>button:hover {
     width: 90%;
-    background: var(--button-color-dark-hover);
+    background: var(--button-color-light-hover);
 }
 
 
