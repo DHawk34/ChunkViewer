@@ -12,12 +12,6 @@ type Props = {
 
 export function ParamsTableWithExpandle(props: Props) {
 
-    const [tables, setTables] = useState<JSX.Element[]>([])
-
-    useEffect(() => {
-        createTables()
-    }, [props.params])
-
     function toggleTable(ev: React.MouseEvent<SVGSVGElement, MouseEvent>, tableId: string) {
         ev.currentTarget.classList.toggle(styles.rotated)
         ev.currentTarget.parentElement?.parentElement?.classList.toggle(styles.table_opened)
@@ -89,9 +83,10 @@ export function ParamsTableWithExpandle(props: Props) {
         }
 
         tables.push(createTable(`endTable`, params_row))
-        setTables(tables)
+        return tables
     }
 
+    const tables = createTables()
 
     return (
         <div key={props.id} id={props.id} className={`${!props.opened && styles.hidden} ${props.class}`}>
