@@ -2,6 +2,9 @@ import { useEffect, useRef } from "react";
 import { ChunkTypes } from "@/scripts/chunks/chunkSaver";
 import { settingsManager } from "@/scripts/settings/settings";
 import './SettingsContainer.css'
+import { Expandable } from "../Expandable/Expandable";
+import { ExpandableGroup } from "../ExpandableGroup/ExpandableGroup";
+import { Switcher } from "../Switcher/Switcher";
 
 export function SettingsContainer() {
     const comboBox = useRef<HTMLSelectElement>(null)
@@ -15,22 +18,85 @@ export function SettingsContainer() {
 
     return (
         <div id='settings_container'>
-            <label>Chunk type when saving</label>
-            
-            <select ref={comboBox} onChange={update_chunkType}>
-                <option value={ChunkTypes.tEXt}> {ChunkTypes.tEXt} (default) </option>
-                <option value={ChunkTypes.iTXt}> {ChunkTypes.iTXt} </option>
-                <option value={ChunkTypes.zTXt}> {ChunkTypes.zTXt} </option>
-            </select>
+            <ExpandableGroup>
+                <Expandable header="General">
+                    <div className="settings_panel">
+                        <div className="setting_row">
+                            <p className="setting_name">Allow <span className="tooltip">unsafe <span className="tooltiptext">If chunk name is 4-character, save it as code rather than text</span></span> chunk names</p>
+                            <div className="setting_input">
+                                <Switcher />
+                            </div>
+                        </div>
 
-            <hr />
+                        <div className="setting_row">
+                            <p className="setting_name">Chunk type when saving</p>
+                            <select className="setting_input" id="chunk_type" ref={comboBox} onChange={update_chunkType}>
+                                <option value={ChunkTypes.tEXt}> {`${ChunkTypes.tEXt} (default)`}</option>
+                                <option value={ChunkTypes.iTXt}> {ChunkTypes.iTXt} </option>
+                                <option value={ChunkTypes.zTXt}> {ChunkTypes.zTXt} </option>
+                            </select>
+                        </div>
 
-            <label>
-                <input ref={checkBox} type="checkbox" onChange={update_allowUnsafeChunkNames} />
-                Allow <span className="tooltip">unsafe
-                    <span className="tooltiptext">If chunk name is 4-character, save it as code rather than text</span>
-                </span> chunk names
-            </label>
+                    </div>
+
+
+                    {/* <div className="test"> */}
+                    {/* <label htmlFor="chunk_type">Chunk type when saving</label>
+
+                        <select id="chunk_type" ref={comboBox} onChange={update_chunkType}>
+                            <option value={ChunkTypes.tEXt}> {ChunkTypes.tEXt} (default) </option>
+                            <option value={ChunkTypes.iTXt}> {ChunkTypes.iTXt} </option>
+                            <option value={ChunkTypes.zTXt}> {ChunkTypes.zTXt} </option>
+                        </select>
+
+                        <label>
+                            Allow <span className="tooltip">unsafe
+                                <span className="tooltiptext">If chunk name is 4-character, save it as code rather than text</span>
+                            </span> chunk names
+
+                            <input ref={checkBox} id="unsafe_chunkname_checkbox" type="checkbox" onChange={update_allowUnsafeChunkNames} />
+                        </label> */}
+
+                    {/* <SettingsPanel /> */}
+                    {/* </div> */}
+                </Expandable>
+
+                <Expandable header="Stable Diffusion">
+                    <div className="test">
+                        <label htmlFor="chunk_type">Chunk type when saving</label>
+
+                        <select id="chunk_type" ref={comboBox} onChange={update_chunkType}>
+                            <option value={ChunkTypes.tEXt}> {ChunkTypes.tEXt} (default) </option>
+                            <option value={ChunkTypes.iTXt}> {ChunkTypes.iTXt} </option>
+                            <option value={ChunkTypes.zTXt}> {ChunkTypes.zTXt} </option>
+                        </select>
+
+                        <label>
+                            Allow <span className="tooltip">unsafe
+                                <span className="tooltiptext">If chunk name is 4-character, save it as code rather than text</span>
+                            </span> chunk names
+                            <input ref={checkBox} id="unsafe_chunkname_checkbox" type="checkbox" onChange={update_allowUnsafeChunkNames} />
+                        </label>
+
+                        <label htmlFor="chunk_type">Chunk type when saving</label>
+
+                        <select id="chunk_type" ref={comboBox} onChange={update_chunkType}>
+                            <option value={ChunkTypes.tEXt}> {ChunkTypes.tEXt} (default) </option>
+                            <option value={ChunkTypes.iTXt}> {ChunkTypes.iTXt} </option>
+                            <option value={ChunkTypes.zTXt}> {ChunkTypes.zTXt} </option>
+                        </select>
+
+                        <label>
+                            Allow <span className="tooltip">unsafe
+                                <span className="tooltiptext">If chunk name is 4-character, save it as code rather than text</span>
+                            </span> chunk names
+                            <input ref={checkBox} id="unsafe_chunkname_checkbox" type="checkbox" onChange={update_allowUnsafeChunkNames} />
+                        </label>
+
+                    </div>
+                </Expandable>
+            </ExpandableGroup>
+
         </div>
     )
 }
