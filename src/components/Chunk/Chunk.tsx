@@ -13,7 +13,7 @@ import RefreshIcon from '@/assets/refresh.svg?react'
 
 import './Chunk.css'
 import { ComfyBlock, parsePrompt } from "@/scripts/parsers/Comfy/comfyPromptParser";
-import { Expandable } from "../Expandable/Expandable";
+import { ExpandableBlock } from "../ExpandableBlock/ExpandableBlock";
 import { ParamsTable } from "../ParamsTable/ParamsTable";
 import { ParamsTableWithExpandle } from "../ParamsTableWithExpandle/ParamsTableWithExpandle";
 
@@ -175,7 +175,7 @@ export function Chunk(props: Props) {
     }
 
     const comfyBlocks = showAnotherView && props.chunk.name === 'prompt' ? getParsedPrompts()?.map(block => {
-        return <Expandable header={`${block.id}. ${block.name}`} opened key={block.id}><ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} /></Expandable>
+        return <ExpandableBlock header={`${block.id}. ${block.name}`} opened key={block.id}><ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} /></ExpandableBlock>
     }) : undefined
 
     return (
