@@ -40,11 +40,11 @@ button {
   border: none;
   font: inherit;
   color: white;
-  background-color: var(--button-color-light);
+  background-color: var(--button-color-grey);
 }
 
 button:hover {
-  background-color: var(--button-color-light-hover);
+  background-color: var(--button-color-grey-hover);
   cursor: pointer;
 }
 
@@ -62,21 +62,25 @@ hr {
 /* Combo box */
 select {
   border: 1px #eee solid;
-  border-radius: 4px;
+  border-radius: 8px;
   outline: none;
   padding: 6px 1em 6px 12px;
 }
 
-select:hover {
-  border-color: #777;
+select option:hover{
+  background: black;
 }
 
+/* select:hover {
+  outline: 1px solid var(--orange);
+} */
+
 /* Check box */
-input[type="checkbox"] {
+/* input[type="checkbox"] {
   margin-right: 12px;
   margin-left: 0;
   accent-color: var(--orange);
-}
+} */
 
 /* Text inputs */
 input[type="text"] {
@@ -119,7 +123,7 @@ textarea {
   min-width: 150px;
   top: 100%;
   left: 0%;
-  margin-left: -75px; /* Half of the width (120/2 = 60), to center */
+  margin-left: -50px; /* Half of the width (120/2 = 60), to center */
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
