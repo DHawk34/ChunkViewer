@@ -84,7 +84,7 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
         }
 
         // deepOptimizeOrder(block.value)
-        block.value = optimizeOrder(block.value, 'positive', 'negative', 'seed', 'model', 'sampler_name', 'scheduler', 'steps', 'cfg', 'width', 'height', 'upscale_model', 'upscale_method', 'image_before_upscale')
+        // block.value = optimizeOrder(block.value, 'positive', 'negative', 'seed', 'model', 'sampler_name', 'scheduler', 'steps', 'cfg', 'width', 'height', 'upscale_model', 'upscale_method', 'image_before_upscale')
     })
 
 
