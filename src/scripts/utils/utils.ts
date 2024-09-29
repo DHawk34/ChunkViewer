@@ -28,45 +28,40 @@ export function getFileNameFromUrlOrPath(input: string): string {
 }
 
 export function capitalizeFirstLetter(text: string) {
-    return text.charAt(0).toUpperCase() + text.slice(1);
+    return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
 export function optimizeOrder(parameters: Dictionary<string>, ...order: string[]) {
-    const paramsOrder = order;
-
     const sortedKeys = Object.keys(parameters).sort((a, b) => {
-        if (paramsOrder.includes(a) && paramsOrder.includes(b)) {
-            return paramsOrder.indexOf(a) - paramsOrder.indexOf(b);
+        if (order.includes(a) && order.includes(b)) {
+            return order.indexOf(a) - order.indexOf(b)
         }
-        else if (paramsOrder.includes(a)) {
-            return -1;
+        else if (order.includes(a)) {
+            return -1
         }
-        else if (paramsOrder.includes(b)) {
-            return 1;
+        else if (order.includes(b)) {
+            return 1
         }
         else {
-            return 0;
+            return 0
         }
     })
 
     const sortedObject = sortedKeys.reduce((acc: Dictionary<string>, key) => {
-        acc[key] = parameters[key];
-        return acc;
-    }, {});
+        acc[key] = parameters[key]
+        return acc
+    }, {})
 
-    return sortedObject;
+    return sortedObject
 }
 
 export function isUrl(input: string): boolean {
-    let url;
-
     try {
-        url = new URL(input);
+        const protocol = new URL(input).protocol
+        return protocol === "http:" || protocol === "https:"
     } catch (_) {
-        return false;
+        return false
     }
-
-    return url.protocol === "http:" || url.protocol === "https:";
 }
 
 export function getDropEndFunc<T>(data: T[], setData: (data: T[]) => void) {
