@@ -13,28 +13,53 @@
     padding-bottom: 20px;
 }
 
+#settings_container button {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: var(--button-color-light);
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    position: relative;
+}
+
+#settings_container button:hover {
+    background: var(--button-color-light-hover);
+}
+
 /* #settings_container label {
     text-align: start;
     margin-top: auto;
     margin-bottom: auto;
 } */
- 
+
 .setting_row {
     display: flex;
     align-items: center;
     width: 100%;
 }
 
-.setting_name{
+.settings_header {
+    margin: 5px auto 0 20px;
+}
+
+.settings_hr {
+    width: 90%;
+    height: 2px;
+    margin-top: 4px;
+}
+
+.setting_name {
     margin: 0;
     padding-right: 10px;
     text-align: start;
     width: 50%;
+    min-width: 50%;
     max-width: 50%;
 }
 
-.setting_input{
-    text-align: start;
+.setting_input {
+    text-align: end;
     width: 50%;
     max-width: 50%;
 }
@@ -46,11 +71,12 @@
     row-gap: 10px;
     margin-top: 10px;
     margin-bottom: 10px;
-    padding: 0 10px;
+    padding: 0 20px;
     overflow: visible;
 
     width: 100%;
-    padding-bottom: 80px;
+    box-sizing: border-box;
+    padding-bottom: 10px;
 }
 
 /* .test {
