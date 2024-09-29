@@ -7,7 +7,7 @@ import { ToolbarContainer } from "./components/ToolbarContainer/ToolbarContainer
 import dragImg from './components/ImageContainer/dragANDdrop.png';
 import chunkHandler, { ChunkData } from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
-import { getFileNameFromUrlOrPath, removeExtFromFileName } from "./scripts/utils";
+import { getFileNameFromUrlOrPath, removeExtFromFileName } from "./scripts/utils/utils";
 import { StatusBar } from "./components/StatusBar/StatusBar";
 import { useLogger } from "./scripts/hooks/useLoggerHook";
 import { varStore } from "./scripts/variableStore";

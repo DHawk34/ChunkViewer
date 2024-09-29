@@ -5,7 +5,7 @@ import { Draggable } from 'react-beautiful-dnd';
 import { UnlistenFn } from "@tauri-apps/api/event";
 import { chunkNameIsUnsafe, maxChunkNameSize } from "@/scripts/chunks/chunkSaver";
 import { settingsManager } from "@/scripts/settings/settings";
-import { enableContentEditable, getSelectionLength } from "@/scripts/frontend.utils";
+import { enableContentEditable, getSelectionLength } from "@/scripts/utils/frontend.utils";
 import ExportIcon from '@/assets/export.svg?react'
 import TrashIcon from '@/assets/trash.svg?react'
 import DragIcon from '@/assets/drag.svg?react'

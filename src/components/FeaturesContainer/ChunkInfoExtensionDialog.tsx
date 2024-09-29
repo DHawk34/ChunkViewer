@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from "react"
 import { ChunkContainer } from "../ChunkContainer/ChunkContainer"
 import { ChunkData } from "@/scripts/chunks/chunkHandler"
-import { useCloseDialog_clickHandler } from "@/scripts/frontend.utils"
+import { useCloseDialog_clickHandler } from "@/scripts/utils/frontend.utils"
 import CloseBoldIcon from '@/assets/close_bold.svg?react'
 import autosize from "autosize"
 import './ChunkInfoExtensionDialog.css'

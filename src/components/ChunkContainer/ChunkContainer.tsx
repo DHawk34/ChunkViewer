@@ -3,7 +3,7 @@ import { Chunk } from '../Chunk/Chunk';
 import { StrictModeDroppable } from '../StrictModeDroppable';
 import { ChunkData } from '@/scripts/chunks/chunkHandler';
 import { DragDropContext } from 'react-beautiful-dnd';
-import { getDropEndFunc } from '@/scripts/utils';
+import { getDropEndFunc } from '@/scripts/utils/utils';
 
 type Props = {
     chunkArray: ChunkData[]

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getTime } from "../utils";
+import { getTime } from "../utils/utils";
 import { Action, EventDispatcher } from "../event";
 
 export type LogMessage = {

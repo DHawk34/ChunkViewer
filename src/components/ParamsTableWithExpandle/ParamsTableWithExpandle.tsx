@@ -1,4 +1,4 @@
-import { isObject, Dictionary, capitalizeFirstLetter } from '@/scripts/utils'
+import { isObject, Dictionary, capitalizeFirstLetter } from '@/scripts/utils/utils'
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import Arrow from '@/assets/arrowDown_bold.svg?react'
 import styles from './ParamsTableWithExpandle.module.css'

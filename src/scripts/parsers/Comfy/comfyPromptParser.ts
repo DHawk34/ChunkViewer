@@ -1,4 +1,4 @@
-import { Dictionary, isObject, optimizeOrder } from "@/scripts/utils"
+import { Dictionary, isObject, optimizeOrder } from "@/scripts/utils/utils"
 import CheckpointLoaderSimpleParser from "./BlockParsers/CheckpointLoaderSimpleParser"
 import VAELoaderParser from "./BlockParsers/VaeLoaderParser"
 import CLIPTextEncodeParser from "./BlockParsers/CLIPTextEncodeParser"
