@@ -8,6 +8,7 @@ import { ChunkInfoExtensionDialog } from './ChunkInfoExtensionDialog'
 import { ChunkExtensionsList } from './ChunkExtensionsList'
 import EditIcon from '@/assets/edit.svg?react'
 import './FeaturesContainer.css'
+import { ChunkExtension, extensionSettingsManager, settingsManager } from '@/scripts/settings/settings'
 
 export interface FeaturesProps {
     chunkArray: ChunkData[]
@@ -85,6 +86,27 @@ export function FeaturesContainer(props: FeaturesProps) {
 
 
 
+    function getExecuteChunkExtensionFunc(ext: ChunkExtension) {
+        return () => {
+            setChunkArray(arr => {
+                if (ext.removeAllChunks) {
+                    arr = []
+                }
+                else if (ext.chunksToRemove) {
+                    arr = arr.filter(chunk => !ext.chunksToRemove!.includes(chunk.name))
+                }
+
+                if (ext.chunksToAdd) {
+                    arr.push(...ext.chunksToAdd.map(chunk => ({ name: chunk.name ?? "?", value: chunk.value ?? "" } as ChunkData)))
+                }
+
+                return [...arr]
+            })
+        }
+    }
+
+    const chunkExtensions = extensionSettingsManager.getCache('chunkExtensions')
+
     // TODO: Chunk info extensions: кнопки добавить/редактировать/удалить extension
     return (
         <div id='features_container'>
@@ -93,7 +115,7 @@ export function FeaturesContainer(props: FeaturesProps) {
             <button onClick={btn_exportAllChunks}>Export all chunks</button>
             <button className='drop_object' onClick={btn_replaceChunks} onDrop={handleDrop}>Replace chunks from image</button>
 
-            <button onClick={expandButton_onClick}>Chunk info extensions</button>
+            {/* <button onClick={expandButton_onClick}>Chunk info extensions</button>
             <div onTransitionEnd={height_0auto_endTransition} ref={ref_chunkButtonsBlock} className='groovedBlock' style={{ height: 0 }}>
                 <button>Replace all with Boosty chunk</button>
                 <button>Add upscale chunks</button>
@@ -107,17 +129,24 @@ export function FeaturesContainer(props: FeaturesProps) {
                     Edit extensions
                     <EditIcon className='editIcon' />
                 </button>
-                {/* <div className='plusMinusButtons'>
-                    <button>Add</button>
-                    <button>Remove</button>
-                </div> */}
-            </div>
+            </div> */}
 
-            <button onClick={openAddExtensionDialog}>TEST 1</button>
+            {/* <button onClick={openAddExtensionDialog}>TEST 1</button>
             <button onClick={openExtensionsListDialog}>TEST 2</button>
 
             <ChunkExtensionsList ref={ref_editExtensionsListDialog} ref_addExtensionDialog={ref_addExtensionDialog} />
-            <ChunkInfoExtensionDialog ref={ref_addExtensionDialog} />
+            <ChunkInfoExtensionDialog ref={ref_addExtensionDialog} /> */}
+
+            {chunkExtensions.length > 0 && (
+                [
+                    <hr key={"hr_0"}></hr>,
+                    chunkExtensions.map((x, index) => (
+                        <button onClick={getExecuteChunkExtensionFunc(x)} key={`func_${index}`}>
+                            {x.name ?? "unnamed func"}
+                        </button>
+                    ))
+                ]
+            )}
         </div >
     )
 }

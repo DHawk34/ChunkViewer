@@ -6,6 +6,7 @@ use std::env;
 use std::io::{self, Read, Write};
 use std::str;
 use tauri::Manager;
+mod show_in_folder;
 
 #[tauri::command]
 fn extend_scope(handle: tauri::AppHandle, path: std::path::PathBuf) {
@@ -48,7 +49,8 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             extend_scope,
-            return_inp
+            return_inp,
+            show_in_folder::show_in_folder
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,11 +1,12 @@
 import { useEffect, useRef } from "react";
 import { ChunkTypes } from "@/scripts/chunks/chunkSaver";
-import { settingsManager } from "@/scripts/settings/settings";
+import { extensionSettingsManager, settingsManager } from "@/scripts/settings/settings";
 import './SettingsContainer.css'
 import { Expandable } from "../Expandable/Expandable";
 import { ExpandableGroup } from "../ExpandableGroup/ExpandableGroup";
 import { Switcher } from "../Switcher/Switcher";
 import { MySelect } from "../MySelect/MySelect";
+import { tauri } from "@tauri-apps/api";
 
 export function SettingsContainer() {
     const comboBox = useRef<HTMLSelectElement>(null)
@@ -79,6 +80,11 @@ export function SettingsContainer() {
                 </div>
             </div>
 
+            <h3 className="settings_header"></h3>
+            <hr className="settings_hr" />
+            <div className="settings_panel">
+                <button onClick={openSettingsFolder}>Open extensions folder</button>
+            </div>
         </div>
     )
 }
@@ -102,4 +108,8 @@ function get_allowUnsafeChunkNames() {
 
 function update_allowUnsafeChunkNames(newValue: boolean) {
     settingsManager.setCache('allowUnsafeChunkNames', newValue)
+}
+
+async function openSettingsFolder() {
+    tauri.invoke('show_in_folder', { path: extensionSettingsManager.path })
 }
