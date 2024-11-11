@@ -1,6 +1,8 @@
 import { isObject, Dictionary, capitalizeFirstLetter, optimizeOrder } from '@/scripts/utils/utils'
 import { forwardRef, useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast';
 import Arrow from '@/assets/arrowDown_bold.svg?react'
+import CopyIcon from '@/assets/copy.svg?react'
 import styles from './ParamsTableWithExpandle.module.css'
 
 type Props = {
@@ -11,13 +13,19 @@ type Props = {
 }
 
 export function ParamsTableWithExpandle(props: Props) {
-
     function toggleTable(ev: React.MouseEvent<SVGSVGElement, MouseEvent>, tableId: string) {
         ev.currentTarget.classList.toggle(styles.rotated)
         ev.currentTarget.parentElement?.parentElement?.classList.toggle(styles.table_opened)
 
         const table = document.getElementById(tableId)
         table?.classList.toggle(styles.hidden)
+    }
+
+    function copyValue(ev: React.MouseEvent<HTMLParagraphElement, MouseEvent>, value: string) {
+        navigator.clipboard.writeText(value);
+        toast.success(`Copied to clipboard!`, {
+            id: 'clipboard',
+        });
     }
 
     function decorateKey(key: string) {
@@ -29,7 +37,7 @@ export function ParamsTableWithExpandle(props: Props) {
     function createRow(key: string, value: string, tableId: string | undefined = undefined, dark: boolean = false) {
         return (<tr key={`${props.id}_${key}`} className={dark ? styles.dark_row : undefined}>
             <td className={styles.param_expand}>{tableId !== undefined && <Arrow className={`${styles.arrow} ${styles.rotated}`} height={15} width={15} onClick={(e) => toggleTable(e, tableId)} />}</td>
-            <td className={styles.param_name}>{decorateKey(key)}</td>
+            <td className={styles.param_name}><p className={styles.name_text} onClick={e => copyValue(e, value)}>{decorateKey(key)}</p></td>
             <td className={styles.param_text}>{value}</td>
         </tr>)
     }

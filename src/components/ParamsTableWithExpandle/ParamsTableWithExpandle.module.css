@@ -16,6 +16,10 @@
     padding: 4px;
 }
 
+.name_text{
+    cursor: pointer;
+}
+
 .rotated {
     transform: rotate(-90deg);
 }

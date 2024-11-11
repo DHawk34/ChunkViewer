@@ -14,6 +14,7 @@ import { varStore } from "./scripts/variableStore";
 import "./App.css";
 import axios from "axios";
 import { useDragEnterCounter } from "./scripts/hooks/useDragEnterCounterHook";
+import { Toaster, ToastBar } from 'react-hot-toast';
 
 const cli_image_filename_arg_name = 'filename'
 const cli_parent_window_arg_name = 'parent-window'
@@ -181,6 +182,28 @@ export function App() {
         logger={logger}
         dragEnterCounter={enterCounter}
       />
+
+      <Toaster
+        position="bottom-center"
+        reverseOrder={false}
+        gutter={8}
+        containerClassName=""
+        containerStyle={{
+          zIndex: 10,
+          marginBottom: '20px'
+        }}
+
+        toastOptions={{
+          // Define default options
+          className: '',
+          duration: 2000,
+          style: {
+            background: '#484a52',
+            color: '#fff',
+          },
+        }}
+      />
+
 
       <StatusBar logs={logs} />
     </div>

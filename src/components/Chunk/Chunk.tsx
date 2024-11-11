@@ -16,6 +16,7 @@ import { ComfyBlock, parsePrompt } from "@/scripts/parsers/Comfy/comfyPromptPars
 import { ExpandableBlock } from "../ExpandableBlock/ExpandableBlock";
 import { ParamsTable } from "../ParamsTable/ParamsTable";
 import { ParamsTableWithExpandle } from "../ParamsTableWithExpandle/ParamsTableWithExpandle";
+import { Dictionary } from "@/scripts/utils/utils";
 
 type Props = {
     index: number
@@ -26,7 +27,7 @@ type Props = {
 
 export function Chunk(props: Props) {
     const [showAnotherView, setShowParameters] = useState(false)
-    const [parsedParams, setParsedParams] = useState<Param[] | undefined>(undefined)
+    const [parsedParams, setParsedParams] = useState<Dictionary<string> | undefined>(undefined)
     const [parsedBlocks, setParsedBlocks] = useState<ComfyBlock[] | undefined>(undefined)
 
     // const [parsedBlocks, setParsedBlocks] = useState<ComfyBlock[] | undefined>(undefined)
@@ -203,8 +204,9 @@ export function Chunk(props: Props) {
                         </div>
                         {
                             showAnotherView && props.chunk.name === 'parameters' ?
-
-                                <ParamsTable params={getParsedParams()} />
+                            
+                                <ParamsTableWithExpandle id="sdwebuitable" opened params={getParsedParams()} />
+    
                                 : showAnotherView && props.chunk.name === 'prompt' ?
                                     comfyBlocks
                                     :
