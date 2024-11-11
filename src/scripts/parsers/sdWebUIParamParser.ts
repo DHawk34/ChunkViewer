@@ -9,7 +9,7 @@ export type Param = {
     value: string
 }
 
-export function parseParameters(parameters: string, parseValueInQuotation?: boolean): Dictionary<string> {
+export function parseParameters(parameters: string, parseValueInQuotation?: boolean): Param[] {
     const result: Param[] = []
 
     if (parameters.length === 0) {
@@ -42,6 +42,11 @@ export function parseParameters(parameters: string, parseValueInQuotation?: bool
         result[0].key = POSITIVE_PROMT_TEXT
     }
 
+    return result
+}
+
+export function parseParametersToJson(parameters: string, parseValueInQuotation?: boolean): Dictionary<string>{
+    const result = parseParameters(parameters, parseValueInQuotation)
     const result_dic: Dictionary<string> = {}
 
     result.forEach((param) =>{

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import chunkHandler, { ChunkData } from '@/scripts/chunks/chunkHandler';
-import { Param, parseParameters } from '@/scripts/parsers/sdWebUIParamParser';
+import { Param, parseParameters, parseParametersToJson } from '@/scripts/parsers/sdWebUIParamParser';
 import { Draggable } from 'react-beautiful-dnd';
 import { UnlistenFn } from "@tauri-apps/api/event";
 import { chunkNameIsUnsafe, maxChunkNameSize } from "@/scripts/chunks/chunkSaver";
@@ -105,7 +105,7 @@ export function Chunk(props: Props) {
             return parsedParams
         }
 
-        const params = parseParameters(props.chunk.value, true)
+        const params = parseParametersToJson(props.chunk.value, true)
 
         setParsedParams(params)
 
