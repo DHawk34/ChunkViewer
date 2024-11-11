@@ -75,35 +75,14 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
     });
 
     //delete empty blocks & optimize order
-    targetBlocks.forEach(block => {
-        if (Object.keys(block.value).length === 0) {
-            const index = targetBlocks.indexOf(block, 0);
-            if (index > -1) {
-                targetBlocks.splice(index, 1);
-            }
-        }
+    const cleanBlocks = targetBlocks.filter(block => Object.keys(block.value).length !== 0)
 
-        // deepOptimizeOrder(block.value)
-        // block.value = optimizeOrder(block.value, 'positive', 'negative', 'seed', 'model', 'sampler_name', 'scheduler', 'steps', 'cfg', 'width', 'height', 'upscale_model', 'upscale_method', 'image_before_upscale')
-    })
+    for (let block of cleanBlocks) {
+        block.value = deepOptimizeOrder(block.value)
+    }
+    console.log(cleanBlocks)
 
-
-    return targetBlocks
-}
-
-function deepOptimizeOrder(block: Dictionary<string>) {
-    console.log(block)
-    const keys = Object.keys(block)
-
-    keys.forEach(key => {
-        const value = block[key]
-
-        if (isObject(value)) {
-            deepOptimizeOrder(value)
-        }
-    })
-
-    block = optimizeOrder(block, 'positive', 'negative', 'seed', 'model', 'sampler_name', 'scheduler', 'steps', 'cfg', 'width', 'height', 'upscale_model', 'upscale_method', 'image_before_upscale')
+    return cleanBlocks
 }
 
 function parseTree(block: Dictionary<string>) {
@@ -137,11 +116,25 @@ function parseTree(block: Dictionary<string>) {
     })
 }
 
-function replaceBlockIDsWithReferences(json: any, block: Dictionary<string>) {
-    const keys = Object.keys(block)
+function deepOptimizeOrder(blockValue: Dictionary<string>) {
+    const keys = Object.keys(blockValue)
 
     keys.forEach(key => {
-        const value = block[key]
+        let value = blockValue[key]
+
+        if (isObject(value)) {
+            blockValue[key] = deepOptimizeOrder(value)
+        }
+    })
+
+    return optimizeOrder(blockValue, 'positive', 'negative', 'seed', 'model', 'sampler_name', 'scheduler', 'steps', 'cfg', 'width', 'height', 'upscale_model', 'upscale_method', 'image_before_upscale')
+}
+
+function replaceBlockIDsWithReferences(json: any, blockValue: Dictionary<string>) {
+    const keys = Object.keys(blockValue)
+
+    keys.forEach(key => {
+        const value = blockValue[key]
 
         if (isObject(value)) {
             replaceBlockIDsWithReferences(json, value)
@@ -150,29 +143,12 @@ function replaceBlockIDsWithReferences(json: any, block: Dictionary<string>) {
         if (Array.isArray(value) && value.length === 2 && typeof value[0] === 'string') {
 
             const anotherBlockID = value[0]
-            const anotherBlock = json[anotherBlockID]
+            const anotherBlockValue = json[anotherBlockID]
 
-            block[key] = anotherBlock
+            blockValue[key] = anotherBlockValue
         }
     })
 }
-
-// function findUsedBlocks(block: BlockValue, usedBlocks: Set<string>) {
-//     const keys = Object.keys(block)
-
-//     keys.forEach(key => {
-//         const value = block[key]
-
-//         if (isObject(value)) {
-//             findUsedBlocks(value, usedBlocks)
-//         }
-
-//         if (Array.isArray(value) && value.length === 2 && typeof value[0] === 'string') {
-//             const anotherBlockID = value[0]
-//             usedBlocks.add(anotherBlockID)
-//         }
-//     })
-// }
 
 
 function simplifyBlockStart(block: Dictionary<string>) {
@@ -191,27 +167,3 @@ function simplifyBlockStart(block: Dictionary<string>) {
         }
     }
 }
-
-// function simplifyPropertyTree(block: BlockValue) {
-//     const keys = Object.keys(block)
-
-//     keys.forEach(key => {
-//         const value = block[key]
-
-//         if (!isObject(value))
-//             return
-
-//         simplifyPropertyTree(value)
-//         const childKeys = Object.keys(value)
-
-//         childKeys.forEach(cKey => {
-//             const childKey = cKey
-//             const childValue = value[childKey]
-//             const propName = `${key}/${childKey}`
-
-//             block[propName] = childValue
-//         })
-
-//         delete block[key]
-//     })
-// }

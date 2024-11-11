@@ -53,8 +53,7 @@ export function ParamsTableWithExpandle(props: Props) {
 
         const tables: JSX.Element[] = []
         let params_row: JSX.Element[] = []
-        const optimizedOrderBlocks = optimizeOrder(props.params, 'positive', 'negative', 'seed', 'model', 'sampler_name', 'scheduler', 'steps', 'cfg', 'width', 'height', 'upscale_model', 'upscale_method', 'image_before_upscale')
-        const keys = Object.keys(optimizedOrderBlocks)
+        const keys = Object.keys(props.params)
 
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i]
