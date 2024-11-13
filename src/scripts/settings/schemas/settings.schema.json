@@ -7,6 +7,14 @@
             "type": "boolean",
             "description": "Whether to save 4-character long chunk names as an 'unsafe' code or simple text"
         },
+        "parseParamsOnLoad": {
+            "type": "boolean",
+            "description": "Parse paramaters on image load"
+        },
+        "showOnlyBiggestBlock": {
+            "type": "boolean",
+            "description": "Show only biggest block (ComfyUI)"
+        },
         "chunkType": {
             "type": "string",
             "description": "Type of chunk to use when saving. tEXt is the default one (no compression)",

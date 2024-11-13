@@ -7,6 +7,8 @@ import extensionsSchema from './schemas/extensions.schema.json?raw'
 
 type SettingsSchema = {
     allowUnsafeChunkNames: boolean
+    parseParamsOnLoad: boolean
+    showOnlyBiggestBlock: boolean
     chunkType: ChunkTypes
 }
 
@@ -28,6 +30,8 @@ export const settingsManager = new MySettingsManager<SettingsSchema>(
     { // defaults
         $schema: "./settings.schema.json",
         allowUnsafeChunkNames: false,
+        parseParamsOnLoad: false,
+        showOnlyBiggestBlock: false,
         chunkType: ChunkTypes.tEXt
     } as SettingsSchema,
     { // options
