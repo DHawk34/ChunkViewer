@@ -17,6 +17,7 @@ import { ExpandableBlock } from "../ExpandableBlock/ExpandableBlock";
 import { ParamsTable } from "../ParamsTable/ParamsTable";
 import { ParamsTableWithExpandle } from "../ParamsTableWithExpandle/ParamsTableWithExpandle";
 import { Dictionary } from "@/scripts/utils/utils";
+import { varStore } from "@/scripts/variableStore";
 
 type Props = {
     index: number
@@ -26,20 +27,55 @@ type Props = {
 }
 
 export function Chunk(props: Props) {
-    const [showAnotherView, setShowParameters] = useState(false)
+    const [showAnotherView, setShowParameters] = useState<boolean>(false)
     const [parsedParams, setParsedParams] = useState<Dictionary<string> | undefined>(undefined)
     const [parsedBlocks, setParsedBlocks] = useState<ComfyBlock[] | undefined>(undefined)
 
     // const [parsedBlocks, setParsedBlocks] = useState<ComfyBlock[] | undefined>(undefined)
 
-    const unlistenResize = useRef<UnlistenFn>()
     const chunkName = useRef<HTMLDivElement>(null)
 
-    useEffect(() => {
+    // on chunk.value changed
 
-        return () => {
-            if (unlistenResize.current) unlistenResize.current()
+    useEffect(() => {
+        if (showAnotherView && props.chunk.name === 'parameters') {
+            setParsedParams(parseParametersToJson(props.chunk.value, true))
         }
+        else {
+            setParsedParams(undefined)
+        }
+
+        if (showAnotherView && props.chunk.name === 'prompt') {
+            const blocks = parsePromptWithSettings(props.chunk.value)
+            setParsedBlocks(blocks)
+        }
+        else {
+            setParsedBlocks(undefined)
+        }
+
+    }, [props.chunk.value])
+
+    useEffect(() => {
+        if (showAnotherView && props.chunk.name === 'parameters') {
+            getParsedParams()
+        }
+
+        if (showAnotherView && props.chunk.name === 'prompt') {
+            getParsedPrompts()
+        }
+    }, [showAnotherView])
+    // const unlistenResize = useRef<UnlistenFn>()
+
+    // useEffect(() => {
+
+    //     return () => {
+    //         if (unlistenResize.current) unlistenResize.current()
+    //     }
+    // }, [])
+
+    useEffect(() => {
+        if (props.chunk.name === 'parameters' || props.chunk.name === 'prompt')
+            setShowParameters(settingsManager.getCache('parseParamsOnLoad'))
     }, [])
 
     // on chunk.name changed
@@ -65,12 +101,6 @@ export function Chunk(props: Props) {
         }
     }, [props.chunk.name])
 
-    // on chunk.value changed
-    useEffect(() => {
-        setParsedParams(undefined)
-        setParsedBlocks(undefined)
-    }, [props.chunk.value])
-
     function onAllowUnsafeSettingChanged(value: boolean) {
         if (!chunkName.current) return
         chunkName.current.className = value ? 'chunk_name yellow' : 'chunk_name'
@@ -87,40 +117,56 @@ export function Chunk(props: Props) {
 
     function exportChunk() {
         if (showAnotherView) {
-            chunkHandler.exportParameters([props.chunk])
-                .catch(e => console.log(e))
-        }
-        else {
-            let isJson = false
-            if (props.chunk.name === 'workflow' || props.chunk.name === 'prompt')
-                isJson = true
+            if (props.chunk.name === 'parameters') {
+                chunkHandler.exportParameters([props.chunk])
+                    .catch(e => console.log(e))
+            }
 
-            chunkHandler.exportChunk(props.chunk, isJson)
-                .catch(e => console.log(e))
+            return
         }
+
+        let isJson = false
+        if (props.chunk.name === 'workflow' || props.chunk.name === 'prompt')
+            isJson = true
+
+        chunkHandler.exportChunk(props.chunk, isJson)
+            .catch(e => console.log(e))
     }
 
     function getParsedParams() {
         if (parsedParams) {
-            return parsedParams
+            return
         }
 
         const params = parseParametersToJson(props.chunk.value, true)
 
         setParsedParams(params)
+    }
 
-        return params
+    function parsePromptWithSettings(value: string) {
+        let blocks = parsePrompt(value)
+
+        if (settingsManager.getCache('showOnlyBiggestBlock')) {
+            const biggestBlock = blocks.reduce(function (prev, current) {
+                return (prev && prev.keysCount > current.keysCount) ? prev : current
+            })
+
+            blocks = [biggestBlock]
+        }
+
+
+        setParsedBlocks(blocks)
+
+        return blocks
     }
 
     function getParsedPrompts() {
         if (parsedBlocks) {
-            return parsedBlocks
+            return
         }
 
-        const blocks = parsePrompt(props.chunk.value)
+        const blocks = parsePromptWithSettings(props.chunk.value)
         setParsedBlocks(blocks)
-
-        return blocks
     }
 
 
@@ -175,8 +221,8 @@ export function Chunk(props: Props) {
         document.execCommand('insertText', false, text)
     }
 
-    const comfyBlocks = showAnotherView && props.chunk.name === 'prompt' ? getParsedPrompts()?.map(block => {
-        return <ExpandableBlock header={`${block.id}. ${block.name}`} opened key={block.id}><ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} /></ExpandableBlock>
+    const comfyBlocks = showAnotherView && props.chunk.name === 'prompt' ? parsedBlocks?.map(block => {
+        return parsedBlocks.length === 1 ? <ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} /> : <ExpandableBlock header={`${block.id}. ${block.name}`} opened key={block.id}><ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} /></ExpandableBlock>
     }) : undefined
 
     return (
@@ -204,9 +250,9 @@ export function Chunk(props: Props) {
                         </div>
                         {
                             showAnotherView && props.chunk.name === 'parameters' ?
-                            
-                                <ParamsTableWithExpandle id="sdwebuitable" opened params={getParsedParams()} />
-    
+
+                                <ParamsTableWithExpandle id="sdwebuitable" opened params={parsedParams} />
+
                                 : showAnotherView && props.chunk.name === 'prompt' ?
                                     comfyBlocks
                                     :
