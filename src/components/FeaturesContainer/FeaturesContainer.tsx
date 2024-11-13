@@ -139,7 +139,7 @@ export function FeaturesContainer(props: FeaturesProps) {
 
             {chunkExtensions.length > 0 && (
                 [
-                    <hr key={"hr_0"}></hr>,
+                    <hr className='settings_hr' key={"hr_0"}></hr>,
                     chunkExtensions.map((x, index) => (
                         <button onClick={getExecuteChunkExtensionFunc(x)} key={`func_${index}`}>
                             {x.name ?? "unnamed func"}
