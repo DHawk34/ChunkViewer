@@ -11,13 +11,6 @@
   flex-direction: column;
 }
 
-#version_label {
-  position: absolute;
-  right: 5px;
-  bottom: 15px;
-  color: gray;
-}
-
 .toolbar_button {
   display: block;
   margin: auto;
