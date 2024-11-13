@@ -14,7 +14,9 @@ import { varStore } from "./scripts/variableStore";
 import "./App.css";
 import axios from "axios";
 import { useDragEnterCounter } from "./scripts/hooks/useDragEnterCounterHook";
-import { Toaster, ToastBar } from 'react-hot-toast';
+import toast, { Toaster, ToastBar, Toast } from 'react-hot-toast';
+import { ToasterWithMax } from "./components/ToasterWithMax/ToasterWithMax";
+import { settingsManager } from "./scripts/settings/settings";
 
 const cli_image_filename_arg_name = 'filename'
 const cli_parent_window_arg_name = 'parent-window'
@@ -67,7 +69,8 @@ export function App() {
         var file = getImageFromFiles(files);
 
         if (!file) {
-          logError('Это не пнг!')
+          logError('This file is not PNG!')
+          toast.error('This file is not PNG!')
           return;
         }
 
@@ -155,22 +158,27 @@ export function App() {
           log(message)
 
         chunks.forEach(chunk => {
-          if (chunk.crcIsBad)
+          if (chunk.crcIsBad) {
+            toast.error('Bad CRC value!')
             logError(`Chunk '${chunk.name}' has bad CRC value! Export image to fix it.`)
+          }
         })
 
         setChunkArray(chunks)
         //console.log('fire')
         setImageUrl(URL.createObjectURL(new Blob([fileData], { type: 'image/png' })))
       })
-      .catch(e => logError(e?.message ?? e))
+      .catch(e => {
+        toast.error('Image load error!')
+        logError(e?.message ?? e)
+      })
   }
 
 
 
   return (
     <div id='container'>
-      <ImageContainer imageUrl={imageUrl} />
+      <ImageContainer imageUrl={imageUrl} loadImage={loadImage} />
 
       <ChunkContainer
         chunkArray={chunkArray}
@@ -183,15 +191,17 @@ export function App() {
         dragEnterCounter={enterCounter}
       />
 
-      <Toaster
+      <ToasterWithMax
+        max={1}
         position="bottom-center"
         reverseOrder={false}
         gutter={8}
         containerClassName=""
         containerStyle={{
           zIndex: 10,
-          marginBottom: '20px'
+          bottom: '35px',
         }}
+
 
         toastOptions={{
           // Define default options
@@ -200,6 +210,7 @@ export function App() {
           style: {
             background: '#484a52',
             color: '#fff',
+            pointerEvents: 'none'
           },
         }}
       />
