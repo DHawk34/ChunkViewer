@@ -5,7 +5,7 @@ export default class ConditioningCombineParser implements IBlockParser {
         if (block[key].hasOwnProperty('conditioning_1') && block[key].hasOwnProperty('conditioning_2') &&
             block[key].conditioning_1.hasOwnProperty('display_value') && block[key].conditioning_2.hasOwnProperty('display_value')) {
 
-            block[key].display_value = block[key].conditioning_1.display_value + block[key].conditioning_2.display_value
+            block[key].display_value = `${block[key].conditioning_1.display_value},  ${block[key].conditioning_2.display_value}`
 
             if (!block[key].hasOwnProperty('add_info'))
                 block[key].add_info = {}
