@@ -24,7 +24,7 @@ export function ParamsTableWithExpandle(props: Props) {
     function copyValue(ev: React.MouseEvent<HTMLParagraphElement, MouseEvent>, value: string) {
         navigator.clipboard.writeText(value);
         toast.success(`Copied to clipboard!`, {
-            id: 'clipboard',
+            // id: 'clipboard',
         });
     }
 

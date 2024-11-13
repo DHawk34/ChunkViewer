@@ -1,7 +1,7 @@
 .inner_table {
     margin-left: 9px;
-    border-left: 5px solid var(--foreground);
-    border-bottom: 3px solid var(--foreground);
+    border-left: 4px solid var(--foreground);
+    border-bottom: 4px solid var(--foreground);
     border-radius: 0 0 0 8px;
     margin-bottom: 5px;
 }
