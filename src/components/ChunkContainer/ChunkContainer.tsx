@@ -37,9 +37,9 @@ export function ChunkContainer(props: Props) {
 
 
 
-    const chunkElements = props.chunkArray.map((chunk: ChunkData, index: number) =>
-        <Chunk index={index} chunk={chunk} OnDelete={getDeleteFunc(index)} OnUpdate={getUpdateFunc(index)} key={index} />
-    )
+    const chunkElements = props.chunkArray.map((chunk: ChunkData, index: number) => {
+        return <Chunk index={index} chunk={chunk} OnDelete={getDeleteFunc(index)} OnUpdate={getUpdateFunc(index)} key={`${chunk.name}_${index}`} />
+    })
 
     return (
         <DragDropContext onDragEnd={getDropEndFunc(props.chunkArray, props.setChunkArray)}>
