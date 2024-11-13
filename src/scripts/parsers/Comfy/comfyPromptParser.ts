@@ -33,6 +33,7 @@ const parserDictionary: { [key: string]: IBlockParser } = {
 export type ComfyBlock = {
     id: string,
     name: string,
+    keysCount: number,
     value: Dictionary<string>
 }
 
@@ -51,7 +52,8 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
         const block: ComfyBlock = {
             id: key,
             name: json[key].class_type,
-            value: json[key]
+            value: json[key],
+            keysCount: 0
         }
         return block
     })
@@ -78,7 +80,7 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
     const cleanBlocks = targetBlocks.filter(block => Object.keys(block.value).length !== 0)
 
     for (let block of cleanBlocks) {
-        block.value = deepOptimizeOrder(block.value)
+        block.value = deepOptimizeOrderAndCountKeys(block.value, block)
     }
     console.log(cleanBlocks)
 
@@ -116,14 +118,15 @@ function parseTree(block: Dictionary<string>) {
     })
 }
 
-function deepOptimizeOrder(blockValue: Dictionary<string>) {
+function deepOptimizeOrderAndCountKeys(blockValue: Dictionary<string>, block: ComfyBlock) {
     const keys = Object.keys(blockValue)
-
+    block.keysCount += keys.length
+    
     keys.forEach(key => {
         let value = blockValue[key]
 
         if (isObject(value)) {
-            blockValue[key] = deepOptimizeOrder(value)
+            blockValue[key] = deepOptimizeOrderAndCountKeys(value, block)
         }
     })
 
