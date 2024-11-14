@@ -17,6 +17,7 @@ import { useDragEnterCounter } from "./scripts/hooks/useDragEnterCounterHook";
 import toast, { Toaster, ToastBar, Toast } from 'react-hot-toast';
 import { ToasterWithMax } from "./components/ToasterWithMax/ToasterWithMax";
 import { settingsManager } from "./scripts/settings/settings";
+import { Buffer } from 'buffer';
 
 const cli_image_filename_arg_name = 'filename'
 const cli_parent_window_arg_name = 'parent-window'
@@ -111,20 +112,15 @@ export function App() {
         console.log(imgFromBrowser)
 
         if (imgFromBrowser) {
-          let imgUrl: string = imgFromBrowser["imgUrl"];
-          if (imgUrl.startsWith('file:///')) {
-            imgUrl = imgUrl.substring(8)
-            imgUrl = decodeURIComponent(imgUrl)
-            await loadFromLocal(imgUrl)
-            return;
-          }
+          const imgData: string = imgFromBrowser["imgData"];
+          console.log(imgData)
+          const imgDataBytes: Uint8Array = new Uint8Array(Buffer.from(imgData, 'base64'))
+          const fileName: string = imgFromBrowser["fileName"];
 
-          varStore.openedImageName = removeExtFromFileName(getFileNameFromUrlOrPath(imgUrl))
+          varStore.openedImageName = removeExtFromFileName(fileName)
 
-          axios.get(imgUrl, { responseType: 'arraybuffer' }).then(response => {
-            loadImage(new Uint8Array(response.data))
-          })
-          logImageLoaded(imgUrl)
+          loadImage(imgDataBytes)
+          logImageLoaded(fileName)
         }
 
         return
