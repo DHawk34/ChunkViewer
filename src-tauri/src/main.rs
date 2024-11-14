@@ -4,9 +4,10 @@
 extern crate fstream;
 use std::env;
 use std::io::{self, Read, Write};
-use std::str;
 use tauri::Manager;
 mod show_in_folder;
+use serde::Serialize;
+use serde_json::json;
 
 #[tauri::command]
 fn extend_scope(handle: tauri::AppHandle, path: std::path::PathBuf) {
@@ -20,7 +21,10 @@ fn extend_scope(handle: tauri::AppHandle, path: std::path::PathBuf) {
 #[tauri::command]
 fn return_inp() -> std::string::String {
     let s = String::from_utf8(read_input().unwrap()).expect("Found invalid UTF-8");
-    write_output("disconnect").unwrap();
+    let response = json!({
+        "disconnect": true
+    });
+    write_output(&response).unwrap();
     return s;
 }
 
@@ -33,13 +37,17 @@ fn read_input() -> io::Result<Vec<u8>> {
     return Ok(buffer);
 }
 
-fn write_output(msg: &str) -> io::Result<()> {
+fn write_output<T: Serialize>(value: &T) -> io::Result<()> {
     let mut outstream = io::stdout();
+    let msg = serde_json::to_string(value)?;
     let len = msg.len();
     if len > 1024 * 1024 {
         panic!("Message was too large, length: {}", len)
     }
-    outstream.write(&len.to_ne_bytes())?;
+    let len = len as u32; // Cast is safe due to size check above
+    let len_bytes = len.to_ne_bytes();
+
+    outstream.write_all(&len_bytes)?;
     outstream.write_all(msg.as_bytes())?;
     outstream.flush()?;
     Ok(())
