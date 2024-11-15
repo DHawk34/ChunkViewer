@@ -4,15 +4,20 @@ import { StrictModeDroppable } from '../StrictModeDroppable';
 import { ChunkData } from '@/scripts/chunks/chunkHandler';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { getDropEndFunc } from '@/scripts/utils/utils';
+import { varStore } from '@/scripts/variableStore';
 
 type Props = {
     chunkArray: ChunkData[]
+    nextChunkId: number
     setChunkArray: (chunk: ChunkData[]) => void
+    setNextChunkId: (id: number) => void
 }
 
 export function ChunkContainer(props: Props) {
+
     function addChunk() {
-        const list = [...props.chunkArray, { name: 'New Chunk', value: '' }]
+        const list = [...props.chunkArray, { name: 'New Chunk', value: '', id: props.nextChunkId }]
+        props.setNextChunkId(props.nextChunkId + 1)
         props.setChunkArray(list)
     }
 
@@ -36,9 +41,9 @@ export function ChunkContainer(props: Props) {
     }
 
 
-
     const chunkElements = props.chunkArray.map((chunk: ChunkData, index: number) => {
-        return <Chunk index={index} chunk={chunk} OnDelete={getDeleteFunc(index)} OnUpdate={getUpdateFunc(index)} key={`${chunk.name}_${index}`} />
+        //key={`${varStore.openedImageName}_${chunk.id}`}
+        return <Chunk index={index} chunk={chunk} OnDelete={getDeleteFunc(index)} OnUpdate={getUpdateFunc(index)} key={`${chunk.id}`} />
     })
 
     return (

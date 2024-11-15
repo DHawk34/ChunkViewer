@@ -27,7 +27,7 @@ type Props = {
 }
 
 export function Chunk(props: Props) {
-    const [showAnotherView, setShowParameters] = useState<boolean>(false)
+    const [showAnotherView, setShowParameters] = useState<boolean>(getDefaultAnotherView())
     const [parsedParams, setParsedParams] = useState<Dictionary<string> | undefined>(undefined)
     const [parsedBlocks, setParsedBlocks] = useState<ComfyBlock[] | undefined>(undefined)
 
@@ -64,6 +64,12 @@ export function Chunk(props: Props) {
             getParsedPrompts()
         }
     }, [showAnotherView])
+
+    useEffect(() => {
+        if (props.chunk.name !== 'parameters' && props.chunk.name !== 'prompt') {
+            setShowParameters(false)
+        }
+    }, [props.chunk.name])
     // const unlistenResize = useRef<UnlistenFn>()
 
     // useEffect(() => {
@@ -73,10 +79,10 @@ export function Chunk(props: Props) {
     //     }
     // }, [])
 
-    useEffect(() => {
-        if (props.chunk.name === 'parameters' || props.chunk.name === 'prompt')
-            setShowParameters(settingsManager.getCache('parseParamsOnLoad'))
-    }, [])
+    // useEffect(() => {
+    //     if (props.chunk.name === 'parameters' || props.chunk.name === 'prompt')
+    //         setShowParameters(settingsManager.getCache('parseParamsOnLoad'))
+    // }, [])
 
     // on chunk.name changed
     useEffect(() => {
@@ -100,6 +106,10 @@ export function Chunk(props: Props) {
                 .unregister(onAllowUnsafeSettingChanged)
         }
     }, [props.chunk.name])
+
+    function getDefaultAnotherView() {
+        return (props.chunk.name === 'parameters' || props.chunk.name === 'prompt') && settingsManager.getCache('parseParamsOnLoad')
+    }
 
     function onAllowUnsafeSettingChanged(value: boolean) {
         if (!chunkName.current) return
@@ -221,8 +231,24 @@ export function Chunk(props: Props) {
         document.execCommand('insertText', false, text)
     }
 
+    function showChankValue() {
+        if (showAnotherView) {
+            if (props.chunk.name === 'parameters') {
+                return <ParamsTableWithExpandle id="sdwebuitable" opened params={parsedParams} />
+            }
+            else if (props.chunk.name === 'prompt') {
+                return comfyBlocks
+            }
+        }
+        else {
+            return <p className='chunk_text' onDoubleClick={enableContentEditable} onBlur={chunkValue_onBlur}>
+                {props.chunk.value}
+            </p>
+        }
+    }
+
     const comfyBlocks = showAnotherView && props.chunk.name === 'prompt' ? parsedBlocks?.map(block => {
-        return parsedBlocks.length === 1 ? <ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} /> : <ExpandableBlock header={`${block.id}. ${block.name}`} opened key={block.id}><ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} /></ExpandableBlock>
+        return parsedBlocks.length === 1 ? <ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} key={block.id} /> : <ExpandableBlock header={`${block.id}. ${block.name}`} opened key={block.id}><ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} /></ExpandableBlock>
     }) : undefined
 
     return (
@@ -249,16 +275,7 @@ export function Chunk(props: Props) {
                             <button className='delete_chunk_button' onClick={deleteChunk}><TrashIcon width="25" height="25" /></button>
                         </div>
                         {
-                            showAnotherView && props.chunk.name === 'parameters' ?
-
-                                <ParamsTableWithExpandle id="sdwebuitable" opened params={parsedParams} />
-
-                                : showAnotherView && props.chunk.name === 'prompt' ?
-                                    comfyBlocks
-                                    :
-                                    <p className='chunk_text' onDoubleClick={enableContentEditable} onBlur={chunkValue_onBlur}>
-                                        {props.chunk.value}
-                                    </p>
+                            showChankValue()
                         }
                     </div>
                 )}

@@ -24,6 +24,7 @@ const cli_parent_window_arg_name = 'parent-window'
 
 export function App() {
   const [chunkArray, setChunkArray] = useState<ChunkData[]>([])
+  const [nextChunkId, setNextChunkId] = useState<number>(0)
   const [imageUrl, setImageUrl] = useState<string>(dragImg)
 
   const logger = useLogger()
@@ -160,6 +161,7 @@ export function App() {
           }
         })
 
+        setNextChunkId(chunks.length)
         setChunkArray(chunks)
         //console.log('fire')
         setImageUrl(URL.createObjectURL(new Blob([fileData], { type: 'image/png' })))
@@ -178,11 +180,14 @@ export function App() {
 
       <ChunkContainer
         chunkArray={chunkArray}
-        setChunkArray={setChunkArray} />
+        setChunkArray={setChunkArray}
+        nextChunkId={nextChunkId}
+        setNextChunkId={setNextChunkId} />
 
       <ToolbarContainer
         chunkArray={chunkArray}
         setChunkArray={setChunkArray}
+        setNextChunkId={setNextChunkId}
         logger={logger}
         dragEnterCounter={enterCounter}
       />

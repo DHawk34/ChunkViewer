@@ -18,6 +18,7 @@ export function ToolbarContainer(props: FeaturesProps) {
                     <FeaturesContainer
                         chunkArray={props.chunkArray}
                         setChunkArray={props.setChunkArray}
+                        setNextChunkId={props.setNextChunkId}
                         logger={props.logger}
                         dragEnterCounter={props.dragEnterCounter}
                     />

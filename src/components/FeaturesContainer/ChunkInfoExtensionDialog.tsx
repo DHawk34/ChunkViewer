@@ -73,10 +73,10 @@ export const ChunkInfoExtensionDialog = forwardRef<HTMLDialogElement>((_, ref) =
 
             <p>Chunks to paste</p>
             <div className='fieldset'>
-                <ChunkContainer
+                {/* <ChunkContainer
                     chunkArray={chunksToAdd}
                     setChunkArray={setChunksToAdd}
-                />
+                /> */}
             </div>
 
             <div className="buttons">

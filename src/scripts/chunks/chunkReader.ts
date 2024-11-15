@@ -70,8 +70,6 @@ export function readInfoChunks(bytes: Uint8Array): ChunkReadResultExtended {
     requiredLength = pos + 8    // Чтобы хватило на чтение длины чанка и его имени
     result.startIndex = pos
 
-
-
     while (bytes.length > requiredLength) {
         // Длина чанка
         length = bytes2UInt32BigEndian(bytes, pos)
@@ -96,7 +94,7 @@ export function readInfoChunks(bytes: Uint8Array): ChunkReadResultExtended {
                 return result
         }
         else {
-            result.chunks.push({ name: blockName, value: bytes2String(bytes, pos, length), crcIsBad: checkCrcIsBad() })
+            result.chunks.push({ name: blockName, value: bytes2String(bytes, pos, length), id: result.chunks.length, crcIsBad: checkCrcIsBad() })
         }
 
         pos += length + 4           // +4 -- CRC (окончание чанка)
@@ -126,7 +124,7 @@ export function readInfoChunks(bytes: Uint8Array): ChunkReadResultExtended {
         length -= blockName.length + 1
         pos += blockName.length + 1
 
-        result.chunks.push({ name: blockName, value: decompressChunk(chunkType), crcIsBad: crcIsBad })
+        result.chunks.push({ name: blockName, value: decompressChunk(chunkType), id: result.chunks.length, crcIsBad: crcIsBad })
         return true
     }
 

@@ -5,6 +5,7 @@ import { pngSaveFilePickerOptions, save } from '../utils/save.utils';
 import { varStore } from '../variableStore';
 
 export type ChunkData = {
+    id: number
     name: string
     value: string
 }

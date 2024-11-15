@@ -51,6 +51,7 @@ export async function exportParameters(chunks: ChunkData[]): Promise<void> {
     }
 
     return exportChunk({
+        id: 0,
         name: 'parameters',
         value: chunkValue.slice(0, -2)
     })

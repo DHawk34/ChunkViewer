@@ -13,6 +13,7 @@ import { ChunkExtension, extensionSettingsManager, settingsManager } from '@/scr
 export interface FeaturesProps {
     chunkArray: ChunkData[]
     setChunkArray: React.Dispatch<React.SetStateAction<ChunkData[]>>
+    setNextChunkId: React.Dispatch<React.SetStateAction<number>>
     logger: Logger
     dragEnterCounter: DragEnterCounter
 }
@@ -22,7 +23,7 @@ export function FeaturesContainer(props: FeaturesProps) {
     const ref_addExtensionDialog = useRef<HTMLDialogElement>(null)
     const ref_editExtensionsListDialog = useRef<HTMLDialogElement>(null)
 
-    const { chunkArray, setChunkArray, logger, dragEnterCounter } = props
+    const { chunkArray, setChunkArray, setNextChunkId, logger, dragEnterCounter } = props
 
     const { logs, log, logError } = logger
 
@@ -31,7 +32,7 @@ export function FeaturesContainer(props: FeaturesProps) {
     const btn_exportImage = () => saveImage(chunkArray, logger)
     const btn_exportParameters = () => exportParams(chunkArray, logger)
     const btn_exportAllChunks = () => exportAllChunks(chunkArray, logger)
-    const btn_replaceChunks = () => replaceChunksWithFileDialog(setChunkArray, logger)
+    const btn_replaceChunks = () => replaceChunksWithFileDialog(setChunkArray, setNextChunkId, logger)
 
     function expandButton_onClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         if (!ref_chunkButtonsBlock.current) return
@@ -63,7 +64,7 @@ export function FeaturesContainer(props: FeaturesProps) {
             }
 
             file.arrayBuffer().then(buff => {
-                replaceChunks(new Uint8Array(buff), setChunkArray, logger)
+                replaceChunks(new Uint8Array(buff), setChunkArray, setNextChunkId, logger)
             })
         }
     }
