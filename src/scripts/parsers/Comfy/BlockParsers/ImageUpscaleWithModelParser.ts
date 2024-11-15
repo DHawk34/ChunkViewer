@@ -1,7 +1,7 @@
 export default class ImageUpscaleWithModelParser implements IBlockParser {
 
     parseBlock(block: { [key: string]: any }, key: string): void {
-
+        
         if (block[key].hasOwnProperty('class_type')) {
             delete block[key].class_type
         }
@@ -9,12 +9,13 @@ export default class ImageUpscaleWithModelParser implements IBlockParser {
         const newKey = 'image_before_upscale'
         block[newKey] = {}
 
-        if (block[key].hasOwnProperty('width') & block[key].hasOwnProperty('height')) {
+        if (block[key].hasOwnProperty('width') && block[key].hasOwnProperty('height')) {
             block[newKey].display_value = `${block[key].width} x ${block[key].height}`
         }
 
         if(block[key].hasOwnProperty('upscale_model')){
             block.upscale_model = block[key].upscale_model
+            delete block[key].upscale_model
         }
 
         const childKeys = Object.keys(block[key])
