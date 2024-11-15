@@ -53,7 +53,7 @@ export function SettingsContainer() {
             <hr className="settings_hr" />
             <div className="settings_panel">
                 <div className="setting_row">
-                    <p className="setting_name">Parse params on image load</p>
+                    <p className="setting_name">Parse params on first image load</p>
                     <div className="setting_input">
                         <Switcher defaultChecked={get_parseParamsOnLoad()} OnChange={update_parseParamsOnLoad} />
                     </div>
