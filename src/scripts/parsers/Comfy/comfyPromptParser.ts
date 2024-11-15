@@ -82,7 +82,7 @@ export function parsePrompt(prompt: string): ComfyBlock[] {
     for (let block of cleanBlocks) {
         block.value = deepOptimizeOrderAndCountKeys(block.value, block)
     }
-    console.log(cleanBlocks)
+    // console.log(cleanBlocks)
 
     return cleanBlocks
 }
