@@ -1,30 +1,30 @@
 import React from "react";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { tauri } from "@tauri-apps/api";
 import { ImageContainer } from "./components/ImageContainer/ImageContainer";
 import { ChunkContainer } from "./components/ChunkContainer/ChunkContainer";
 import { ToolbarContainer } from "./components/ToolbarContainer/ToolbarContainer";
 import dragImg from './components/ImageContainer/dragANDdrop.png';
-import chunkHandler, { ChunkData } from "./scripts/chunks/chunkHandler";
+import chunkHandler from "./scripts/chunks/chunkHandler";
 import { getMatches } from '@tauri-apps/api/cli'
 import { getFileNameFromUrlOrPath, removeExtFromFileName } from "./scripts/utils/utils";
 import { StatusBar } from "./components/StatusBar/StatusBar";
 import { useLogger } from "./scripts/hooks/useLoggerHook";
 import { varStore } from "./scripts/variableStore";
-import "./App.css";
-import axios from "axios";
 import { useDragEnterCounter } from "./scripts/hooks/useDragEnterCounterHook";
 import toast, { Toaster, ToastBar, Toast } from 'react-hot-toast';
 import { ToasterWithMax } from "./components/ToasterWithMax/ToasterWithMax";
 import { settingsManager } from "./scripts/settings/settings";
 import { Buffer } from 'buffer';
+import { useChunkArray } from "./scripts/hooks/useChunkArray";
+import "./App.css";
 
 const cli_image_filename_arg_name = 'filename'
 const cli_parent_window_arg_name = 'parent-window'
 
 export function App() {
-  const [chunkArray, setChunkArray] = useState<ChunkData[]>([])
-  const [nextChunkId, setNextChunkId] = useState<number>(0)
+  const chunkArray = useChunkArray()
   const [imageUrl, setImageUrl] = useState<string>(dragImg)
 
   const logger = useLogger()
@@ -37,6 +37,7 @@ export function App() {
     loadImageOnStartUp()
     setupDragAndDrop()
   }, [])
+
 
   function logImageLoaded(fileName: string) {
     return log(`Loaded "${getFileNameFromUrlOrPath(fileName)}"`)
@@ -161,8 +162,7 @@ export function App() {
           }
         })
 
-        setNextChunkId(chunks.length)
-        setChunkArray(chunks)
+        chunkArray.reset(chunks)
         //console.log('fire')
         setImageUrl(URL.createObjectURL(new Blob([fileData], { type: 'image/png' })))
       })
@@ -179,15 +179,10 @@ export function App() {
       <ImageContainer imageUrl={imageUrl} loadImage={loadImage} />
 
       <ChunkContainer
-        chunkArray={chunkArray}
-        setChunkArray={setChunkArray}
-        nextChunkId={nextChunkId}
-        setNextChunkId={setNextChunkId} />
+        chunkArray={chunkArray} />
 
       <ToolbarContainer
         chunkArray={chunkArray}
-        setChunkArray={setChunkArray}
-        setNextChunkId={setNextChunkId}
         logger={logger}
         dragEnterCounter={enterCounter}
       />

@@ -64,6 +64,7 @@ export function isUrl(input: string): boolean {
     }
 }
 
+// todo: delete
 export function getDropEndFunc<T>(data: T[], setData: (data: T[]) => void) {
     return (result: DropResult) => {
         if (!result.destination)

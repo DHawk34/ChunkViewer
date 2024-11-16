@@ -2,52 +2,55 @@ import './ChunkContainer.css'
 import { Chunk } from '../Chunk/Chunk';
 import { StrictModeDroppable } from '../StrictModeDroppable';
 import { ChunkData } from '@/scripts/chunks/chunkHandler';
-import { DragDropContext } from 'react-beautiful-dnd';
-import { getDropEndFunc } from '@/scripts/utils/utils';
-import { varStore } from '@/scripts/variableStore';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import { ChunkArray, ChunkDataWithId } from '@/scripts/hooks/useChunkArray';
+import { useEffect } from 'react';
 
 type Props = {
-    chunkArray: ChunkData[]
-    nextChunkId: number
-    setChunkArray: (chunk: ChunkData[]) => void
-    setNextChunkId: (id: number) => void
+    chunkArray: ChunkArray
 }
 
 export function ChunkContainer(props: Props) {
 
+    useEffect(() => {
+        console.log(props.chunkArray.chunks)
+    }, [props])
+
     function addChunk() {
-        const list = [...props.chunkArray, { name: 'New Chunk', value: '', id: props.nextChunkId }]
-        props.setNextChunkId(props.nextChunkId + 1)
-        props.setChunkArray(list)
-    }
-
-    function updateChunk(newValue: ChunkData, index: number) {
-        const list = [...props.chunkArray]
-        list[index] = newValue
-        props.setChunkArray(list)
-    }
-
-    function deleteChunk(index: number) {
-        const list = props.chunkArray.toSpliced(index, 1)
-        props.setChunkArray(list)
+        props.chunkArray.push({ name: 'New Chunk', value: '' })
     }
 
     function getUpdateFunc(chunkIndex: number) {
-        return (newValue: ChunkData) => updateChunk(newValue, chunkIndex)
+        return (newValue: ChunkData) => props.chunkArray.updateAt(chunkIndex, newValue)
     }
 
     function getDeleteFunc(chunkIndex: number) {
-        return () => deleteChunk(chunkIndex)
+        return () => props.chunkArray.removeAt(chunkIndex)
+    }
+
+    function getDropEndFunc() {
+        return (result: DropResult) => {
+            if (!result.destination)
+                return
+
+            if (result.source.index === result.destination.index)
+                return
+
+            const sourceIndex = result.source.index
+            const destinationIndex = result.destination.index
+
+            props.chunkArray.swap(sourceIndex, destinationIndex)
+        }
     }
 
 
-    const chunkElements = props.chunkArray.map((chunk: ChunkData, index: number) => {
+    const chunkElements = props.chunkArray.chunks.map((chunk: ChunkDataWithId, index: number) => {
         //key={`${varStore.openedImageName}_${chunk.id}`}
         return <Chunk index={index} chunk={chunk} OnDelete={getDeleteFunc(index)} OnUpdate={getUpdateFunc(index)} key={`${chunk.id}`} />
     })
 
     return (
-        <DragDropContext onDragEnd={getDropEndFunc(props.chunkArray, props.setChunkArray)}>
+        <DragDropContext onDragEnd={getDropEndFunc()}>
             <div id='chunk_container'>
                 <StrictModeDroppable droppableId='chunks'>
                     {(provided) => (

@@ -94,7 +94,7 @@ export function readInfoChunks(bytes: Uint8Array): ChunkReadResultExtended {
                 return result
         }
         else {
-            result.chunks.push({ name: blockName, value: bytes2String(bytes, pos, length), id: result.chunks.length, crcIsBad: checkCrcIsBad() })
+            result.chunks.push({ name: blockName, value: bytes2String(bytes, pos, length), crcIsBad: checkCrcIsBad() })
         }
 
         pos += length + 4           // +4 -- CRC (окончание чанка)
@@ -124,7 +124,7 @@ export function readInfoChunks(bytes: Uint8Array): ChunkReadResultExtended {
         length -= blockName.length + 1
         pos += blockName.length + 1
 
-        result.chunks.push({ name: blockName, value: decompressChunk(chunkType), id: result.chunks.length, crcIsBad: crcIsBad })
+        result.chunks.push({ name: blockName, value: decompressChunk(chunkType), crcIsBad: crcIsBad })
         return true
     }
 
@@ -155,7 +155,7 @@ export function readInfoChunks(bytes: Uint8Array): ChunkReadResultExtended {
             length -= translated.length + 1
 
             result.message += `Чанк iTXt (${isCompressed ? 'compressed' : 'uncompressed'}${language == '' ? '' : ', language: ' + language}${translated == '' ? '' : ', translated: ' + translated}) | `
-            
+
             if (isCompressed) {
                 // TODO: decompress image
                 result.message += 'Закодированный чанк iTXt. Эта картинка нужна для тестов! | '

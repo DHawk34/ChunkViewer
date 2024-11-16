@@ -9,11 +9,10 @@ import { ChunkExtensionsList } from './ChunkExtensionsList'
 import EditIcon from '@/assets/edit.svg?react'
 import './FeaturesContainer.css'
 import { ChunkExtension, extensionSettingsManager, settingsManager } from '@/scripts/settings/settings'
+import { ChunkArray } from '@/scripts/hooks/useChunkArray'
 
 export interface FeaturesProps {
-    chunkArray: ChunkData[]
-    setChunkArray: React.Dispatch<React.SetStateAction<ChunkData[]>>
-    setNextChunkId: React.Dispatch<React.SetStateAction<number>>
+    chunkArray: ChunkArray
     logger: Logger
     dragEnterCounter: DragEnterCounter
 }
@@ -23,16 +22,16 @@ export function FeaturesContainer(props: FeaturesProps) {
     const ref_addExtensionDialog = useRef<HTMLDialogElement>(null)
     const ref_editExtensionsListDialog = useRef<HTMLDialogElement>(null)
 
-    const { chunkArray, setChunkArray, setNextChunkId, logger, dragEnterCounter } = props
+    const { chunkArray, logger, dragEnterCounter } = props
 
     const { logs, log, logError } = logger
 
     const { enterCount, incrementDragEnterCount, decrementDragEnterCount, setDragEnterCount } = dragEnterCounter
 
-    const btn_exportImage = () => saveImage(chunkArray, logger)
-    const btn_exportParameters = () => exportParams(chunkArray, logger)
-    const btn_exportAllChunks = () => exportAllChunks(chunkArray, logger)
-    const btn_replaceChunks = () => replaceChunksWithFileDialog(setChunkArray, setNextChunkId, logger)
+    const btn_exportImage = () => saveImage(chunkArray.chunks, logger)
+    const btn_exportParameters = () => exportParams(chunkArray.chunks, logger)
+    const btn_exportAllChunks = () => exportAllChunks(chunkArray.chunks, logger)
+    const btn_replaceChunks = () => replaceChunksWithFileDialog(chunkArray, logger)
 
     function expandButton_onClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         if (!ref_chunkButtonsBlock.current) return
@@ -64,7 +63,7 @@ export function FeaturesContainer(props: FeaturesProps) {
             }
 
             file.arrayBuffer().then(buff => {
-                replaceChunks(new Uint8Array(buff), setChunkArray, setNextChunkId, logger)
+                replaceChunks(new Uint8Array(buff), chunkArray, logger)
             })
         }
     }
@@ -89,7 +88,7 @@ export function FeaturesContainer(props: FeaturesProps) {
 
     function getExecuteChunkExtensionFunc(ext: ChunkExtension) {
         return () => {
-            setChunkArray(arr => {
+            chunkArray.edit(arr => {
                 if (ext.removeAllChunks) {
                     arr = []
                 }
@@ -98,7 +97,7 @@ export function FeaturesContainer(props: FeaturesProps) {
                 }
 
                 if (ext.chunksToAdd) {
-                    arr.push(...ext.chunksToAdd.map(chunk => ({ name: chunk.name ?? "?", value: chunk.value ?? "" } as ChunkData)))
+                    arr.push(...ext.chunksToAdd.map(chunk => ({ name: chunk.name ?? "?", value: chunk.value ?? "" })))
                 }
 
                 return [...arr]
