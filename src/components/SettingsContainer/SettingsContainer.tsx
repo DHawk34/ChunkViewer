@@ -46,7 +46,7 @@ export function SettingsContainer() {
                     </div>
                 </div>
 
-                <button onClick={(e) => {window.open("https://github.com/DHawk34/ChunkViewer/releases");}}>Check for Update</button>
+                <button onClick={(e) => { window.open("https://github.com/DHawk34/ChunkViewer/releases"); }}>Check for Update</button>
             </div>
 
             <h3 className="settings_header">Stable Diffusion</h3>
@@ -70,6 +70,7 @@ export function SettingsContainer() {
             <hr className="settings_hr" />
             <div className="settings_panel">
                 <button onClick={openSettingsFolder}>Open extensions folder</button>
+                <button onClick={() => extensionSettingsManager.initialize() }>Reload extensions</button>
             </div>
         </div>
     )
