@@ -30,6 +30,7 @@ export function Chunk(props: Props) {
     const [showAnotherView, setShowParameters] = useState<boolean>(getDefaultAnotherView())
     const [parsedParams, setParsedParams] = useState<Dictionary<string> | undefined>(undefined)
     const [parsedBlocks, setParsedBlocks] = useState<ComfyBlock[] | undefined>(undefined)
+    const [showOnlyBiggest, setShowOnlyBiggest] = useState<boolean>(getDefaultShowOnlyBiggest())
 
     // const [parsedBlocks, setParsedBlocks] = useState<ComfyBlock[] | undefined>(undefined)
 
@@ -46,7 +47,7 @@ export function Chunk(props: Props) {
         }
 
         if (showAnotherView && props.chunk.name === 'prompt') {
-            const blocks = parsePromptWithSettings(props.chunk.value)
+            const blocks = getParsedPrompt(props.chunk.value)
             setParsedBlocks(blocks)
         }
         else {
@@ -69,7 +70,43 @@ export function Chunk(props: Props) {
         if (props.chunk.name !== 'parameters' && props.chunk.name !== 'prompt') {
             setShowParameters(false)
         }
+
+        if (props.chunk.name === 'prompt') {
+            settingsManager
+                .getValueUpdatedEvent('showOnlyBiggestBlock')
+                .register(onShowBiggestBlockChanged)
+        }
+
+        return () => {
+            // unsub from event
+            // if (props.chunk.name !== 'prompt') {
+            settingsManager
+                .getValueUpdatedEvent('showOnlyBiggestBlock')
+                .unregister(onShowBiggestBlockChanged)
+            // }
+        }
     }, [props.chunk.name])
+
+    // useEffect(() => {
+
+    //     // sub to event
+    //     if (props.chunk.name === 'prompt') {
+    //         settingsManager
+    //             .getValueUpdatedEvent('showOnlyBiggestBlock')
+    //             .register(onShowBiggestBlockChanged)
+    //     }
+
+    //     return () => {
+    //         onShowBiggestBlockChanged(false)
+
+    //         // unsub from event
+    //         // if (props.chunk.name !== 'prompt') {
+    //             settingsManager
+    //                 .getValueUpdatedEvent('showOnlyBiggestBlock')
+    //                 .unregister(onShowBiggestBlockChanged)
+    //         // }
+    //     }
+    // }, [])
     // const unlistenResize = useRef<UnlistenFn>()
 
     // useEffect(() => {
@@ -97,18 +134,27 @@ export function Chunk(props: Props) {
             .getValueUpdatedEvent('allowUnsafeChunkNames')
             .register(onAllowUnsafeSettingChanged)
 
+
         return () => {
             onAllowUnsafeSettingChanged(false) // disable yellow coloring
-
             // unsub from event
             settingsManager
                 .getValueUpdatedEvent('allowUnsafeChunkNames')
                 .unregister(onAllowUnsafeSettingChanged)
+
         }
     }, [props.chunk.name])
 
     function getDefaultAnotherView() {
         return (props.chunk.name === 'parameters' || props.chunk.name === 'prompt') && settingsManager.getCache('parseParamsOnLoad')
+    }
+
+    function getDefaultShowOnlyBiggest() {
+        return (props.chunk.name === 'prompt') && settingsManager.getCache('showOnlyBiggestBlock')
+    }
+
+    function onShowBiggestBlockChanged(value: boolean) {
+        setShowOnlyBiggest(value)
     }
 
     function onAllowUnsafeSettingChanged(value: boolean) {
@@ -153,21 +199,24 @@ export function Chunk(props: Props) {
         setParsedParams(params)
     }
 
-    function parsePromptWithSettings(value: string) {
+    function getParsedPrompt(value: string) {
         let blocks = parsePrompt(value)
-
-        if (settingsManager.getCache('showOnlyBiggestBlock')) {
-            const biggestBlock = blocks.reduce(function (prev, current) {
-                return (prev && prev.keysCount > current.keysCount) ? prev : current
-            })
-
-            blocks = [biggestBlock]
-        }
-
 
         setParsedBlocks(blocks)
 
         return blocks
+    }
+
+    function getBiggestBlock() {
+        if (parsedBlocks && parsedBlocks.length > 0) {
+            let t = [...parsedBlocks]
+            const biggestBlock = t.reduce(function (prev, current) {
+                return (prev && prev.keysCount > current.keysCount) ? prev : current
+            })
+            return biggestBlock
+        }
+
+        return undefined
     }
 
     function getParsedPrompts() {
@@ -175,7 +224,7 @@ export function Chunk(props: Props) {
             return
         }
 
-        const blocks = parsePromptWithSettings(props.chunk.value)
+        const blocks = getParsedPrompt(props.chunk.value)
         setParsedBlocks(blocks)
     }
 
@@ -247,9 +296,13 @@ export function Chunk(props: Props) {
         }
     }
 
-    const comfyBlocks = showAnotherView && props.chunk.name === 'prompt' ? parsedBlocks?.map(block => {
-        return parsedBlocks.length === 1 ? <ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} key={block.id} /> : <ExpandableBlock header={`${block.id}. ${block.name}`} opened key={block.id}><ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} /></ExpandableBlock>
-    }) : undefined
+    const comfyBlocks = showAnotherView && props.chunk.name === 'prompt' ?
+        showOnlyBiggest ? <ParamsTableWithExpandle id={`biggest_comfyParamTable`} opened params={getBiggestBlock()?.value} /> :
+            parsedBlocks?.map(block => {
+                return <ExpandableBlock header={`${block.id}. ${block.name}`} opened key={block.id}>
+                    <ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} />
+                </ExpandableBlock>
+            }) : undefined
 
     return (
         <div>
