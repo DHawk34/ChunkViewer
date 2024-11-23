@@ -12,9 +12,9 @@ type Props = {
 
 export function ChunkContainer(props: Props) {
 
-    useEffect(() => {
-        console.log(props.chunkArray.chunks)
-    }, [props])
+    // useEffect(() => {
+    //     console.log(props.chunkArray.chunks)
+    // }, [props])
 
     function addChunk() {
         props.chunkArray.push({ name: 'New Chunk', value: '' })
