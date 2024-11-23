@@ -10,11 +10,7 @@ type Props = {
 
 export function ExpandableBlock(props: Props) {
 
-    const [opened, setOpened] = useState<boolean>()
-
-    useEffect(() => {
-        setOpened(props.opened ?? false)
-    }, [props.opened])
+    const [opened, setOpened] = useState<boolean>(props.opened ?? false)
 
     function openCloseExpandable(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
         setOpened(!opened)
