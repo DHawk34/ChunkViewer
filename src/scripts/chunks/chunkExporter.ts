@@ -1,5 +1,5 @@
-import { txtSaveFilePickerOptions, save } from "../save.utils";
-import { Param, parseParameters } from "../sdParamParser";
+import { txtSaveFilePickerOptions, save, jsonSaveFilePickerOptions } from "../utils/save.utils";
+import { Param, parseParameters } from "../parsers/sdWebUIParamParser";
 import { varStore } from "../variableStore";
 import { ChunkData } from "./chunkHandler";
 
@@ -7,8 +7,9 @@ export default {
     exportChunk, exportChunks, exportParameters
 }
 
-export async function exportChunk(chunk: ChunkData) {
-    const filePickerOptions = txtSaveFilePickerOptions(`${varStore.openedImageName} ${chunk.name}.txt`)
+export async function exportChunk(chunk: ChunkData, isJson: boolean = false) {
+    const fileName = `${varStore.openedImageName} ${chunk.name}`
+    const filePickerOptions = isJson ? jsonSaveFilePickerOptions(`${fileName}.json`) : txtSaveFilePickerOptions(`${fileName}.txt`)
     const content = chunk.value
 
     return save(content, filePickerOptions)
@@ -48,8 +49,6 @@ export async function exportParameters(chunks: ChunkData[]): Promise<void> {
         if (value !== '')
             chunkValue += value + '\n\n'
     }
-
-    console.log(chunkValue)
 
     return exportChunk({
         name: 'parameters',

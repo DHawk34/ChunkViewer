@@ -1,0 +1,133 @@
+#features_container dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+dialog[open]#chunkExtensionsListDialog {
+    height: 85%;
+    max-height: 700px;
+    width: 450px;
+}
+
+dialog[open]#chunkExtensionsListDialog h2 {
+    margin-bottom: 8px;
+}
+
+dialog[open]#chunkExtensionsListDialog hr {
+    margin: 0;
+    margin-bottom: 12px;
+    width: 60%;
+    align-self: center;
+}
+
+dialog[open]#chunkExtensionsListDialog .placeholder {
+    text-align: center;
+}
+
+dialog[open]#chunkExtensionsListDialog .extensionNames {
+    display: flex;
+    flex-direction: column;
+    /* flex-grow: 1; */
+
+    padding: 0;
+    width: auto;
+}
+
+dialog[open]#chunkExtensionsListDialog .extension_name {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: auto;
+    word-break: break-all;
+
+    margin-top: 4px;
+    margin-bottom: 4px;
+
+    padding: 4px 8px;
+    gap: 4px;
+
+    background-color: var(--background-dark);
+    border-radius: 6px;
+    border: 1px solid black;
+}
+
+dialog[open]#chunkExtensionsListDialog p {
+    width: 100%;
+    margin: 2px 0;
+    padding: 2px 4px;
+}
+
+dialog[open]#chunkExtensionsListDialog [contenteditable="plaintext-only"] {
+    background-color: white;
+    color: black;
+}
+
+
+
+dialog[open]#chunkExtensionsListDialog .add_button {
+    margin-top: 8px;
+    margin-left: auto;
+    margin-right: 0;
+    width: 90px;
+    font-family: Tahoma, Verdana, sans-serif;
+
+    /* padding-left: 2em;
+    padding-right: 2em; */
+
+    background-color: var(--button-green);
+    border: 1px solid black;
+}
+
+dialog[open]#chunkExtensionsListDialog .add_button:hover {
+    background-color: var(--button-green-hover);
+}
+
+dialog[open]#chunkExtensionsListDialog .add_button:active {
+    background-color: darkgreen;
+}
+
+
+
+dialog[open]#chunkExtensionsListDialog .extension_name .edit_button,
+dialog[open]#chunkExtensionsListDialog .extension_name .delete_button {
+    display: inline-block;
+    background-color: transparent;
+    padding: 5px;
+    height: 35px;
+
+    margin-right: 0;
+    margin-left: 0;
+}
+
+
+
+dialog[open]#chunkExtensionsListDialog .extension_name .edit_button {
+    color: var(--orange);
+    margin-left: auto;
+}
+
+dialog[open]#chunkExtensionsListDialog .extension_name .edit_button:hover {
+    color: black;
+    background-color: var(--orange);
+}
+
+dialog[open]#chunkExtensionsListDialog .extension_name .edit_button:active {
+    color: black;
+    background-color: var(--orange-active);
+}
+
+
+
+dialog[open]#chunkExtensionsListDialog .extension_name .delete_button {
+    color: var(--button-red);
+}
+
+dialog[open]#chunkExtensionsListDialog .extension_name .delete_button:hover {
+    color: var(--white-button-hover);
+    background-color: var(--button-red);
+}
+
+dialog[open]#chunkExtensionsListDialog .extension_name .delete_button:active {
+    color: var(--white-button-hover);
+    background-color: var(--button-red-active);
+}

@@ -1,0 +1,20 @@
+.parameters_table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    white-space: pre-wrap;
+
+    :is(td) {
+        padding: 10px;
+    }
+
+    tr:nth-child(even) {
+        background-color: var(--background-darker);
+    }
+    
+}
+
+.param_name_col {
+    max-width: 110px;
+    width: min(110px, 11vw);
+}

@@ -1,16 +1,14 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { FeaturesContainer, FeaturesProps } from '../FeaturesContainer/FeaturesContainer';
 import { SettingsContainer } from "../SettingsContainer/SettingsContainer";
-import { getVersion } from '@tauri-apps/api/app';
+import { settingsManager } from "@/scripts/settings/settings";
 import './ToolbarContainer.css'
-import { settingsManager } from "../../scripts/settings/settings";
 
-const appVersion = await getVersion()
 
 export function ToolbarContainer(props: FeaturesProps) {
     return (
         <div id='toolbar_container'>
-            <Tabs onSelect={saveSettings}>
+            <Tabs className={'tabs'} onSelect={saveSettings}>
                 <TabList>
                     <Tab>Features</Tab>
                     <Tab>Options</Tab>
@@ -19,8 +17,8 @@ export function ToolbarContainer(props: FeaturesProps) {
                 <TabPanel>
                     <FeaturesContainer
                         chunkArray={props.chunkArray}
-                        setChunkArray={props.setChunkArray}
                         logger={props.logger}
+                        dragEnterCounter={props.dragEnterCounter}
                     />
                 </TabPanel>
 
@@ -28,7 +26,6 @@ export function ToolbarContainer(props: FeaturesProps) {
                     <SettingsContainer />
                 </TabPanel>
             </Tabs>
-            <p id='version_label'>v {appVersion}</p>
         </div>
     )
 }

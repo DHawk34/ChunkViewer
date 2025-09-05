@@ -11,13 +11,26 @@
   text-align: center;
 }
 
+#image_container>div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  height: 100%;
+  width: 100%;
+  border-radius: 8px;
+}
+
+/* #image_container>div:hover{
+  outline: 1px solid black;
+} */
+
 #preview {
-  overflow: auto;
-  
-  margin: auto;
   max-height: 100%;
   max-width: 100%;
   border-radius: 8px;
+  cursor: pointer;
 }
 
 #image_container p {

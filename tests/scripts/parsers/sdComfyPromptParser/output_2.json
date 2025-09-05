@@ -1,0 +1,80 @@
+[
+    {
+        "id": "2",
+        "name": "CLIPSetLastLayer",
+        "value": {
+            "stop_at_clip_layer": -2,
+            "clip/ckpt_name": "ComfyMangoV3_00001_.safetensors"
+        }
+    },
+    {
+        "id": "8",
+        "name": "VAELoader",
+        "value": {
+            "vae_name": "sdxl_vae.safetensors"
+        }
+    },
+    {
+        "id": "19",
+        "name": "PreviewImage",
+        "value": {
+            "samples": {
+                "seed": 941969726529078,
+                "steps": 28,
+                "cfg": 7.0,
+                "sampler_name": "dpmpp_2m",
+                "scheduler": "karras",
+                "denoise": 1.0,
+                "model/ckpt_name": "ComfyMangoV3_00001_.safetensors",
+                "positive": {
+                    "text": "1girl, armpit crease, bangs, bare shoulders, blush, braid, breasts, choker, dress, hair cones, hair ornament, long hair, looking at viewer, medium breasts, off shoulder, purple eyes, purple hair, solo, twintails, upper body, window, keqing \\(genshin impact\\), score_9, score_8_up, score_7_up, 4k, source_anime, masterpiece, highest quality, anime style",
+                    "clip/ckpt_name": "ComfyMangoV3_00001_.safetensors"
+                },
+                "negative": {
+                    "text": "score_6, score_5, 3d, (censored:1.1), source_cartoon, source_furry, source_pony, photorealistic, realistic, sketch, painting",
+                    "clip/ckpt_name": "ComfyMangoV3_00001_.safetensors"
+                },
+                "latent_image": {
+                    "width": 816,
+                    "height": 1224,
+                    "batch_size": 2
+                }
+            },
+            "vae/ckpt_name": "ComfyMangoV3_00001_.safetensors"
+        }
+    },
+    {
+        "id": "32:6",
+        "name": "VAEDecode",
+        "value": {
+            "samples": {
+                "seed": 500154254838566,
+                "steps": 16,
+                "cfg": 7,
+                "sampler_name": "dpmpp_2m",
+                "scheduler": "karras",
+                "denoise": 0.4,
+                "model/ckpt_name": "ComfyMangoV3_00001_.safetensors",
+                "positive": {
+                    "text": "1girl, armpit crease, bangs, bare shoulders, blush, braid, breasts, choker, dress, hair cones, hair ornament, long hair, looking at viewer, medium breasts, off shoulder, purple eyes, purple hair, solo, twintails, upper body, window, keqing \\(genshin impact\\), score_9, score_8_up, score_7_up, 4k, source_anime, masterpiece, highest quality, anime style",
+                    "clip/ckpt_name": "ComfyMangoV3_00001_.safetensors"
+                },
+                "negative": {
+                    "text": "score_6, score_5, 3d, (censored:1.1), source_cartoon, source_furry, source_pony, photorealistic, realistic, sketch, painting",
+                    "clip/ckpt_name": "ComfyMangoV3_00001_.safetensors"
+                },
+                "latent_image": {
+                    "pixels": {
+                        "upscale_method": "nearest-exact",
+                        "width": 1632,
+                        "height": 2448,
+                        "crop": "disabled",
+                        "image/upscale_model/model_name": "4x-UltraSharp.pth"
+                    },
+                    "vae/ckpt_name": "ComfyMangoV3_00001_.safetensors"
+                }
+            },
+            "vae/ckpt_name": "ComfyMangoV3_00001_.safetensors"
+        }
+    }
+]

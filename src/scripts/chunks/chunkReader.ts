@@ -70,8 +70,6 @@ export function readInfoChunks(bytes: Uint8Array): ChunkReadResultExtended {
     requiredLength = pos + 8    // Чтобы хватило на чтение длины чанка и его имени
     result.startIndex = pos
 
-
-
     while (bytes.length > requiredLength) {
         // Длина чанка
         length = bytes2UInt32BigEndian(bytes, pos)
@@ -157,7 +155,7 @@ export function readInfoChunks(bytes: Uint8Array): ChunkReadResultExtended {
             length -= translated.length + 1
 
             result.message += `Чанк iTXt (${isCompressed ? 'compressed' : 'uncompressed'}${language == '' ? '' : ', language: ' + language}${translated == '' ? '' : ', translated: ' + translated}) | `
-            
+
             if (isCompressed) {
                 // TODO: decompress image
                 result.message += 'Закодированный чанк iTXt. Эта картинка нужна для тестов! | '

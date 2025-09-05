@@ -1,34 +1,125 @@
-import { useEffect, useRef, useState } from "react";
-import { appWindow } from "@tauri-apps/api/window";
-import chunkHandler, { ChunkData } from '../../scripts/chunks/chunkHandler';
-import { Param, parseParameters } from '../../scripts/sdParamParser';
+import React, { useEffect, useRef, useState } from "react";
+import chunkHandler, { ChunkData } from '@/scripts/chunks/chunkHandler';
+import { Param, parseParameters, parseParametersToJson } from '@/scripts/parsers/sdWebUIParamParser';
 import { Draggable } from 'react-beautiful-dnd';
 import { UnlistenFn } from "@tauri-apps/api/event";
-import { chunkNameIsUnsafe, maxChunkNameSize } from "../../scripts/chunks/chunkSaver";
-import { settingsManager } from "../../scripts/settings/settings";
+import { chunkNameIsUnsafe, maxChunkNameSize } from "@/scripts/chunks/chunkSaver";
+import { settingsManager } from "@/scripts/settings/settings";
+import { enableContentEditable, getSelectionLength } from "@/scripts/utils/frontend.utils";
+import ExportIcon from '@/assets/export.svg?react'
+import TrashIcon from '@/assets/trash.svg?react'
+import DragIcon from '@/assets/drag.svg?react'
+import RefreshIcon from '@/assets/refresh.svg?react'
+
 import './Chunk.css'
-import autosize from 'autosize';
+import { ComfyBlock, parsePrompt } from "@/scripts/parsers/Comfy/comfyPromptParser";
+import { ExpandableBlock } from "../ExpandableBlock/ExpandableBlock";
+import { ParamsTable } from "../ParamsTable/ParamsTable";
+import { ParamsTableWithExpandle } from "../ParamsTableWithExpandle/ParamsTableWithExpandle";
+import { Dictionary } from "@/scripts/utils/utils";
+import { varStore } from "@/scripts/variableStore";
 
 type Props = {
     index: number
     chunk: ChunkData
-    OnUpdate: (index: number, newValue: ChunkData) => void
-    OnDelete: (index: number) => void
+    OnUpdate: (newValue: ChunkData) => void
+    OnDelete: () => void
 }
 
 export function Chunk(props: Props) {
-    const [showParameters, setShowParameters] = useState(false)
-    const [curInput, setCurInput] = useState<HTMLElement | undefined>()
-    const [parsedParams, setParsedParams] = useState<Param[] | undefined>(undefined)
-    const unlistenResize = useRef<UnlistenFn>()
+    const [showAnotherView, setShowParameters] = useState<boolean>(getDefaultAnotherView())
+    const [parsedParams, setParsedParams] = useState<Dictionary<string> | undefined>(undefined)
+    const [parsedBlocks, setParsedBlocks] = useState<ComfyBlock[] | undefined>(undefined)
+    const [showOnlyBiggest, setShowOnlyBiggest] = useState<boolean>(getDefaultShowOnlyBiggest())
+
+    // const [parsedBlocks, setParsedBlocks] = useState<ComfyBlock[] | undefined>(undefined)
+
     const chunkName = useRef<HTMLDivElement>(null)
 
+    // on chunk.value changed
+
     useEffect(() => {
+        if (showAnotherView && props.chunk.name === 'parameters') {
+            setParsedParams(parseParametersToJson(props.chunk.value, true))
+        }
+        else {
+            setParsedParams(undefined)
+        }
+
+        if (showAnotherView && props.chunk.name === 'prompt') {
+            const blocks = getParsedPrompt(props.chunk.value)
+            setParsedBlocks(blocks)
+        }
+        else {
+            setParsedBlocks(undefined)
+        }
+
+    }, [props.chunk.value])
+
+    useEffect(() => {
+        if (showAnotherView && props.chunk.name === 'parameters') {
+            getParsedParams()
+        }
+
+        if (showAnotherView && props.chunk.name === 'prompt') {
+            getParsedPrompts()
+        }
+    }, [showAnotherView])
+
+    useEffect(() => {
+        if (props.chunk.name !== 'parameters' && props.chunk.name !== 'prompt') {
+            setShowParameters(false)
+        }
+
+        if (props.chunk.name === 'prompt') {
+            settingsManager
+                .getValueUpdatedEvent('showOnlyBiggestBlock')
+                .register(onShowBiggestBlockChanged)
+        }
 
         return () => {
-            if (unlistenResize.current) unlistenResize.current()
+            // unsub from event
+            // if (props.chunk.name !== 'prompt') {
+            settingsManager
+                .getValueUpdatedEvent('showOnlyBiggestBlock')
+                .unregister(onShowBiggestBlockChanged)
+            // }
         }
-    }, [])
+    }, [props.chunk.name])
+
+    // useEffect(() => {
+
+    //     // sub to event
+    //     if (props.chunk.name === 'prompt') {
+    //         settingsManager
+    //             .getValueUpdatedEvent('showOnlyBiggestBlock')
+    //             .register(onShowBiggestBlockChanged)
+    //     }
+
+    //     return () => {
+    //         onShowBiggestBlockChanged(false)
+
+    //         // unsub from event
+    //         // if (props.chunk.name !== 'prompt') {
+    //             settingsManager
+    //                 .getValueUpdatedEvent('showOnlyBiggestBlock')
+    //                 .unregister(onShowBiggestBlockChanged)
+    //         // }
+    //     }
+    // }, [])
+    // const unlistenResize = useRef<UnlistenFn>()
+
+    // useEffect(() => {
+
+    //     return () => {
+    //         if (unlistenResize.current) unlistenResize.current()
+    //     }
+    // }, [])
+
+    // useEffect(() => {
+    //     if (props.chunk.name === 'parameters' || props.chunk.name === 'prompt')
+    //         setShowParameters(settingsManager.getCache('parseParamsOnLoad'))
+    // }, [])
 
     // on chunk.name changed
     useEffect(() => {
@@ -43,131 +134,205 @@ export function Chunk(props: Props) {
             .getValueUpdatedEvent('allowUnsafeChunkNames')
             .register(onAllowUnsafeSettingChanged)
 
+
         return () => {
             onAllowUnsafeSettingChanged(false) // disable yellow coloring
-
             // unsub from event
             settingsManager
                 .getValueUpdatedEvent('allowUnsafeChunkNames')
                 .unregister(onAllowUnsafeSettingChanged)
+
         }
     }, [props.chunk.name])
 
-    // on chunk.value changed
-    useEffect(() => {
-        setParsedParams(undefined)
-    }, [props.chunk.value])
+    function getDefaultAnotherView() {
+        return (props.chunk.name === 'parameters' || props.chunk.name === 'prompt') && settingsManager.getCache('parseParamsOnLoad')
+    }
+
+    function getDefaultShowOnlyBiggest() {
+        return (props.chunk.name === 'prompt') && settingsManager.getCache('showOnlyBiggestBlock')
+    }
+
+    function onShowBiggestBlockChanged(value: boolean) {
+        setShowOnlyBiggest(value)
+    }
 
     function onAllowUnsafeSettingChanged(value: boolean) {
         if (!chunkName.current) return
         chunkName.current.className = value ? 'chunk_name yellow' : 'chunk_name'
     }
 
-    function spawnInput(element: HTMLElement, index: number) {
-        if (element.querySelector('.editable_textarea'))
-            return
-        const val: string = element.textContent as string;
-        const input = document.createElement('textarea')
-        setCurInput(input)
-        input.setAttribute('class', 'editable_textarea')
-
-        if (element.className.includes('chunk_name')) {
-            input.setAttribute('maxlength', maxChunkNameSize.toString())
-        }
-
-        input.value = val;
-        input.onblur = () => {
-            if (element.className.includes('chunk_name')) {
-                let val = input.value.substring(0, maxChunkNameSize).trim()
-                if (val.length === 0) val = '?'
-
-                props.chunk.name = element.textContent = val
-                props.OnUpdate(index, props.chunk)
-            }
-            else {
-                props.chunk.value = element.textContent = input.value
-                props.OnUpdate(index, props.chunk)
-            }
-            setCurInput(undefined)
-        }
-
-        element.innerHTML = ''
-        element.appendChild(input)
-        input.focus()
-        autosize(input);
-        
-        element.parentElement?.scrollIntoView({block: "start"});
-
-    }
 
     function deleteChunk() {
-        props.OnDelete(props.index)
+        props.OnDelete()
     }
 
     function changeView() {
-        setShowParameters(!showParameters)
+        setShowParameters(!showAnotherView)
     }
 
     function exportChunk() {
-        if (showParameters) {
-            chunkHandler.exportParameters([props.chunk])
-                .catch(e => console.log(e))
+        if (showAnotherView) {
+            if (props.chunk.name === 'parameters') {
+                chunkHandler.exportParameters([props.chunk])
+                    .catch(e => console.log(e))
+            }
+
+            return
+        }
+
+        let isJson = false
+        if (props.chunk.name === 'workflow' || props.chunk.name === 'prompt')
+            isJson = true
+
+        chunkHandler.exportChunk(props.chunk, isJson)
+            .catch(e => console.log(e))
+    }
+
+    function getParsedParams() {
+        if (parsedParams) {
+            return
+        }
+
+        const params = parseParametersToJson(props.chunk.value, true)
+
+        setParsedParams(params)
+    }
+
+    function getParsedPrompt(value: string) {
+        let blocks = parsePrompt(value)
+
+        setParsedBlocks(blocks)
+
+        return blocks
+    }
+
+    function getBiggestBlock() {
+        if (parsedBlocks && parsedBlocks.length > 0) {
+            let t = [...parsedBlocks]
+            const biggestBlock = t.reduce(function (prev, current) {
+                return (prev && prev.keysCount > current.keysCount) ? prev : current
+            })
+            return biggestBlock
+        }
+
+        return undefined
+    }
+
+    function getParsedPrompts() {
+        if (parsedBlocks) {
+            return
+        }
+
+        const blocks = getParsedPrompt(props.chunk.value)
+        setParsedBlocks(blocks)
+    }
+
+
+
+    function chunkName_onBlur(e: React.FocusEvent<HTMLElement>) {
+        e.currentTarget.contentEditable = 'false'
+
+        // trim text just in case
+        if (e.currentTarget.textContent && e.currentTarget.textContent.length > maxChunkNameSize) {
+            e.currentTarget.textContent = e.currentTarget.textContent.substring(0, maxChunkNameSize)
+        }
+
+        // don't let chunkName be empty 
+        let val = e.currentTarget.textContent?.substring(0, maxChunkNameSize).trim() ?? ''
+        if (val.length === 0) val = '?'
+
+        props.chunk.name = e.currentTarget.textContent = val
+        props.OnUpdate(props.chunk)
+    }
+
+    function chunkValue_onBlur(e: React.FocusEvent<HTMLElement>) {
+        e.currentTarget.contentEditable = 'false'
+        props.chunk.value = e.currentTarget.textContent ?? ''
+        props.OnUpdate(props.chunk)
+    }
+
+    function limitChunkNameMaxLength_onKeyDown(e: React.KeyboardEvent<HTMLElement>) {
+        if (e.ctrlKey || e.key === 'Backspace' || e.key === 'Delete' || e.key.includes('Arrow')) {
+            return
+        }
+
+        const selectionLength = getSelectionLength(window)
+        if (selectionLength > 0) return // we can enter only 1 symbol at a time, so it's ok
+
+        const contentLength = e.currentTarget.textContent?.length ?? 0
+        if (contentLength >= maxChunkNameSize) {
+            e.preventDefault()
+        }
+    }
+
+    function limitChunkNameMaxLength_onPaste(e: React.ClipboardEvent<HTMLElement>) {
+        e.preventDefault()
+
+        const currentTextLength = e.currentTarget.textContent?.length ?? 0
+        const selectionLength = getSelectionLength(window)
+
+        const text = e.clipboardData
+            .getData('text')
+            .substring(0, maxChunkNameSize - currentTextLength + selectionLength)
+
+        // paste trimmed value
+        document.execCommand('insertText', false, text)
+    }
+
+    function showChankValue() {
+        if (showAnotherView) {
+            if (props.chunk.name === 'parameters') {
+                return <ParamsTableWithExpandle id="sdwebuitable" opened params={parsedParams} />
+            }
+            else if (props.chunk.name === 'prompt') {
+                return comfyBlocks
+            }
         }
         else {
-            chunkHandler.exportChunk(props.chunk)
-                .catch(e => console.log(e))
+            return <p className='chunk_text' onDoubleClick={enableContentEditable} onBlur={chunkValue_onBlur}>
+                {props.chunk.value}
+            </p>
         }
     }
 
-    function getParsedParams(): Param[] {
-        if (parsedParams) {
-            return parsedParams
-        }
-
-        const params = parseParameters(props.chunk.value, true)
-        setParsedParams(params)
-
-        return params
-    }
-
-    const parameters = showParameters ? getParsedParams().map((param: Param, index: number) => {
-        return <tr key={index}>
-            <td className='param_name'>{param.key}</td>
-            <td className='param_text'>{param.value}</td>
-        </tr>
-    }) : undefined
+    const comfyBlocks = showAnotherView && props.chunk.name === 'prompt' ?
+        showOnlyBiggest ? <ParamsTableWithExpandle id={`biggest_comfyParamTable`} opened params={getBiggestBlock()?.value} /> :
+            parsedBlocks?.map(block => {
+                return <ExpandableBlock header={`${block.id}. ${block.name}`} opened key={block.id}>
+                    <ParamsTableWithExpandle id={`${block.id}_${block.name}_comfyParamTable`} opened params={block.value} />
+                </ExpandableBlock>
+            }) : undefined
 
     return (
-        <Draggable draggableId={props.index.toString()} key={props.index} index={props.index}>
-            {(provided) => (
-                <div className='chunk' key={props.index}
-                    {...provided.draggableProps} ref={provided.innerRef}>
-                    <div className='chunk_header'>
-                        <div  {...provided.dragHandleProps} id='chunk_dragger' onMouseDown={() => document.querySelector<HTMLTextAreaElement>('.editable_textarea')?.blur()}><svg width={16} height={35} fill='white' viewBox="64 -11.5 128 256"><rect width="128" height="256" fill="none" /><circle cx="92" cy="60" r="12" /><circle cx="164" cy="60" r="12" /><circle cx="92" cy="128" r="12" /><circle cx="164" cy="128" r="12" /><circle cx="92" cy="196" r="12" /><circle cx="164" cy="196" r="12" /></svg></div>
-                        <div ref={chunkName} className='chunk_name' onDoubleClick={(e) => spawnInput(e.currentTarget, props.index)}>{props.chunk.name}</div>
+        <div>
+            <Draggable draggableId={props.index.toString()} key={props.index} index={props.index}>
+                {(provided) => (
+                    <div className='chunk' key={props.index}
+                        {...provided.draggableProps} ref={provided.innerRef}>
+                        <div className='chunk_header'>
+                            <div  {...provided.dragHandleProps} className='dragger' onMouseDown={() => {
+                                document.querySelector<HTMLTextAreaElement>('.editable_textarea')?.blur()
+                                document.querySelector<HTMLElement>('[contenteditable="plaintext-only"]')?.blur()
+                            }
+                            }><DragIcon width="16" height="35" /></div>
+
+                            <p ref={chunkName} className='chunk_name' onDoubleClick={enableContentEditable} onBlur={chunkName_onBlur} onKeyDown={limitChunkNameMaxLength_onKeyDown} onPaste={limitChunkNameMaxLength_onPaste}>
+                                {props.chunk.name}
+                            </p>
+                            {
+                                (props.chunk.name === 'parameters' || props.chunk.name === 'prompt') &&
+                                <button className='change_view_chunk_button' onClick={() => changeView()}><RefreshIcon width="25" height="25" /></button>
+                            }
+                            <button className='export_chunk_button' onClick={exportChunk}><ExportIcon width="25" height="25" /></button>
+                            <button className='delete_chunk_button' onClick={deleteChunk}><TrashIcon width="25" height="25" /></button>
+                        </div>
                         {
-                            props.chunk.name === 'parameters' &&
-                            <button className='change_view_chunk_button' onClick={changeView}><svg width="25" height="25" viewBox="0 0 109.927 122.881"><g><path fill='currentColor' d="M38.884,13.221c-0.041,1.756,0.255,2.601,1.781,2.603h36.71 c6.647,0.521,12.596,2.272,17.625,5.684c3.492,2.369,6.04,5.183,7.963,8.302c3.412,5.537,5.34,13.521,6.384,19.967 c0.45,2.787,0.661,5.392,0.18,6.6c-0.228,0.569-0.565,0.953-1.023,1.135c-2.524,1.011-5.192-2.464-6.614-4.127 c-6.77-7.918-16.61-11.194-28.212-11.809h-33.56c-1.201,0.208-1.627,1.096-1.507,2.466v9.451c-0.07,3.141-1.654,4.21-4.794,3.15 L4.92,33.966l-2.842-2.231l-0.727-0.57c-2.323-2.089-1.368-3.991,0.717-5.633l2.206-1.736L31.964,1.999 c3.379-2.661,6.92-3.373,6.92,2.362V13.221L38.884,13.221z M71.042,109.66c0.041-1.757-0.254-2.602-1.78-2.604h-36.71 c-6.647-0.521-12.596-2.271-17.625-5.684c-3.514-2.384-6.072-5.217-7.998-8.358c-3.485-5.686-5.757-14.941-6.591-21.583 c-0.266-2.119-0.321-3.966,0.063-4.927c0.227-0.569,0.565-0.953,1.022-1.136c2.524-1.011,5.192,2.464,6.614,4.127 c6.771,7.918,16.611,11.194,28.213,11.809h33.56c1.2-0.207,1.627-1.096,1.507-2.466v-9.451c0.07-3.141,1.654-4.21,4.794-3.15 l28.896,22.677l2.843,2.231l0.727,0.57c2.323,2.089,1.367,3.991-0.718,5.633l-2.205,1.736l-27.689,21.797 c-3.38,2.661-6.921,3.373-6.921-2.362V109.66L71.042,109.66z" /></g></svg></button>
+                            showChankValue()
                         }
-                        <button className='export_chunk_button' onClick={exportChunk}><svg width="25" height="25" viewBox="0 0 35 35"><path d="M4.4,29.2c3.6-5.4,8.8-7.9,16-7.9v6.4l10.2-10.9L20.4,5.8v6.2C10.2,13.6,5.8,21.4,4.4,29.2z" fill="currentColor"></path></svg></button>
-                        <button className='delete_chunk_button' onClick={deleteChunk}><svg aria-hidden="true" role="img" width="25" height="25" viewBox="0 0 24 24"><path fill="currentColor" d="M15 3.999V2H9V3.999H3V5.999H21V3.999H15Z"></path><path fill="currentColor" d="M5 6.99902V18.999C5 20.101 5.897 20.999 7 20.999H17C18.103 20.999 19 20.101 19 18.999V6.99902H5ZM11 17H9V11H11V17ZM15 17H13V11H15V17Z"></path></svg></button>
                     </div>
-                    {
-                        showParameters && props.chunk.name === 'parameters' ?
-                            <table id='parameters_table'>
-                                <colgroup>
-                                    <col className='param_name_col' />
-                                    <col className='param_value_col' />
-                                </colgroup>
-                                <tbody>
-                                    {parameters}
-                                </tbody>
-                            </table>
-                            :
-                            <p className='chunk_text' onDoubleClick={(e) => spawnInput(e.currentTarget, props.index)}>{props.chunk.value.toString()}</p>
-                    }
-                </div>
-            )}
-        </Draggable>
+                )}
+            </Draggable>
+        </div>
     )
 }

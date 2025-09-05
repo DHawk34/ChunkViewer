@@ -1,29 +1,152 @@
-import { exportAllChunks, exportParams, replaceChunks, saveImage } from '../../scripts/features'
-import { ChunkData } from '../../scripts/chunks/chunkHandler'
-import { Logger } from '../../scripts/hooks/useLoggerHook'
+import { useRef } from 'react'
+import { exportAllChunks, exportParams, replaceChunks, replaceChunksWithFileDialog, saveImage } from '@/scripts/features'
+import { ChunkData } from '@/scripts/chunks/chunkHandler'
+import { Logger } from '@/scripts/hooks/useLoggerHook'
+import { height_0auto_startTransition, height_0auto_endTransition } from '@/scripts/utils/frontend.utils'
+import { DragEnterCounter, useDragEnterCounter } from '@/scripts/hooks/useDragEnterCounterHook'
+import { ChunkInfoExtensionDialog } from './ChunkInfoExtensionDialog'
+import { ChunkExtensionsList } from './ChunkExtensionsList'
+import EditIcon from '@/assets/edit.svg?react'
 import './FeaturesContainer.css'
+import { ChunkExtension, extensionSettingsManager, settingsManager } from '@/scripts/settings/settings'
+import { ChunkArray } from '@/scripts/hooks/useChunkArray'
 
 export interface FeaturesProps {
-    chunkArray: ChunkData[]
-    setChunkArray: React.Dispatch<React.SetStateAction<ChunkData[]>>
-    // TODO: transfer settings
+    chunkArray: ChunkArray
     logger: Logger
+    dragEnterCounter: DragEnterCounter
 }
 
 export function FeaturesContainer(props: FeaturesProps) {
-    const { chunkArray, setChunkArray, logger } = props
+    const ref_chunkButtonsBlock = useRef<HTMLDivElement>(null)
+    const ref_addExtensionDialog = useRef<HTMLDialogElement>(null)
+    const ref_editExtensionsListDialog = useRef<HTMLDialogElement>(null)
 
-    const btn_exportImage = () => saveImage(chunkArray, logger)
-    const btn_exportParameters = () => exportParams(chunkArray, logger)
-    const btn_exportAllChunks = () => exportAllChunks(chunkArray, logger)
-    const btn_replaceChunks = () => replaceChunks(setChunkArray, logger)
+    const { chunkArray, logger, dragEnterCounter } = props
 
+    const { logs, log, logError } = logger
+
+    const { enterCount, incrementDragEnterCount, decrementDragEnterCount, setDragEnterCount } = dragEnterCounter
+
+    const btn_exportImage = () => saveImage(chunkArray.chunks, logger)
+    const btn_exportParameters = () => exportParams(chunkArray.chunks, logger)
+    const btn_exportAllChunks = () => exportAllChunks(chunkArray.chunks, logger)
+    const btn_replaceChunks = () => replaceChunksWithFileDialog(chunkArray, logger)
+
+    function expandButton_onClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        if (!ref_chunkButtonsBlock.current) return
+        const block = ref_chunkButtonsBlock.current
+        const expandBtn = e.currentTarget
+
+        const blockOpened = height_0auto_startTransition(block)
+        expandBtn.className = blockOpened ? 'pressed' : ''
+    }
+
+    function handleDrop(ev: React.DragEvent<HTMLButtonElement>) {
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        decrementDragEnterCount()
+
+        if (!ev.dataTransfer)
+            return;
+
+        const { files } = ev.dataTransfer;
+
+        if (files && files.length) {
+            //console.log(files);
+            var file = getImageFromFiles(files);
+
+            if (!file) {
+                logError('Это не пнг!')
+                return;
+            }
+
+            file.arrayBuffer().then(buff => {
+                replaceChunks(new Uint8Array(buff), chunkArray, logger)
+            })
+        }
+    }
+
+    function getImageFromFiles(files: FileList) {
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i]
+            if (file.name.endsWith('.png'))
+                return file
+        }
+    }
+
+    function openAddExtensionDialog() {
+        ref_addExtensionDialog.current?.showModal()
+    }
+
+    function openExtensionsListDialog() {
+        ref_editExtensionsListDialog.current?.showModal()
+    }
+
+
+
+    function getExecuteChunkExtensionFunc(ext: ChunkExtension) {
+        return () => {
+            chunkArray.edit(arr => {
+                if (ext.removeAllChunks) {
+                    arr = []
+                }
+                else if (ext.chunksToRemove) {
+                    arr = arr.filter(chunk => !ext.chunksToRemove!.includes(chunk.name))
+                }
+
+                if (ext.chunksToAdd) {
+                    arr.push(...ext.chunksToAdd.map(chunk => ({ name: chunk.name ?? "?", value: chunk.value ?? "" })))
+                }
+
+                return [...arr]
+            })
+        }
+    }
+
+    const chunkExtensions = extensionSettingsManager.getCache('chunkExtensions')
+
+    // TODO: Chunk info extensions: кнопки добавить/редактировать/удалить extension
     return (
         <div id='features_container'>
             <button onClick={btn_exportImage}>Export Image</button>
             <button onClick={btn_exportParameters}>Export parameters</button>
             <button onClick={btn_exportAllChunks}>Export all chunks</button>
-            <button onClick={btn_replaceChunks}>Replace chunks from image</button>
-        </div>
+            <button className='drop_object' onClick={btn_replaceChunks} onDrop={handleDrop}>Replace chunks from image</button>
+
+            {/* <button onClick={expandButton_onClick}>Chunk info extensions</button>
+            <div onTransitionEnd={height_0auto_endTransition} ref={ref_chunkButtonsBlock} className='groovedBlock' style={{ height: 0 }}>
+                <button>Replace all with Boosty chunk</button>
+                <button>Add upscale chunks</button>
+
+                <button>Remove parameters chunk</button>
+                <button>Remove parameters chunk</button>
+                <button>Remove parameters chunk</button>
+
+                <hr />
+                <button className='editExtensionsButton'>
+                    Edit extensions
+                    <EditIcon className='editIcon' />
+                </button>
+            </div> */}
+
+            {/* <button onClick={openAddExtensionDialog}>TEST 1</button>
+            <button onClick={openExtensionsListDialog}>TEST 2</button>
+
+            <ChunkExtensionsList ref={ref_editExtensionsListDialog} ref_addExtensionDialog={ref_addExtensionDialog} />
+            <ChunkInfoExtensionDialog ref={ref_addExtensionDialog} /> */}
+
+            {chunkExtensions.length > 0 && (
+                [
+                    <hr className='settings_hr' key={"hr_0"}></hr>,
+                    chunkExtensions.map((x, index) => (
+                        <button onClick={getExecuteChunkExtensionFunc(x)} key={`func_${index}`}>
+                            {x.name ?? "unnamed func"}
+                        </button>
+                    ))
+                ]
+            )}
+        </div >
     )
 }

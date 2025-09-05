@@ -1,0 +1,43 @@
+:root {
+    --background: #313338;
+    --background-dark: #282a2e;
+    --background-darker: #26282c;
+    --foreground: #1e1f22;
+
+    --button-color-light: #3a3c41;
+    --button-color-light-hover: #484a52;
+
+    --button-color-grey: #232427;
+    --button-color-grey-hover: #1e1f22;
+
+    --button-color-dark: #191919;
+    --button-color-dark-hover: #121212;
+    --button-color-dark-pressed: #0f0f0f;
+
+    --button-green: green;
+    --button-green-hover: rgb(0, 110, 0);
+    --button-green-active: #006a00;
+
+    --white-button-hover: #dedede;
+    --button-red: #da0000;
+    --button-red-active: #aa0000;
+
+    --button-red-dark: rgb(170, 0, 0);
+    --button-red-dark-hover: rgb(150, 0, 0);
+    --button-red-dark-active: rgb(140, 0, 0);
+
+    --button-blue: royalblue;
+    --button-blue-active: #2a4eba;
+
+    --light-blue: rgb(1, 147, 207);
+    --medium-blue: rgb(1, 126, 207);
+    --orange: rgb(255, 188, 43);
+    --orange-active: hsl(41, 90%, 45%);
+}
+
+/* orange */
+/* rgb(255, 188, 43) */
+/* rgb(230, 181, 75) */
+
+/* blue */
+/* rgb(101, 137, 235) */

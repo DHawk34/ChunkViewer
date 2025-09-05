@@ -1,7 +1,7 @@
 import { ChunkReadResult, readInfoChunks } from './chunkReader'
 import { exportChunk, exportChunks, exportParameters } from './chunkExporter'
 import { SaveOptions, saveChunksToImageBytes } from './chunkSaver'
-import { pngSaveFilePickerOptions, save } from '../save.utils';
+import { pngSaveFilePickerOptions, save } from '../utils/save.utils';
 import { varStore } from '../variableStore';
 
 export type ChunkData = {

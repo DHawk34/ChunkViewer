@@ -12,6 +12,7 @@
     height: 30px;
 
     transition: all 0.2s ease-out;
+    z-index: 9999;
 }
 
 #status_bar_container.full_open {

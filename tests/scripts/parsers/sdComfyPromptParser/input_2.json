@@ -1,0 +1,182 @@
+{
+    "2": {
+        "inputs": {
+            "stop_at_clip_layer": -2,
+            "clip": [
+                "174",
+                1
+            ]
+        },
+        "class_type": "CLIPSetLastLayer"
+    },
+    "3": {
+        "inputs": {
+            "text": "1girl, armpit crease, bangs, bare shoulders, blush, braid, breasts, choker, dress, hair cones, hair ornament, long hair, looking at viewer, medium breasts, off shoulder, purple eyes, purple hair, solo, twintails, upper body, window, keqing \\(genshin impact\\), score_9, score_8_up, score_7_up, 4k, source_anime, masterpiece, highest quality, anime style",
+            "clip": [
+                "174",
+                1
+            ]
+        },
+        "class_type": "CLIPTextEncode"
+    },
+    "4": {
+        "inputs": {
+            "text": "score_6, score_5, 3d, (censored:1.1), source_cartoon, source_furry, source_pony, photorealistic, realistic, sketch, painting",
+            "clip": [
+                "174",
+                1
+            ]
+        },
+        "class_type": "CLIPTextEncode"
+    },
+    "5": {
+        "inputs": {
+            "seed": 941969726529078,
+            "steps": 28,
+            "cfg": 7.0,
+            "sampler_name": "dpmpp_2m",
+            "scheduler": "karras",
+            "denoise": 1.0,
+            "model": [
+                "174",
+                0
+            ],
+            "positive": [
+                "3",
+                0
+            ],
+            "negative": [
+                "4",
+                0
+            ],
+            "latent_image": [
+                "6",
+                0
+            ]
+        },
+        "class_type": "KSampler"
+    },
+    "6": {
+        "inputs": {
+            "width": 816,
+            "height": 1224,
+            "batch_size": 2
+        },
+        "class_type": "EmptyLatentImage"
+    },
+    "8": {
+        "inputs": {
+            "vae_name": "sdxl_vae.safetensors"
+        },
+        "class_type": "VAELoader"
+    },
+    "18": {
+        "inputs": {
+            "samples": [
+                "5",
+                0
+            ],
+            "vae": [
+                "174",
+                2
+            ]
+        },
+        "class_type": "VAEDecode"
+    },
+    "19": {
+        "inputs": {
+            "images": [
+                "18",
+                0
+            ]
+        },
+        "class_type": "PreviewImage"
+    },
+    "174": {
+        "inputs": {
+            "ckpt_name": "ComfyMangoV3_00001_.safetensors"
+        },
+        "class_type": "CheckpointLoaderSimple"
+    },
+    "32:0": {
+        "inputs": {
+            "model_name": "4x-UltraSharp.pth"
+        },
+        "class_type": "UpscaleModelLoader"
+    },
+    "32:2": {
+        "inputs": {
+            "upscale_model": [
+                "32:0",
+                0
+            ]
+        },
+        "class_type": "ImageUpscaleWithModel"
+    },
+    "32:3": {
+        "inputs": {
+            "upscale_method": "nearest-exact",
+            "width": 1632,
+            "height": 2448,
+            "crop": "disabled",
+            "image": [
+                "32:2",
+                0
+            ]
+        },
+        "class_type": "ImageScale"
+    },
+    "32:4": {
+        "inputs": {
+            "pixels": [
+                "32:3",
+                0
+            ],
+            "vae": [
+                "174",
+                2
+            ]
+        },
+        "class_type": "VAEEncode"
+    },
+    "32:5": {
+        "inputs": {
+            "seed": 500154254838566,
+            "steps": 16,
+            "cfg": 7,
+            "sampler_name": "dpmpp_2m",
+            "scheduler": "karras",
+            "denoise": 0.4,
+            "model": [
+                "174",
+                0
+            ],
+            "positive": [
+                "3",
+                0
+            ],
+            "negative": [
+                "4",
+                0
+            ],
+            "latent_image": [
+                "32:4",
+                0
+            ]
+        },
+        "class_type": "KSampler"
+    },
+    "32:6": {
+        "inputs": {
+            "samples": [
+                "32:5",
+                0
+            ],
+            "vae": [
+                "174",
+                2
+            ]
+        },
+        "class_type": "VAEDecode"
+    }
+}
