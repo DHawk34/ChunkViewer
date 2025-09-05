@@ -33,6 +33,7 @@ export function exportParams(chunks: ChunkData[], logger: Logger) {
         .catch(e => logger.logError(e))
 }
 
+
 export function replaceChunksWithFileDialog(chunkArray: ChunkArray, logger: Logger) {
     dialog.open({
         multiple: false,
@@ -56,7 +57,7 @@ export function replaceChunks(data: Uint8Array, chunkArray: ChunkArray, logger: 
         .then(({ chunks, message }) => {
             if (message && message !== '')
                 logger.log(message)
-
+      
             chunkArray.reset(chunks)
         })
         .catch(e => logger.logError(e?.message ?? e))
