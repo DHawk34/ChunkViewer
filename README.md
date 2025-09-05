@@ -16,7 +16,7 @@ It also includes a parser for [Stable Diffusion WebUI](https://github.com/AUTOMA
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (>= 18)
 - [Rust](https://www.rust-lang.org/) (for Tauri backend)
-- [npm](https://www.npmjs.com/) or `yarn`
+- [npm](https://www.npmjs.com/) or any other package manager
 
 ### Installation
 
